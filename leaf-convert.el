@@ -28,6 +28,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (defgroup leaf-convert nil
   "Convert many format to leaf format."
   :prefix "leaf-convert-"
@@ -105,10 +107,24 @@ This list can be created by this sexp.
   pl-setq auth-setq
   pl-setq-default auth-setq-default)
 
+(defun leaf-convert--string-or-symbol (elm default)
+  "Convert ELM to symbol.  If ELM is nil, return DEFAULT.
+ELM can be string or symbol."
+  (or (if (stringp elm) (intern elm) elm)
+      default))
+
+(defun leaf-convert--convert-name (contents)
+  "Convert CONTENTS to name sexp."
+  (leaf-convert--string-or-symbol
+   (leaf-convert-contents-name contents)
+   'leaf-convert))
+
 ;;;###autoload
-(defmacro leaf-convert-from-contents (contents)
+(defun leaf-convert-from-contents (contents)
   "Convert CONTENTS to leaf format using LEAF-NAME."
-  )
+  (if (not (leaf-convert-contents-p contents))
+      (error "CONTENTS must be a instance of leaf-convert-contents")
+    `(leaf ,(leaf-convert--convert-name contents))))
 
 (provide 'leaf-convert)
 

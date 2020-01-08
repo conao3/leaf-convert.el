@@ -32,6 +32,28 @@
   (it "contains a spec with an expectation"
     (expect t :to-be t)))
 
+(describe "Could convert from leaf-convert-contents"
+  (it "Name"
+    (expect
+     (leaf-convert-from-contents
+      (leaf-convert-contents-new))
+     :to-equal
+     '(leaf leaf-convert))
+
+    (expect
+     (leaf-convert-from-contents
+      (leaf-convert-contents-new
+       :name "some-package"))
+     :to-equal
+     '(leaf some-package))
+
+    (expect
+     (leaf-convert-from-contents
+      (leaf-convert-contents-new
+       :name 'some-package))
+     :to-equal
+     '(leaf some-package))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
