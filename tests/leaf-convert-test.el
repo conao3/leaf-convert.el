@@ -63,13 +63,13 @@
      '(leaf leaf-convert
         :disabled t))
 
-    ;; (expect
-    ;;  (leaf-convert-from-contents
-    ;;   (leaf-convert-contents-new
-    ;;    :disabled nil))
-    ;;  :to-equal
-    ;;  '(leaf leaf-convert))
-    ))
+    (expect
+     (leaf-convert-from-contents
+      (leaf-convert-contents-new
+       :disabled :leaf-convert--nil))
+     :to-equal
+     '(leaf leaf-convert
+        :disabled nil))))
 
 ;; (provide 'leaf-convert-test)
 

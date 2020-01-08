@@ -83,7 +83,8 @@ This list can be created by below sexp.
                    (:constructor leaf-convert-contents-new
                                  (&key ,@leaf-convert-slots))
                    (:copier nil))
-      "Contents of leaf."
+      "Contents of leaf.
+If specify nil as value, use :leaf-convert--nil instead of just nil."
       ,@leaf-convert-slots)))
 
 
@@ -115,7 +116,8 @@ ELM can be string or symbol."
                    (let ((fn (intern
                               (format "leaf-convert-contents-%s" elm))))
                      (when-let (value (funcall fn contents))
-                       `(,(intern (format ":%s" elm)) ,value))))
+                       `(,(intern (format ":%s" elm))
+                         ,(if (eq value :leaf-convert--nil) nil value)))))
                  (remq 'name leaf-convert-slots)))))
 
 (provide 'leaf-convert)
