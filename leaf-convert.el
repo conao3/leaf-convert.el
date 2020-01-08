@@ -40,9 +40,10 @@
 (eval-and-compile
   (defvar leaf-convert-slots
     '(name
-      disabled leaf-protect load-path
+      disabled leaf-protect
+      load-path load-path*
       leaf-autoload
-      doc file url
+      doc tag file url
       defun defvar
       leaf-defun leaf-defvar
       preface
