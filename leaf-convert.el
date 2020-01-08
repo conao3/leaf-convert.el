@@ -36,76 +36,54 @@
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-convert.el"))
 
-(cl-defstruct (leaf-convert-contents
-               (:constructor nil)
-               (:constructor leaf-convert-contents-new
-                             (&key name
-                                   disabled leaf-protect load-path
-                                   leaf-autoload
-                                   doc file url
-                                   defun defvar
-                                   leaf-defun leaf-defvar
-                                   preface
-                                   when unless if
-                                   ensure package
-                                   straight el-get
-                                   after commands
-                                   bind bind*
-                                   mode interpreter
-                                   magic magic-fallback
-                                   hook
-                                   advice advice-remove
-                                   init pre-setq
-                                   pl-pre-setq auth-pre-setq
-                                   custom pl-custom auth-custom
-                                   custom-face
-                                   hydra combo combo*
-                                   smartrep smartrep*
-                                   chord chord*
-                                   leaf-defer
-                                   require
-                                   config
-                                   diminish delight
-                                   setq setq-default
-                                   pl-setq auth-setq
-                                   pl-setq-default auth-setq-default))
-               (:copier nil))
-  "Contents of leaf.
-This list can be created by this sexp.
+(eval-and-compile
+  (defvar leaf-convert-slots
+    '(name
+      disabled leaf-protect load-path
+      leaf-autoload
+      doc file url
+      defun defvar
+      leaf-defun leaf-defvar
+      preface
+      when unless if
+      ensure package
+      straight el-get
+      after commands
+      bind bind*
+      mode interpreter
+      magic magic-fallback
+      hook
+      advice advice-remove
+      init pre-setq
+      pl-pre-setq auth-pre-setq
+      custom pl-custom auth-custom
+      custom-face
+      hydra combo combo*
+      smartrep smartrep*
+      chord chord*
+      leaf-defer
+      require
+      config
+      diminish delight
+      setq setq-default
+      pl-setq auth-setq
+      pl-setq-default auth-setq-default)
+    "Leaf slots.
 
-  (mapcar (lambda (elm)
+This list can be created by below sexp.
+
+ (mapcar (lambda (elm)
             (intern (substring (symbol-name elm) 1)))
-          (leaf-available-keywords))"
-  name
-  disabled leaf-protect load-path
-  leaf-autoload
-  doc file url
-  defun defvar
-  leaf-defun leaf-defvar
-  preface
-  when unless if
-  ensure package
-  straight el-get
-  after commands
-  bind bind*
-  mode interpreter
-  magic magic-fallback
-  hook
-  advice advice-remove
-  init pre-setq
-  pl-pre-setq auth-pre-setq
-  custom pl-custom auth-custom
-  custom-face
-  hydra combo combo*
-  smartrep smartrep*
-  chord chord*
-  leaf-defer
-  require
-  config
-  diminish delight
-  setq setq-default
-  pl-setq auth-setq
-  pl-setq-default auth-setq-default)
+          (leaf-available-keywords))")
+
+  (eval
+   `(cl-defstruct (leaf-convert-contents
+                   (:constructor nil)
+                   (:constructor leaf-convert-contents-new
+                                 (&key ,@leaf-convert-slots))
+                   (:copier nil))
+      "Contents of leaf."
+      ,@leaf-convert-slots)))
 
 (defun leaf-convert--string-or-symbol (elm default)
   "Convert ELM to symbol.  If ELM is nil, return DEFAULT.
