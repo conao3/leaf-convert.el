@@ -54,7 +54,7 @@
      :to-equal
      '(leaf some-package)))
 
-  (it "Disabled"
+  (it ":disabled"
     (expect
      (leaf-convert-from-contents
       (leaf-convert-contents-new
@@ -95,7 +95,7 @@
           (leaf-keywords-teardown))))))
 
 (describe "Leaf-convert-contents could convert from sexp"
-  (it "load-path"
+  (it ":load-path"
     (expect
      (leaf-convert-contents-new--from-sexp
       '(add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
