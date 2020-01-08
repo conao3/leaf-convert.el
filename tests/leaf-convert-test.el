@@ -101,7 +101,7 @@
       '(add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
      :to-equal
      (leaf-convert-contents-new
-      :load-path '("~/.emacs.d/local/26.3/site-lisp"))))
+      :load-path "~/.emacs.d/local/26.3/site-lisp")))
 
   (it ":config"
     (expect
