@@ -96,14 +96,6 @@ ELM can be string or symbol."
       default))
 
 
-;;; Convert functions
-(defun leaf-convert--convert-name (contents)
-  "Convert CONTENTS to name sexp."
-  (leaf-convert--string-or-symbol
-   (leaf-convert-contents-name contents)
-   'leaf-convert))
-
-
 ;;; Main
 
 ;;;###autoload
@@ -111,7 +103,9 @@ ELM can be string or symbol."
   "Convert CONTENTS to leaf format using LEAF-NAME."
   (if (not (leaf-convert-contents-p contents))
       (error "CONTENTS must be a instance of leaf-convert-contents")
-    `(leaf ,(leaf-convert--convert-name contents)
+    `(leaf ,(leaf-convert--string-or-symbol
+             (leaf-convert-contents-name contents)
+             'leaf-convert)
        ,@(mapcan (lambda (elm)
                    (let ((fn (intern
                               (format "leaf-convert-contents-%s" elm))))
