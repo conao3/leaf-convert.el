@@ -69,7 +69,30 @@
        :disabled :leaf-convert--nil))
      :to-equal
      '(leaf leaf-convert
-        :disabled nil))))
+        :disabled nil)))
+
+  (it ":config"
+    (expect
+     (leaf-convert-from-contents
+      (leaf-convert-contents-new
+       :config '((leaf-keywords-init))))
+     :to-equal
+     '(leaf leaf-convert
+        :config
+        (progn
+          (leaf-keywords-init))))
+
+    (expect
+     (leaf-convert-from-contents
+      (leaf-convert-contents-new
+       :config '((leaf-keywords-init)
+                 (leaf-keywords-teardown))))
+     :to-equal
+     '(leaf leaf-convert
+        :config
+        (progn
+          (leaf-keywords-init)
+          (leaf-keywords-teardown))))))
 
 (describe "Leaf-convert-contents could convert from sexp"
   (it "load-path"
@@ -78,7 +101,15 @@
       '(add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
      :to-equal
      (leaf-convert-contents-new
-      :load-path '("~/.emacs.d/local/26.3/site-lisp")))))
+      :load-path '("~/.emacs.d/local/26.3/site-lisp"))))
+
+  (it ":config"
+    (expect
+     (leaf-convert-contents-new--from-sexp
+      '(leaf-keywords-init))
+     :to-equal
+     (leaf-convert-contents-new
+      :config '((leaf-keywords-init))))))
 
 ;; (provide 'leaf-convert-test)
 
