@@ -29,6 +29,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'subr-x)
 
 (defgroup leaf-convert nil
   "Convert many format to leaf format."
@@ -109,7 +110,13 @@ ELM can be string or symbol."
   "Convert CONTENTS to leaf format using LEAF-NAME."
   (if (not (leaf-convert-contents-p contents))
       (error "CONTENTS must be a instance of leaf-convert-contents")
-    `(leaf ,(leaf-convert--convert-name contents))))
+    `(leaf ,(leaf-convert--convert-name contents)
+       ,@(mapcan (lambda (elm)
+                   (let ((fn (intern
+                              (format "leaf-convert-contents-%s" elm))))
+                     (when-let (value (funcall fn contents))
+                       `(,(intern (format ":%s" elm)) ,value))))
+                 (remq 'name leaf-convert-slots)))))
 
 (provide 'leaf-convert)
 

@@ -52,7 +52,24 @@
       (leaf-convert-contents-new
        :name 'some-package))
      :to-equal
-     '(leaf some-package))))
+     '(leaf some-package)))
+
+  (it "Disabled"
+    (expect
+     (leaf-convert-from-contents
+      (leaf-convert-contents-new
+       :disabled t))
+     :to-equal
+     '(leaf leaf-convert
+        :disabled t))
+
+    ;; (expect
+    ;;  (leaf-convert-from-contents
+    ;;   (leaf-convert-contents-new
+    ;;    :disabled nil))
+    ;;  :to-equal
+    ;;  '(leaf leaf-convert))
+    ))
 
 ;; (provide 'leaf-convert-test)
 
