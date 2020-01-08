@@ -128,7 +128,7 @@ If specified CONTENTS, add value to it instead of new instance."
            (_reqs (package-desc-reqs desc))
            (extras (package-desc-extras desc))
            (url (cdr (assoc :url extras)))
-           (_keywords (if desc (package-desc--keywords desc)))
+           (keywords (if desc (package-desc--keywords desc)))
            (path (locate-file (format "%s.el" pkg)
                               load-path
                               load-file-rep-suffixes)))
@@ -138,8 +138,8 @@ If specified CONTENTS, add value to it instead of new instance."
         (leaf-convert-contents-file contents))
       (leaf-convert--setf-or-push url
         (leaf-convert-contents-url contents))
-      ;; (setf (leaf-convert-contents-tag contents) keywords)
-      )
+      (leaf-convert--setf-or-push keywords
+        (leaf-convert-contents-tag contents)))
     contents))
 
 
