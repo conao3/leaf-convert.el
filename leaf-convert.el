@@ -34,6 +34,82 @@
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-convert.el"))
 
+(cl-defstruct (leaf-convert-contents
+               (:constructor nil)
+               (:constructor leaf-convert-contents-new
+                             (&key name
+                                   disabled leaf-protect load-path
+                                   leaf-autoload
+                                   doc file url
+                                   defun defvar
+                                   leaf-defun leaf-defvar
+                                   preface
+                                   when unless if
+                                   ensure package
+                                   straight el-get
+                                   after commands
+                                   bind bind*
+                                   mode interpreter
+                                   magic magic-fallback
+                                   hook
+                                   advice advice-remove
+                                   init pre-setq
+                                   pl-pre-setq auth-pre-setq
+                                   custom pl-custom auth-custom
+                                   custom-face
+                                   hydra combo combo*
+                                   smartrep smartrep*
+                                   chord chord*
+                                   leaf-defer
+                                   require
+                                   config
+                                   diminish delight
+                                   setq setq-default
+                                   pl-setq auth-setq
+                                   pl-setq-default auth-setq-default))
+               (:copier nil))
+  "Contents of leaf.
+This list can be created by this sexp.
+
+  (mapcar (lambda (elm)
+            (intern (substring (symbol-name elm) 1)))
+          (leaf-available-keywords))"
+  name
+  disabled leaf-protect load-path
+  leaf-autoload
+  doc file url
+  defun defvar
+  leaf-defun leaf-defvar
+  preface
+  when unless if
+  ensure package
+  straight el-get
+  after commands
+  bind bind*
+  mode interpreter
+  magic magic-fallback
+  hook
+  advice advice-remove
+  init pre-setq
+  pl-pre-setq auth-pre-setq
+  custom pl-custom auth-custom
+  custom-face
+  hydra combo combo*
+  smartrep smartrep*
+  chord chord*
+  leaf-defer
+  require
+  config
+  diminish delight
+  setq setq-default
+  pl-setq auth-setq
+  pl-setq-default auth-setq-default)
+
+;;;###autoload
+(defmacro leaf-convert-from-contents (contents)
+  "Convert CONTENTS to leaf format using LEAF-NAME."
+  )
+
 (provide 'leaf-convert)
 
 ;; Local Variables:
