@@ -79,8 +79,7 @@
      :to-equal
      '(leaf leaf-convert
         :config
-        (progn
-          (leaf-keywords-init))))
+        (leaf-keywords-init)))
 
     (expect
      (leaf-convert-from-contents
@@ -90,9 +89,8 @@
      :to-equal
      '(leaf leaf-convert
         :config
-        (progn
-          (leaf-keywords-init)
-          (leaf-keywords-teardown))))))
+        (leaf-keywords-init)
+        (leaf-keywords-teardown)))))
 
 (describe "Leaf-convert-contents could convert from sexp"
   (it ":load-path"

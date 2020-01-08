@@ -166,11 +166,11 @@ If specified CONTENTS, add value to it instead of new instance."
                               (format "leaf-convert-contents-%s" elm))))
                      (when-let (value (funcall fn contents))
                        `(,(intern (format ":%s" elm))
-                         ,(cond
-                           ((memq elm '(preface init config))
-                            `(progn ,@value))
-                           (t
-                            (if (eq value :leaf-convert--nil) nil value)))))))
+                         ,@(cond
+                            ((memq elm '(preface init config))
+                             value)
+                            (t
+                             (if (eq value :leaf-convert--nil) '(nil) `(,value))))))))
                  (remq 'name leaf-convert-slots)))))
 
 (provide 'leaf-convert)
