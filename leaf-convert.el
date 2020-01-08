@@ -85,17 +85,24 @@ This list can be created by below sexp.
       "Contents of leaf."
       ,@leaf-convert-slots)))
 
+
+;;; Functions
 (defun leaf-convert--string-or-symbol (elm default)
   "Convert ELM to symbol.  If ELM is nil, return DEFAULT.
 ELM can be string or symbol."
   (or (if (stringp elm) (intern elm) elm)
       default))
 
+
+;;; Convert functions
 (defun leaf-convert--convert-name (contents)
   "Convert CONTENTS to name sexp."
   (leaf-convert--string-or-symbol
    (leaf-convert-contents-name contents)
    'leaf-convert))
+
+
+;;; Main
 
 ;;;###autoload
 (defun leaf-convert-from-contents (contents)
