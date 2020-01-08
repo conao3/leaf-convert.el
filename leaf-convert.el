@@ -95,6 +95,16 @@ ELM can be string or symbol."
   (or (if (stringp elm) (intern elm) elm)
       default))
 
+(defun leaf-convert-contents-new--from-sexp (sexp &optional contents)
+  "Convert SEXP to leaf-convert-contents.
+If specified CONTENTS, add value to it instead of new instance."
+  (let ((contents* (or contents (leaf-convert-contents-new))))
+    (pcase sexp
+      (`(add-to-list 'load-path ,(and (pred stringp) elm))
+       (push elm (leaf-convert-contents-load-path contents*)))
+      (_ (push sexp (leaf-convert-contents-config contents*))))
+    contents*))
+
 
 ;;; Main
 

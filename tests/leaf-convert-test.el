@@ -71,6 +71,15 @@
      '(leaf leaf-convert
         :disabled nil))))
 
+(describe "Leaf-convert-contents could convert from sexp"
+  (it "load-path"
+    (expect
+     (leaf-convert-contents-new--from-sexp
+      '(add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
+     :to-equal
+     (leaf-convert-contents-new
+      :load-path '("~/.emacs.d/local/26.3/site-lisp")))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
