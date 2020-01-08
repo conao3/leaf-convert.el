@@ -126,7 +126,7 @@ If specified CONTENTS, add value to it instead of new instance."
                            (package--from-builtin built-in)
                          (cadr (assq pkg package-archive-contents)))))))
     (let* ((summary (package-desc-summary desc))
-           (_reqs (package-desc-reqs desc))
+           (reqs (package-desc-reqs desc))
            (extras (package-desc-extras desc))
            (url (cdr (assoc :url extras)))
            (keywords (if desc (package-desc--keywords desc)))
@@ -140,7 +140,14 @@ If specified CONTENTS, add value to it instead of new instance."
       (leaf-convert--setf-or-push url
         (leaf-convert-contents-url contents))
       (leaf-convert--setf-or-push keywords
-        (leaf-convert-contents-tag contents)))
+        (leaf-convert-contents-tag contents))
+      (dolist (elm reqs)
+        (pcase elm
+          (`(emacs ,ver)
+           (leaf-convert--setf-or-push
+               (format "emacs-%s"
+                       (string-join (mapcar 'number-to-string ver) "."))
+             (leaf-convert-contents-tag contents))))))
     contents))
 
 
