@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Version: 0.0.1
 ;; Keywords: tools
-;; Package-Requires: ((emacs "26"))
+;; Package-Requires: ((emacs "26.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -104,6 +104,35 @@ If specified CONTENTS, add value to it instead of new instance."
        (push elm (leaf-convert-contents-load-path contents*)))
       (_ (push sexp (leaf-convert-contents-config contents*))))
     contents*))
+
+(defun leaf-convert--fill-info (contents)
+  "Add :doc, :file, :url information to CONTENTS."
+  ;; see `describe-package-1'
+  (when-let* ((pkg (leaf-convert-contents-name contents))
+              (desc (or
+                     (if (package-desc-p pkg) pkg)
+                     (cadr (assq pkg package-alist))
+                     (let ((built-in (assq pkg package--builtins)))
+                       (if built-in
+                           (package--from-builtin built-in)
+                         (cadr (assq pkg package-archive-contents)))))))
+    (let* ((summary (package-desc-summary desc))
+           (_reqs (package-desc-reqs desc))
+           (extras (package-desc-extras desc))
+           (url (cdr (assoc :url extras)))
+           (_keywords (if desc (package-desc--keywords desc)))
+           (path (locate-file (format "%s.el" pkg)
+                              load-path
+                              load-file-rep-suffixes)))
+      (leaf-convert--setf-or-push summary
+        (leaf-convert-contents-doc contents))
+      (leaf-convert--setf-or-push path
+        (leaf-convert-contents-file contents))
+      (leaf-convert--setf-or-push url
+        (leaf-convert-contents-url contents))
+      ;; (setf (leaf-convert-contents-tag contents) keywords)
+      )
+    contents))
 
 
 ;;; Main
