@@ -111,6 +111,10 @@ If specified CONTENTS, add value to it instead of new instance."
     (pcase sexp
       (`(add-to-list 'load-path ,(and (pred stringp) elm))
        (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path contents*)))
+      (`(add-to-list 'load-path (locate-user-emacs-file ,(and (pred stringp) elm)))
+       (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents*)))
+      (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
+       (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents*)))
       (_ (push sexp (leaf-convert-contents-config contents*))))
     contents*))
 
