@@ -151,6 +151,14 @@ If specified CONTENTS, add value to it instead of new instance."
        (dolist (elm body)
          (setq contents*
                (leaf-convert-contents-new--from-sexp-1 elm contents*))))
+      (`(with-eval-after-load ,(or `(quote ,name)
+                                   (and (pred stringp) name))
+          . ,body)
+       (setf (leaf-convert-contents-name contents*) name)
+       (setf (leaf-convert-contents-after contents*) t)
+       (dolist (elm body)
+         (setq contents*
+               (leaf-convert-contents-new--from-sexp-1 elm contents*))))
       (_
        (leaf-convert-contents-new--from-sexp-1 sexp contents*)))
     contents*))

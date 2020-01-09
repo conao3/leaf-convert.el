@@ -183,6 +183,20 @@
       :name "leaf"
       :load-path* "site-lisp"
       :defun '((leaf2 . leaf-2)
+               (leaf1 . leaf-1))))
+
+    (expect
+     (leaf-convert-contents-new--from-sexp
+      (with-eval-after-load 'leaf
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
+        (declare-function leaf1 "leaf-1")
+        (declare-function leaf2 "leaf-2")))
+     :to-equal
+     (leaf-convert-contents-new
+      :name 'leaf
+      :after t
+      :load-path* "site-lisp"
+      :defun '((leaf2 . leaf-2)
                (leaf1 . leaf-1))))))
 
 ;; (provide 'leaf-convert-test)
