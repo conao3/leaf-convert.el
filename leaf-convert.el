@@ -127,6 +127,10 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
     (`(declare-function ,elm ,(and (pred stringp) file) ,_args)
      (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents)))
 
+    ;; :defvar
+    (`(defvar ,elm)
+     (leaf-convert--setf-or-push elm (leaf-convert-contents-defvar contents)))
+
     ;; any
     (_ (push sexp (leaf-convert-contents-config contents))))
   contents)

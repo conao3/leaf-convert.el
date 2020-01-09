@@ -138,6 +138,14 @@
      (leaf-convert-contents-new
       :defun '(leaf . leaf))))
 
+  (it ":defvar"
+    (expect
+     (leaf-convert-contents-new--from-sexp
+      (defvar leaf-keywords))
+     :to-equal
+     (leaf-convert-contents-new
+      :defvar 'leaf-keywords)))
+
   (it "progn support"
     (expect
      (leaf-convert-contents-new--from-sexp
