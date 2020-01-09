@@ -111,18 +111,23 @@ ELM can be string or symbol."
   "Internal recursive function of `leaf-convert-contents-new--from-sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (pcase sexp
+    ;; :load-path, :load-path*
     (`(add-to-list 'load-path ,(and (pred stringp) elm))
      (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path contents)))
     (`(add-to-list 'load-path (locate-user-emacs-file ,(and (pred stringp) elm)))
      (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents)))
     (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
      (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents)))
+
+    ;; :defun
     (`(declare-function ,elm)
      (leaf-convert--setf-or-push elm (leaf-convert-contents-defun contents)))
     (`(declare-function ,elm ,(and (pred stringp) file))
      (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents)))
     (`(declare-function ,elm ,(and (pred stringp) file) ,_args)
      (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents)))
+
+    ;; any
     (_ (push sexp (leaf-convert-contents-config contents))))
   contents)
 
