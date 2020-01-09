@@ -30,6 +30,7 @@
 
 (require 'cl-lib)
 (require 'subr-x)
+(require 'package)
 
 (defgroup leaf-convert nil
   "Convert many format to leaf format."
