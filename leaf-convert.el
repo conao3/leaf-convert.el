@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Version: 0.0.1
 ;; Keywords: tools
-;; Package-Requires: ((emacs "26.1"))
+;; Package-Requires: ((emacs "26.1") (leaf "3.6.0"))
 ;; URL: https://github.com/conao3/leaf-convert.el
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -31,6 +31,7 @@
 (require 'cl-lib)
 (require 'subr-x)
 (require 'package)
+(require 'leaf)
 
 (defgroup leaf-convert nil
   "Convert many format to leaf format."
@@ -100,29 +101,42 @@ ELM can be string or symbol."
 (defmacro leaf-convert--setf-or-push (elm place)
   "If PLACE is nil, just serf ELM, if PLACE is non-nil, push ELM."
   `(if ,place
-       (if (listp ,place)
+       (if (and (listp ,place)
+                (not (leaf-pairp ,place)))
            (push ,elm ,place)
          (setf ,place (list ,elm ,place)))
      (setf ,place ,elm)))
+
+(defun leaf-convert-contents-new--from-sexp-1 (sexp contents)
+  "Internal recursive function of `leaf-convert-contents-new--from-sexp'.
+Add convert SEXP to leaf-convert-contents to CONTENTS."
+  (pcase sexp
+    (`(add-to-list 'load-path ,(and (pred stringp) elm))
+     (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path contents)))
+    (`(add-to-list 'load-path (locate-user-emacs-file ,(and (pred stringp) elm)))
+     (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents)))
+    (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
+     (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents)))
+    (`(declare-function ,elm)
+     (leaf-convert--setf-or-push elm (leaf-convert-contents-defun contents)))
+    (`(declare-function ,elm ,(and (pred stringp) file))
+     (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents)))
+    (`(declare-function ,elm ,(and (pred stringp) file) ,_args)
+     (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents)))
+    (_ (push sexp (leaf-convert-contents-config contents))))
+  contents)
 
 (defmacro leaf-convert-contents-new--from-sexp (sexp &optional contents)
   "Convert SEXP to leaf-convert-contents.
 If specified CONTENTS, add value to it instead of new instance."
   (let ((contents* (or (eval contents) (leaf-convert-contents-new))))
     (pcase sexp
-      (`(add-to-list 'load-path ,(and (pred stringp) elm))
-       (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path contents*)))
-      (`(add-to-list 'load-path (locate-user-emacs-file ,(and (pred stringp) elm)))
-       (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents*)))
-      (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
-       (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents*)))
-      (`(declare-function ,elm)
-       (leaf-convert--setf-or-push elm (leaf-convert-contents-defun contents*)))
-      (`(declare-function ,elm ,(and (pred stringp) file))
-       (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents*)))
-      (`(declare-function ,elm ,(and (pred stringp) file) ,_args)
-       (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents*)))
-      (_ (push sexp (leaf-convert-contents-config contents*))))
+      (`(progn . ,body)
+       (dolist (elm body)
+         (setq contents*
+               (leaf-convert-contents-new--from-sexp-1 elm contents*))))
+      (_
+       (leaf-convert-contents-new--from-sexp-1 sexp contents*)))
     contents*))
 
 (defun leaf-convert--fill-info (contents)
