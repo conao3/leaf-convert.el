@@ -115,6 +115,12 @@ If specified CONTENTS, add value to it instead of new instance."
        (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents*)))
       (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
        (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents*)))
+      (`(declare-function ,elm)
+       (leaf-convert--setf-or-push elm (leaf-convert-contents-defun contents*)))
+      (`(declare-function ,elm ,(and (pred stringp) file))
+       (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents*)))
+      (`(declare-function ,elm ,(and (pred stringp) file) ,_args)
+       (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents*)))
       (_ (push sexp (leaf-convert-contents-config contents*))))
     contents*))
 

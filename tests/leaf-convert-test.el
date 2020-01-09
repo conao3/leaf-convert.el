@@ -121,7 +121,22 @@
       '(leaf-keywords-init))
      :to-equal
      (leaf-convert-contents-new
-      :config '((leaf-keywords-init))))))
+      :config '((leaf-keywords-init)))))
+
+  (it ":defun"
+    (expect
+     (leaf-convert-contents-new--from-sexp
+      '(declare-function leaf))
+     :to-equal
+     (leaf-convert-contents-new
+      :defun 'leaf))
+
+    (expect
+     (leaf-convert-contents-new--from-sexp
+      '(declare-function leaf "leaf"))
+     :to-equal
+     (leaf-convert-contents-new
+      :defun '(leaf . leaf)))))
 
 ;; (provide 'leaf-convert-test)
 
