@@ -221,6 +221,12 @@ If specified CONTENTS, add value to it instead of new instance."
                              (if (eq value :leaf-convert--nil) '(nil) `(,value))))))))
                  (remq 'name leaf-convert-slots)))))
 
+;;;###autoload
+(defmacro leaf-convert-from-sexp (sexp)
+  "Convert SEXP to leaf format."
+  `(leaf-convert-from-contents
+    (leaf-convert-contents-new--from-sexp ,sexp)))
+
 (provide 'leaf-convert)
 
 ;; Local Variables:
