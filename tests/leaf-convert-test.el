@@ -35,20 +35,20 @@
 (describe "Could convert from leaf-convert-contents"
   (it "Name"
     (expect
-     (leaf-convert-from-contents
+     (leaf-convert-contents
       (leaf-convert-contents-new))
      :to-equal
      '(leaf leaf-convert))
 
     (expect
-     (leaf-convert-from-contents
+     (leaf-convert-contents
       (leaf-convert-contents-new
        :name "some-package"))
      :to-equal
      '(leaf some-package))
 
     (expect
-     (leaf-convert-from-contents
+     (leaf-convert-contents
       (leaf-convert-contents-new
        :name 'some-package))
      :to-equal
@@ -56,7 +56,7 @@
 
   (it ":disabled"
     (expect
-     (leaf-convert-from-contents
+     (leaf-convert-contents
       (leaf-convert-contents-new
        :disabled t))
      :to-equal
@@ -64,7 +64,7 @@
         :disabled t))
 
     (expect
-     (leaf-convert-from-contents
+     (leaf-convert-contents
       (leaf-convert-contents-new
        :disabled :leaf-convert--nil))
      :to-equal
@@ -73,7 +73,7 @@
 
   (it ":config"
     (expect
-     (leaf-convert-from-contents
+     (leaf-convert-contents
       (leaf-convert-contents-new
        :config '((leaf-keywords-init))))
      :to-equal
@@ -82,7 +82,7 @@
         (leaf-keywords-init)))
 
     (expect
-     (leaf-convert-from-contents
+     (leaf-convert-contents
       (leaf-convert-contents-new
        :config '((leaf-keywords-init)
                  (leaf-keywords-teardown))))
@@ -95,21 +95,21 @@
 (describe "Leaf-convert-contents could convert from sexp"
   (it ":load-path"
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
      :to-equal
      (leaf-convert-contents-new
       :load-path "~/.emacs.d/local/26.3/site-lisp"))
 
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (add-to-list 'load-path (locate-user-emacs-file "site-lisp")))
      :to-equal
      (leaf-convert-contents-new
       :load-path* "site-lisp"))
 
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (add-to-list 'load-path (concat user-emacs-directory "site-lisp")))
      :to-equal
      (leaf-convert-contents-new
@@ -117,7 +117,7 @@
 
   (it ":config"
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (leaf-keywords-init))
      :to-equal
      (leaf-convert-contents-new
@@ -125,14 +125,14 @@
 
   (it ":defun"
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (declare-function leaf))
      :to-equal
      (leaf-convert-contents-new
       :defun 'leaf))
 
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (declare-function leaf "leaf"))
      :to-equal
      (leaf-convert-contents-new
@@ -140,7 +140,7 @@
 
   (it ":defvar"
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (defvar leaf-keywords))
      :to-equal
      (leaf-convert-contents-new
@@ -148,7 +148,7 @@
 
   (it "progn support"
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (progn
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")
@@ -160,7 +160,7 @@
                (leaf1 . leaf-1))))
 
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (prog1 'leaf
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")
@@ -173,7 +173,7 @@
                (leaf1 . leaf-1))))
 
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (prog1 "leaf"
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")
@@ -186,7 +186,7 @@
                (leaf1 . leaf-1))))
 
     (expect
-     (leaf-convert-contents-new--from-sexp
+     (leaf-convert-contents-new--sexp
       (with-eval-after-load 'leaf
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")

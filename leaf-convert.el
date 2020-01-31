@@ -107,8 +107,8 @@ ELM can be string or symbol."
          (setf ,place (list ,elm ,place)))
      (setf ,place ,elm)))
 
-(defun leaf-convert-contents-new--from-sexp-1 (sexp contents)
-  "Internal recursive function of `leaf-convert-contents-new--from-sexp'.
+(defun leaf-convert-contents-new--sexp-1 (sexp contents)
+  "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (pcase sexp
     ;; :load-path, :load-path*
@@ -135,7 +135,7 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
     (_ (push sexp (leaf-convert-contents-config contents))))
   contents)
 
-(defmacro leaf-convert-contents-new--from-sexp (sexp &optional contents)
+(defmacro leaf-convert-contents-new--sexp (sexp &optional contents)
   "Convert SEXP to leaf-convert-contents.
 If specified CONTENTS, add value to it instead of new instance."
   (let ((contents* (or (eval contents) (leaf-convert-contents-new))))
@@ -143,14 +143,14 @@ If specified CONTENTS, add value to it instead of new instance."
       (`(progn . ,body)
        (dolist (elm body)
          (setq contents*
-               (leaf-convert-contents-new--from-sexp-1 elm contents*))))
+               (leaf-convert-contents-new--sexp-1 elm contents*))))
       (`(prog1 ,(or `(quote ,name)
                     (and (pred stringp) name))
           . ,body)
        (setf (leaf-convert-contents-name contents*) name)
        (dolist (elm body)
          (setq contents*
-               (leaf-convert-contents-new--from-sexp-1 elm contents*))))
+               (leaf-convert-contents-new--sexp-1 elm contents*))))
       (`(with-eval-after-load ,(or `(quote ,name)
                                    (and (pred stringp) name))
           . ,body)
@@ -158,9 +158,9 @@ If specified CONTENTS, add value to it instead of new instance."
        (setf (leaf-convert-contents-after contents*) t)
        (dolist (elm body)
          (setq contents*
-               (leaf-convert-contents-new--from-sexp-1 elm contents*))))
+               (leaf-convert-contents-new--sexp-1 elm contents*))))
       (_
-       (leaf-convert-contents-new--from-sexp-1 sexp contents*)))
+       (leaf-convert-contents-new--sexp-1 sexp contents*)))
     contents*))
 
 (defun leaf-convert--fill-info (contents)
@@ -202,7 +202,7 @@ If specified CONTENTS, add value to it instead of new instance."
 
 ;;; Main
 
-(defun leaf-convert-from-contents (contents)
+(defun leaf-convert-contents (contents)
   "Convert CONTENTS to leaf format using LEAF-NAME."
   (if (not (leaf-convert-contents-p contents))
       (error "CONTENTS must be a instance of leaf-convert-contents")
@@ -222,13 +222,13 @@ If specified CONTENTS, add value to it instead of new instance."
                  (remq 'name leaf-convert-slots)))))
 
 ;;;###autoload
-(defalias 'leaf-convert 'leaf-convert-from-sexp)
+(defalias 'leaf-convert 'leaf-convert-sexp)
 
 ;;;###autoload
-(defmacro leaf-convert-from-sexp (sexp)
+(defmacro leaf-convert-sexp (sexp)
   "Convert SEXP to leaf format."
-  `(leaf-convert-from-contents
-    (leaf-convert-contents-new--from-sexp ,sexp)))
+  `(leaf-convert-contents
+    (leaf-convert-contents-new--sexp ,sexp)))
 
 (provide 'leaf-convert)
 
