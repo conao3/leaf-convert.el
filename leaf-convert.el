@@ -202,7 +202,6 @@ If specified CONTENTS, add value to it instead of new instance."
 
 ;;; Main
 
-;;;###autoload
 (defun leaf-convert-from-contents (contents)
   "Convert CONTENTS to leaf format using LEAF-NAME."
   (if (not (leaf-convert-contents-p contents))
