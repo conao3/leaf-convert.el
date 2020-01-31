@@ -222,6 +222,9 @@ If specified CONTENTS, add value to it instead of new instance."
                  (remq 'name leaf-convert-slots)))))
 
 ;;;###autoload
+(defalias 'leaf-convert 'leaf-convert-from-sexp)
+
+;;;###autoload
 (defmacro leaf-convert-from-sexp (sexp)
   "Convert SEXP to leaf format."
   `(leaf-convert-from-contents
