@@ -27,8 +27,21 @@
 * Description
 
 * Install
+~leaf-convert~ is available via ~el-get~.
+
+#+begin_src emacs-lisp
+  (leaf leaf-convert :el-get conao3/leaf-convert)
+#+end_src
 
 * Usage
+Please use ~leaf-convert~ and pass any sexp.
+
+#+begin_src emacs-lisp
+  (leaf-convert
+   (add-to-list a "a"))
+  ;;=> (leaf leaf-convert
+  ;;     :config (add-to-list a "a"))
+#+end_src
 
 * Customize
 
