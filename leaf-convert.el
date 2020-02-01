@@ -99,7 +99,7 @@ ELM can be string or symbol."
       default))
 
 (defmacro leaf-convert--setf-or-push (elm place)
-  "If PLACE is nil, just serf ELM, if PLACE is non-nil, push ELM."
+  "If PLACE is nil, just setf ELM, if PLACE is non-nil, push ELM."
   `(if ,place
        (if (and (listp ,place)
                 (not (leaf-pairp ,place)))
