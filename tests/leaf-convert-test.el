@@ -113,64 +113,64 @@ Example:
         (leaf-keywords-teardown)))))
 
 (cort-deftest-with-equal leaf-convert/load-path
-  '(((leaf-convert-sexp
+  '(((leaf-convert
       (add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
      '(leaf leaf-convert
         :load-path "~/.emacs.d/local/26.3/site-lisp"))
 
-    ((leaf-convert-sexp
+    ((leaf-convert
       (add-to-list 'load-path (locate-user-emacs-file "site-lisp")))
      '(leaf leaf-convert
         :load-path* "site-lisp"))
 
-    ((leaf-convert-sexp
+    ((leaf-convert
       (add-to-list 'load-path (concat user-emacs-directory "site-lisp")))
      '(leaf leaf-convert
         :load-path* "site-lisp"))))
 
 (cort-deftest-with-equal leaf-convert/config
-  '(((leaf-convert-sexp
+  '(((leaf-convert
       (leaf-keywords-init))
      '(leaf leaf-convert
         :config (leaf-keywords-init)))))
 
 (cort-deftest-with-equal leaf-convert/defun
-  '(((leaf-convert-sexp
+  '(((leaf-convert
       (declare-function leaf))
      '(leaf leaf-convert
         :defun leaf))
 
-    ((leaf-convert-sexp
+    ((leaf-convert
       (declare-function leaf "leaf"))
      '(leaf leaf-convert
         :defun (leaf . leaf)))))
 
 (cort-deftest-with-equal leaf-convert/defvar
-  '(((leaf-convert-sexp
+  '(((leaf-convert
       (defvar leaf-keywords))
      '(leaf leaf-convert
         :defvar leaf-keywords))))
 
 (cort-deftest-with-equal leaf-convert/progn
-  '(((leaf-convert-sexp
+  '(((leaf-convert
       (progn
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
      '(leaf leaf-convert
         :load-path* "site-lisp"))
 
-    ((leaf-convert-sexp
+    ((leaf-convert
       (prog1 'leaf
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
      '(leaf leaf
         :load-path* "site-lisp"))
 
-    ((leaf-convert-sexp
+    ((leaf-convert
       (prog1 "leaf"
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
      '(leaf leaf
         :load-path* "site-lisp"))
 
-    ((leaf-convert-sexp
+    ((leaf-convert
       (with-eval-after-load 'leaf
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")
