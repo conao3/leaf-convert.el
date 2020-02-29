@@ -112,6 +112,36 @@ Example:
         (leaf-keywords-init)
         (leaf-keywords-teardown)))))
 
+(cort-deftest-with-equal leaf-convert/progn
+  '(((leaf-convert
+      (progn
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
+     '(leaf leaf-convert
+        :load-path* "site-lisp"))
+
+    ((leaf-convert
+      (prog1 'leaf
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
+     '(leaf leaf
+        :load-path* "site-lisp"))
+
+    ((leaf-convert
+      (prog1 "leaf"
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
+     '(leaf leaf
+        :load-path* "site-lisp"))
+
+    ((leaf-convert
+      (with-eval-after-load 'leaf
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
+        (declare-function leaf1 "leaf-1")
+        (declare-function leaf2 "leaf-2")))
+     '(leaf leaf
+        :load-path* "site-lisp"
+        :defun ((leaf2 . leaf-2)
+                (leaf1 . leaf-1))
+        :after t))))
+
 (cort-deftest-with-equal leaf-convert/load-path
   '(((leaf-convert
       (add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
@@ -150,36 +180,6 @@ Example:
       (defvar leaf-keywords))
      '(leaf leaf-convert
         :defvar leaf-keywords))))
-
-(cort-deftest-with-equal leaf-convert/progn
-  '(((leaf-convert
-      (progn
-        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
-     '(leaf leaf-convert
-        :load-path* "site-lisp"))
-
-    ((leaf-convert
-      (prog1 'leaf
-        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
-     '(leaf leaf
-        :load-path* "site-lisp"))
-
-    ((leaf-convert
-      (prog1 "leaf"
-        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
-     '(leaf leaf
-        :load-path* "site-lisp"))
-
-    ((leaf-convert
-      (with-eval-after-load 'leaf
-        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
-        (declare-function leaf1 "leaf-1")
-        (declare-function leaf2 "leaf-2")))
-     '(leaf leaf
-        :load-path* "site-lisp"
-        :defun ((leaf2 . leaf-2)
-                (leaf1 . leaf-1))
-        :after t))))
 
 ;; (provide 'leaf-convert-test)
 
