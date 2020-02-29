@@ -156,7 +156,17 @@ Example:
     ((leaf-convert
       (add-to-list 'load-path (concat user-emacs-directory "site-lisp")))
      '(leaf leaf-convert
-        :load-path* "site-lisp"))))
+        :load-path* "site-lisp"))
+
+    ;; ((leaf-convert
+    ;;   (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf"))
+    ;;   (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf-keywords"))
+    ;;   (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf-convert")))
+    ;;  '(leaf leaf-convert
+    ;;     :load-path* ("site-lisp"
+    ;;                  "site-lisp/leaf-keywords"
+    ;;                  "site-lisp/leaf-convert")))
+    ))
 
 (cort-deftest-with-equal leaf-convert/config
   '(((leaf-convert
