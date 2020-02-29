@@ -227,7 +227,7 @@ If specified CONTENTS, add value to it instead of new instance."
 ;;;###autoload
 (defmacro leaf-convert-from-sexp (sexp)
   "Convert SEXP (as plain Elisp) to leaf format."
-  `(leaf-convert-contents
+  `(leaf-convert-from-contents
     (leaf-convert-contents-new--sexp ,sexp)))
 
 (provide 'leaf-convert)
