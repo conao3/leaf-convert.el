@@ -70,40 +70,40 @@ Example:
 ;;; test definitions
 
 (cort-deftest-with-equal leaf-convert/convert-contents
-  '(((leaf-convert-contents
+  '(((leaf-convert-from-contents
       (leaf-convert-contents-new))
      '(leaf leaf-convert))
 
-    ((leaf-convert-contents
+    ((leaf-convert-from-contents
       (leaf-convert-contents-new
-       :name "some-package"))
+       :leaf-convert--name "some-package"))
      '(leaf some-package))
 
-    ((leaf-convert-contents
+    ((leaf-convert-from-contents
       (leaf-convert-contents-new
-       :name 'some-package))
+       :leaf-convert--name 'some-package))
      '(leaf some-package))
 
-    ((leaf-convert-contents
+    ((leaf-convert-from-contents
       (leaf-convert-contents-new
        :disabled t))
      '(leaf leaf-convert
         :disabled t))
 
-    ((leaf-convert-contents
+    ((leaf-convert-from-contents
       (leaf-convert-contents-new
        :disabled :leaf-convert--nil))
      '(leaf leaf-convert
         :disabled nil))
 
-    ((leaf-convert-contents
+    ((leaf-convert-from-contents
       (leaf-convert-contents-new
        :config '((leaf-keywords-init))))
      '(leaf leaf-convert
         :config
         (leaf-keywords-init)))
 
-    ((leaf-convert-contents
+    ((leaf-convert-from-contents
       (leaf-convert-contents-new
        :config '((leaf-keywords-init)
                  (leaf-keywords-teardown))))
