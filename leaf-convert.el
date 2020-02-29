@@ -41,7 +41,7 @@
 
 (eval-and-compile
   (defvar leaf-convert-slots
-    '(name
+    '(leaf-convert--name            ; leaf-convert only internal keyword
       disabled leaf-protect
       load-path load-path*
       leaf-autoload
@@ -147,14 +147,14 @@ If specified CONTENTS, add value to it instead of new instance."
       (`(prog1 ,(or `(quote ,name)
                     (and (pred stringp) name))
           . ,body)
-       (setf (leaf-convert-contents-name contents*) name)
+       (setf (leaf-convert-contents-leaf-convert--name contents*) name)
        (dolist (elm body)
          (setq contents*
                (leaf-convert-contents-new--sexp-1 elm contents*))))
       (`(with-eval-after-load ,(or `(quote ,name)
                                    (and (pred stringp) name))
           . ,body)
-       (setf (leaf-convert-contents-name contents*) name)
+       (setf (leaf-convert-contents-leaf-convert--name contents*) name)
        (setf (leaf-convert-contents-after contents*) t)
        (dolist (elm body)
          (setq contents*
@@ -166,7 +166,7 @@ If specified CONTENTS, add value to it instead of new instance."
 (defun leaf-convert--fill-info (contents)
   "Add :doc, :file, :url information to CONTENTS."
   ;; see `describe-package-1'
-  (when-let* ((pkg (leaf-convert-contents-name contents))
+  (when-let* ((pkg (leaf-convert-contents-leaf-convert--name contents))
               (desc (or
                      (if (package-desc-p pkg) pkg)
                      (cadr (assq pkg package-alist))
@@ -207,7 +207,7 @@ If specified CONTENTS, add value to it instead of new instance."
   (if (not (leaf-convert-contents-p contents))
       (error "CONTENTS must be a instance of leaf-convert-contents")
     `(leaf ,(leaf-convert--string-or-symbol
-             (leaf-convert-contents-name contents)
+             (leaf-convert-contents-leaf-convert--name contents)
              'leaf-convert)
        ,@(mapcan (lambda (elm)
                    (let ((fn (intern
@@ -219,7 +219,7 @@ If specified CONTENTS, add value to it instead of new instance."
                              value)
                             (t
                              (if (eq value :leaf-convert--nil) '(nil) `(,value))))))))
-                 (remq 'name leaf-convert-slots)))))
+                 (remq 'leaf-convert--name leaf-convert-slots)))))
 
 ;;;###autoload
 (defalias 'leaf-convert 'leaf-convert-from-sexp)
