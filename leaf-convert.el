@@ -202,7 +202,7 @@ If specified CONTENTS, add value to it instead of new instance."
 
 ;;; Main
 
-(defun leaf-convert-contents (contents)
+(defun leaf-convert-from-contents (contents)
   "Convert `leaf-convert-contents', CONTENTS to leaf format."
   (if (not (leaf-convert-contents-p contents))
       (error "CONTENTS must be a instance of leaf-convert-contents")
@@ -222,10 +222,10 @@ If specified CONTENTS, add value to it instead of new instance."
                  (remq 'name leaf-convert-slots)))))
 
 ;;;###autoload
-(defalias 'leaf-convert 'leaf-convert-sexp)
+(defalias 'leaf-convert 'leaf-convert-from-sexp)
 
 ;;;###autoload
-(defmacro leaf-convert-sexp (sexp)
+(defmacro leaf-convert-from-sexp (sexp)
   "Convert Elisp, SEXP to leaf format."
   `(leaf-convert-contents
     (leaf-convert-contents-new--sexp ,sexp)))
