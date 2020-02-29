@@ -6,4 +6,6 @@
 (package-file "leaf-convert.el")
 
 (development
- (depends-on "buttercup"))
+ (depends-on "cort-test"
+             :git "https://github.com/conao3/cort-test.el.git"
+             :ref "cce9052f"))

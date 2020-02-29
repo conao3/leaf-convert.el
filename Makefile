@@ -20,6 +20,7 @@ all:
 REPO_USER    := conao3
 PACKAGE_NAME := leaf-convert
 REPO_NAME    := leaf-convert.el
+TESTFILE     := tests/leaf-convert-test.el
 
 EMACS        ?= emacs
 ELS          := $(shell cask files)
@@ -67,7 +68,7 @@ help:
 build: $(ELS:%.el=%.elc)
 
 test: build
-	cask exec buttercup -L .
+	cask exec $(EMACS) -Q --batch -l $(TESTFILE) -f cort-test-run
 
 clean:
 	rm -rf $(ELS:%.el=%.elc) .cask

@@ -25,173 +25,168 @@
 
 ;;; Code:
 
-(require 'buttercup)
+(require 'cort-test)
 (require 'leaf-convert)
 
-(describe "A suite"
-  (it "contains a spec with an expectation"
-    (expect t :to-be t)))
+(defmacro cort-deftest-with-equal (name form)
+  "Return `cort-deftest' compare by `equal' for NAME, FORM.
 
-(describe "Could convert from leaf-convert-contents"
-  (it "Name"
-    (expect
-     (leaf-convert-contents
+Example:
+  (p (cort-deftest-with-equal leaf/disabled
+       '((asdf asdf-fn)
+         (uiop uiop-fn))))
+   => (cort-deftest leaf/disabled
+        '((:equal 'asdf asdf-fn)
+          (:equal 'uiop uiop-fn)))"
+  (declare (indent 1))
+  `(cort-deftest ,name
+     ',(mapcar (lambda (elm)
+                 `(:equal ,(cadr elm) ,(car elm)))
+               (cadr form))))
+
+(defmacro cort-deftest-with-macroexpand (name form)
+  "Return `cort-deftest' compare by `equal' for NAME, FORM.
+
+Example:
+  (p (cort-deftest-with-equal leaf/disabled
+       '((asdf asdf)
+         (uiop uiop))))
+   => (cort-deftest leaf/disabled
+        '((:equal 'asdf
+                  (macroexpand-1 'asdf))
+          (:equal 'uiop
+                  (macroexpand-1 'uiop))))"
+  (declare (indent 1))
+  `(cort-deftest ,name
+     ',(mapcar (lambda (elm)
+                 `(:equal
+                   ',(cadr elm)
+                   (macroexpand-1 ',(car elm))))
+               (cadr form))))
+
+
+;;; test definitions
+
+(cort-deftest-with-equal leaf-convert/convert-contents
+  '(((leaf-convert-contents
       (leaf-convert-contents-new))
-     :to-equal
      '(leaf leaf-convert))
 
-    (expect
-     (leaf-convert-contents
+    ((leaf-convert-contents
       (leaf-convert-contents-new
        :name "some-package"))
-     :to-equal
      '(leaf some-package))
 
-    (expect
-     (leaf-convert-contents
+    ((leaf-convert-contents
       (leaf-convert-contents-new
        :name 'some-package))
-     :to-equal
-     '(leaf some-package)))
+     '(leaf some-package))
 
-  (it ":disabled"
-    (expect
-     (leaf-convert-contents
+    ((leaf-convert-contents
       (leaf-convert-contents-new
        :disabled t))
-     :to-equal
      '(leaf leaf-convert
         :disabled t))
 
-    (expect
-     (leaf-convert-contents
+    ((leaf-convert-contents
       (leaf-convert-contents-new
        :disabled :leaf-convert--nil))
-     :to-equal
      '(leaf leaf-convert
-        :disabled nil)))
+        :disabled nil))
 
-  (it ":config"
-    (expect
-     (leaf-convert-contents
+    ((leaf-convert-contents
       (leaf-convert-contents-new
        :config '((leaf-keywords-init))))
-     :to-equal
      '(leaf leaf-convert
         :config
         (leaf-keywords-init)))
 
-    (expect
-     (leaf-convert-contents
+    ((leaf-convert-contents
       (leaf-convert-contents-new
        :config '((leaf-keywords-init)
                  (leaf-keywords-teardown))))
-     :to-equal
      '(leaf leaf-convert
         :config
         (leaf-keywords-init)
         (leaf-keywords-teardown)))))
 
-(describe "Leaf-convert-contents could convert from sexp"
-  (it ":load-path"
-    (expect
-     (leaf-convert-contents-new--sexp
+(cort-deftest-with-equal leaf-convert/load-path
+  '(((leaf-convert-contents-new--sexp
       (add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
-     :to-equal
      (leaf-convert-contents-new
       :load-path "~/.emacs.d/local/26.3/site-lisp"))
 
-    (expect
-     (leaf-convert-contents-new--sexp
+    ((leaf-convert-contents-new--sexp
       (add-to-list 'load-path (locate-user-emacs-file "site-lisp")))
-     :to-equal
      (leaf-convert-contents-new
       :load-path* "site-lisp"))
 
-    (expect
-     (leaf-convert-contents-new--sexp
+    ((leaf-convert-contents-new--sexp
       (add-to-list 'load-path (concat user-emacs-directory "site-lisp")))
-     :to-equal
      (leaf-convert-contents-new
-      :load-path* "site-lisp")))
+      :load-path* "site-lisp"))))
 
-  (it ":config"
-    (expect
-     (leaf-convert-contents-new--sexp
+(cort-deftest-with-equal leaf-convert/config
+  '(((leaf-convert-contents-new--sexp
       (leaf-keywords-init))
-     :to-equal
      (leaf-convert-contents-new
-      :config '((leaf-keywords-init)))))
+      :config '((leaf-keywords-init))))))
 
-  (it ":defun"
-    (expect
-     (leaf-convert-contents-new--sexp
+(cort-deftest-with-equal leaf-convert/defun
+  '(((leaf-convert-contents-new--sexp
       (declare-function leaf))
-     :to-equal
      (leaf-convert-contents-new
       :defun 'leaf))
 
-    (expect
-     (leaf-convert-contents-new--sexp
+    ((leaf-convert-contents-new--sexp
       (declare-function leaf "leaf"))
-     :to-equal
      (leaf-convert-contents-new
-      :defun '(leaf . leaf))))
+      :defun '(leaf . leaf)))))
 
-  (it ":defvar"
-    (expect
-     (leaf-convert-contents-new--sexp
+(cort-deftest-with-equal leaf-convert/defvar
+  '(((leaf-convert-contents-new--sexp
       (defvar leaf-keywords))
-     :to-equal
      (leaf-convert-contents-new
-      :defvar 'leaf-keywords)))
+      :defvar 'leaf-keywords))))
 
-  (it "progn support"
-    (expect
-     (leaf-convert-contents-new--sexp
+(cort-deftest-with-equal leaf-convert/progn
+  '(((leaf-convert-contents-new--sexp
       (progn
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")
         (declare-function leaf2 "leaf-2")))
-     :to-equal
      (leaf-convert-contents-new
       :load-path* "site-lisp"
       :defun '((leaf2 . leaf-2)
                (leaf1 . leaf-1))))
 
-    (expect
-     (leaf-convert-contents-new--sexp
+    ((leaf-convert-contents-new--sexp
       (prog1 'leaf
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")
         (declare-function leaf2 "leaf-2")))
-     :to-equal
      (leaf-convert-contents-new
       :name 'leaf
       :load-path* "site-lisp"
       :defun '((leaf2 . leaf-2)
                (leaf1 . leaf-1))))
 
-    (expect
-     (leaf-convert-contents-new--sexp
+    ((leaf-convert-contents-new--sexp
       (prog1 "leaf"
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")
         (declare-function leaf2 "leaf-2")))
-     :to-equal
      (leaf-convert-contents-new
       :name "leaf"
       :load-path* "site-lisp"
       :defun '((leaf2 . leaf-2)
                (leaf1 . leaf-1))))
 
-    (expect
-     (leaf-convert-contents-new--sexp
+    ((leaf-convert-contents-new--sexp
       (with-eval-after-load 'leaf
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
         (declare-function leaf1 "leaf-1")
         (declare-function leaf2 "leaf-2")))
-     :to-equal
      (leaf-convert-contents-new
       :name 'leaf
       :after t
