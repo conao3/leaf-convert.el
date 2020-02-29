@@ -203,7 +203,7 @@ If specified CONTENTS, add value to it instead of new instance."
 ;;; Main
 
 (defun leaf-convert-contents (contents)
-  "Convert CONTENTS to leaf format using LEAF-NAME."
+  "Convert `leaf-convert-contents', CONTENTS to leaf format."
   (if (not (leaf-convert-contents-p contents))
       (error "CONTENTS must be a instance of leaf-convert-contents")
     `(leaf ,(leaf-convert--string-or-symbol
@@ -226,7 +226,7 @@ If specified CONTENTS, add value to it instead of new instance."
 
 ;;;###autoload
 (defmacro leaf-convert-sexp (sexp)
-  "Convert SEXP to leaf format."
+  "Convert Elisp, SEXP to leaf format."
   `(leaf-convert-contents
     (leaf-convert-contents-new--sexp ,sexp)))
 
