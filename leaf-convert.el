@@ -211,15 +211,17 @@ If specified CONTENTS, add value to it instead of new instance."
              'leaf-convert)
        ,@(mapcan (lambda (elm)
                    (let ((fn (intern
-                              (format "leaf-convert-contents-%s" elm))))
-                     (when-let (value (funcall fn contents))
-                       `(,(intern (format ":%s" elm))
-                         ,@(cond
-                            ((memq elm '(preface init config))
-                             value)
-                            (t
-                             (if (eq value :leaf-convert--nil) '(nil) `(,value))))))))
-                 (remq 'leaf-convert--name leaf-convert-slots)))))
+                              (format "leaf-convert-contents-%s"
+                                      (substring (symbol-name elm) 1)))))
+                     (when (fboundp fn)
+                       (when-let (value (funcall fn contents))
+                         `(,elm
+                           ,@(cond
+                              ((memq elm '(:preface :init :config))
+                               value)
+                              (t
+                               (if (eq value :leaf-convert--nil) '(nil) `(,value)))))))))
+                 (leaf-available-keywords)))))
 
 ;;;###autoload
 (defalias 'leaf-convert 'leaf-convert-from-sexp)
