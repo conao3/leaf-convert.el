@@ -144,7 +144,7 @@ If specified CONTENTS, add value to it instead of new instance."
      ,@(mapcan (lambda (keyword)
                  (let ((key (intern (substring (symbol-name keyword) 1))))
                    (when-let (value (alist-get key contents))
-                     `(,keyword ,@value))))
+                     `(,keyword ,@(nreverse value)))))
                (leaf-available-keywords))))
 
 ;;;###autoload

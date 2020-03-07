@@ -103,8 +103,8 @@ Example:
                    (leaf-keywords-teardown)))))
      '(leaf leaf-convert
         :config
-        (leaf-keywords-init)
-        (leaf-keywords-teardown)))))
+        (leaf-keywords-teardown)
+        (leaf-keywords-init)))))
 
 (cort-deftest-with-equal leaf-convert/progn
   '(((leaf-convert
@@ -133,8 +133,8 @@ Example:
      '(leaf leaf
         :load-path* "site-lisp"
         :defun
-        (leaf2 . leaf-2)
         (leaf1 . leaf-1)
+        (leaf2 . leaf-2)
         :after t))))
 
 (cort-deftest-with-equal leaf-convert/load-path
@@ -159,9 +159,9 @@ Example:
       (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf-convert")))
      '(leaf leaf-convert
         :load-path*
-        "site-lisp/leaf-convert"
+        "site-lisp/leaf"
         "site-lisp/leaf-keywords"
-        "site-lisp/leaf"))))
+        "site-lisp/leaf-convert"))))
 
 (cort-deftest-with-equal leaf-convert/config
   '(((leaf-convert
