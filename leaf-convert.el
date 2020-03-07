@@ -75,21 +75,22 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
     (_ (push sexp (alist-get 'config contents))))
   contents)
 
-(defmacro leaf-convert-contents-new--sexp (sexp &optional contents)
-  "Convert SEXP to leaf-convert-contents.
+(defun leaf-convert-contents-new--sexp-internal (sexp &optional contents)
+  "Internal function of `leaf-convert-contents-new--sexp'.
+Convert SEXP to leaf-convert-contents.
 If specified CONTENTS, add value to it instead of new instance."
   (pcase sexp
     (`(progn . ,body)
      (dolist (elm body)
        (setq contents
-             (eval `(leaf-convert-contents-new--sexp ,elm ,contents)))))
+             (leaf-convert-contents-new--sexp-internal elm contents))))
     (`(prog1 ,(or `(quote ,name)
                   (and (pred stringp) name))
         . ,body)
      (setf (alist-get 'leaf-convert--name contents) name)
      (dolist (elm body)
        (setq contents
-             (eval `(leaf-convert-contents-new--sexp ,elm ,contents)))))
+             (leaf-convert-contents-new--sexp-internal elm contents))))
     (`(with-eval-after-load ,(or `(quote ,name)
                                  (and (pred stringp) name))
         . ,body)
@@ -101,7 +102,12 @@ If specified CONTENTS, add value to it instead of new instance."
     (_
      (setq contents
            (leaf-convert-contents-new--sexp-1 sexp contents))))
-  `',contents)
+  contents)
+
+(defmacro leaf-convert-contents-new--sexp (sexp &optional contents)
+  "Convert SEXP to leaf-convert-contents.
+If specified CONTENTS, add value to it instead of new instance."
+  `(leaf-convert-contents-new--sexp-internal ',sexp ',contents))
 
 (defun leaf-convert--fill-info (contents)
   "Add :doc, :file, :url information to CONTENTS."
