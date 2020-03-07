@@ -139,17 +139,14 @@ If specified CONTENTS, add value to it instead of new instance."
 
 (defun leaf-convert-from-contents (contents)
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
-  (if nil ;; (not (leaf-convert-contents-p contents))
-      (error "CONTENTS must be a instance of leaf-convert-contents")
-    `(leaf ,(leaf-convert--string-or-symbol
-             (alist-get 'leaf-convert--name contents)
-             'leaf-convert)
-       ,@(mapcan (lambda (keyword)
-                   (let ((key (intern (substring (symbol-name keyword) 1))))
-                     (when t ;; (fboundp fn)
-                       (when-let (value (alist-get key contents))
-                         `(,keyword ,@value)))))
-                 (leaf-available-keywords)))))
+  `(leaf ,(leaf-convert--string-or-symbol
+           (alist-get 'leaf-convert--name contents)
+           'leaf-convert)
+     ,@(mapcan (lambda (keyword)
+                 (let ((key (intern (substring (symbol-name keyword) 1))))
+                   (when-let (value (alist-get key contents))
+                     `(,keyword ,@value))))
+               (leaf-available-keywords))))
 
 ;;;###autoload
 (defalias 'leaf-convert 'leaf-convert-from-sexp)
