@@ -151,10 +151,10 @@ If specified CONTENTS, add value to it instead of new instance."
 (defalias 'leaf-convert 'leaf-convert-from-sexp)
 
 ;;;###autoload
-(defmacro leaf-convert-from-sexp (sexp)
+(defmacro leaf-convert-from-sexp (&rest sexp)
   "Convert SEXP (as plain Elisp) to leaf format."
   `(leaf-convert-from-contents
-    (leaf-convert-contents-new--sexp ,sexp)))
+    (leaf-convert-contents-new--sexp (progn ,@sexp))))
 
 (provide 'leaf-convert)
 
