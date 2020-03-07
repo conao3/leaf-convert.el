@@ -71,42 +71,36 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/convert-contents
   '(((leaf-convert-from-contents
-      (leaf-convert-contents-new))
+      nil)
      '(leaf leaf-convert))
 
     ((leaf-convert-from-contents
-      (leaf-convert-contents-new
-       :leaf-convert--name "some-package"))
+      '((leaf-convert--name . "some-package")))
      '(leaf some-package))
 
     ((leaf-convert-from-contents
-      (leaf-convert-contents-new
-       :leaf-convert--name 'some-package))
+      '((leaf-convert--name . some-package)))
      '(leaf some-package))
 
     ((leaf-convert-from-contents
-      (leaf-convert-contents-new
-       :disabled t))
+      '((disabled . (t))))
      '(leaf leaf-convert
         :disabled t))
 
     ((leaf-convert-from-contents
-      (leaf-convert-contents-new
-       :disabled :leaf-convert--nil))
+      '((disabled . (nil))))
      '(leaf leaf-convert
         :disabled nil))
 
     ((leaf-convert-from-contents
-      (leaf-convert-contents-new
-       :config '((leaf-keywords-init))))
+      '((config . ((leaf-keywords-init)))))
      '(leaf leaf-convert
         :config
         (leaf-keywords-init)))
 
     ((leaf-convert-from-contents
-      (leaf-convert-contents-new
-       :config '((leaf-keywords-init)
-                 (leaf-keywords-teardown))))
+      '((config . ((leaf-keywords-init)
+                   (leaf-keywords-teardown)))))
      '(leaf leaf-convert
         :config
         (leaf-keywords-init)
@@ -138,8 +132,9 @@ Example:
         (declare-function leaf2 "leaf-2")))
      '(leaf leaf
         :load-path* "site-lisp"
-        :defun ((leaf2 . leaf-2)
-                (leaf1 . leaf-1))
+        :defun
+        (leaf2 . leaf-2)
+        (leaf1 . leaf-1)
         :after t))))
 
 (cort-deftest-with-equal leaf-convert/load-path

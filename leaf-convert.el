@@ -39,57 +39,6 @@
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-convert.el"))
 
-(eval-and-compile
-  (defvar leaf-convert-slots
-    '(leaf-convert--name            ; leaf-convert only internal keyword
-      disabled leaf-protect
-      load-path load-path*
-      leaf-autoload
-      doc tag file url
-      defun defvar
-      leaf-defun leaf-defvar
-      preface
-      when unless if
-      ensure package
-      straight el-get
-      after commands
-      bind bind*
-      mode interpreter
-      magic magic-fallback
-      hook
-      advice advice-remove
-      init pre-setq
-      pl-pre-setq auth-pre-setq
-      custom pl-custom auth-custom
-      custom-face
-      hydra combo combo*
-      smartrep smartrep*
-      chord chord*
-      leaf-defer
-      require
-      config
-      diminish delight
-      setq setq-default
-      pl-setq auth-setq
-      pl-setq-default auth-setq-default)
-    "Leaf slots.
-
-This list can be created by below sexp.
-
- (mapcar (lambda (elm)
-            (intern (substring (symbol-name elm) 1)))
-          (leaf-available-keywords))")
-
-  (eval
-   `(cl-defstruct (leaf-convert-contents
-                   (:constructor nil)
-                   (:constructor leaf-convert-contents-new
-                                 (&key ,@leaf-convert-slots))
-                   (:copier nil))
-      "Contents of leaf.
-If specify nil as value, use :leaf-convert--nil instead of just nil."
-      ,@leaf-convert-slots)))
-
 
 ;;; Functions
 (defun leaf-convert--string-or-symbol (elm default)
@@ -98,47 +47,38 @@ ELM can be string or symbol."
   (or (if (stringp elm) (intern elm) elm)
       default))
 
-(defmacro leaf-convert--setf-or-push (elm place)
-  "If PLACE is nil, just setf ELM, if PLACE is non-nil, push ELM."
-  `(if ,place
-       (if (and (listp ,place)
-                (not (leaf-pairp ,place)))
-           (push ,elm ,place)
-         (setf ,place (list ,elm ,place)))
-     (setf ,place ,elm)))
-
 (defun leaf-convert-contents-new--sexp-1 (sexp contents)
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (pcase sexp
     ;; :load-path, :load-path*
     (`(add-to-list 'load-path ,(and (pred stringp) elm))
-     (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path contents)))
+     (push elm (alist-get 'load-path contents)))
     (`(add-to-list 'load-path (locate-user-emacs-file ,(and (pred stringp) elm)))
-     (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents)))
+     (push elm (alist-get 'load-path* contents)))
     (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
-     (leaf-convert--setf-or-push elm (leaf-convert-contents-load-path* contents)))
+     (push elm (alist-get 'load-path* contents)))
 
     ;; :defun
     (`(declare-function ,elm)
-     (leaf-convert--setf-or-push elm (leaf-convert-contents-defun contents)))
+     (push elm (alist-get 'defun contents)))
     (`(declare-function ,elm ,(and (pred stringp) file))
-     (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents)))
+     (push `(,elm . ,(intern file)) (alist-get 'defun contents)))
     (`(declare-function ,elm ,(and (pred stringp) file) ,_args)
-     (leaf-convert--setf-or-push `(,elm . ,(intern file)) (leaf-convert-contents-defun contents)))
+     (push `(,elm . ,(intern file)) (alist-get 'defun contents)))
 
     ;; :defvar
     (`(defvar ,elm)
-     (leaf-convert--setf-or-push elm (leaf-convert-contents-defvar contents)))
+     (push elm (alist-get 'defvar contents)))
 
     ;; any
-    (_ (push sexp (leaf-convert-contents-config contents))))
+    (_ (push sexp (alist-get 'config contents))))
   contents)
 
 (defmacro leaf-convert-contents-new--sexp (sexp &optional contents)
   "Convert SEXP to leaf-convert-contents.
 If specified CONTENTS, add value to it instead of new instance."
-  (let ((contents* (or (eval contents) (leaf-convert-contents-new))))
+  (let ((contents* (eval contents)))
     (pcase sexp
       (`(progn . ,body)
        (dolist (elm body)
@@ -147,26 +87,27 @@ If specified CONTENTS, add value to it instead of new instance."
       (`(prog1 ,(or `(quote ,name)
                     (and (pred stringp) name))
           . ,body)
-       (setf (leaf-convert-contents-leaf-convert--name contents*) name)
+       (setf (alist-get 'leaf-convert--name contents*) name)
        (dolist (elm body)
          (setq contents*
                (leaf-convert-contents-new--sexp-1 elm contents*))))
       (`(with-eval-after-load ,(or `(quote ,name)
                                    (and (pred stringp) name))
           . ,body)
-       (setf (leaf-convert-contents-leaf-convert--name contents*) name)
-       (setf (leaf-convert-contents-after contents*) t)
+       (setf (alist-get 'leaf-convert--name contents*) name)
+       (push t (alist-get 'after contents*))
        (dolist (elm body)
          (setq contents*
                (leaf-convert-contents-new--sexp-1 elm contents*))))
       (_
-       (leaf-convert-contents-new--sexp-1 sexp contents*)))
-    contents*))
+       (setq contents*
+             (leaf-convert-contents-new--sexp-1 sexp contents*))))
+    `',contents*))
 
 (defun leaf-convert--fill-info (contents)
   "Add :doc, :file, :url information to CONTENTS."
   ;; see `describe-package-1'
-  (when-let* ((pkg (leaf-convert-contents-leaf-convert--name contents))
+  (when-let* ((pkg (alist-get 'leaf-convert--name contents))
               (desc (or
                      (if (package-desc-p pkg) pkg)
                      (cadr (assq pkg package-alist))
@@ -182,21 +123,15 @@ If specified CONTENTS, add value to it instead of new instance."
            (path (locate-file (format "%s.el" pkg)
                               load-path
                               load-file-rep-suffixes)))
-      (leaf-convert--setf-or-push summary
-        (leaf-convert-contents-doc contents))
-      (leaf-convert--setf-or-push path
-        (leaf-convert-contents-file contents))
-      (leaf-convert--setf-or-push url
-        (leaf-convert-contents-url contents))
-      (leaf-convert--setf-or-push keywords
-        (leaf-convert-contents-tag contents))
+      (push summary (alist-get 'doc contents))
+      (push path (alist-get 'file contents))
+      (push url (alist-get 'url contents))
+      (push keywords (alist-get 'tag contents))
       (dolist (elm reqs)
         (pcase elm
           (`(emacs ,ver)
-           (leaf-convert--setf-or-push
-               (format "emacs-%s"
-                       (string-join (mapcar 'number-to-string ver) "."))
-             (leaf-convert-contents-tag contents))))))
+           (push (format "emacs-%s" (string-join (mapcar 'number-to-string ver) "."))
+                 (alist-get 'tag contents))))))
     contents))
 
 
@@ -204,23 +139,16 @@ If specified CONTENTS, add value to it instead of new instance."
 
 (defun leaf-convert-from-contents (contents)
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
-  (if (not (leaf-convert-contents-p contents))
+  (if nil ;; (not (leaf-convert-contents-p contents))
       (error "CONTENTS must be a instance of leaf-convert-contents")
     `(leaf ,(leaf-convert--string-or-symbol
-             (leaf-convert-contents-leaf-convert--name contents)
+             (alist-get 'leaf-convert--name contents)
              'leaf-convert)
-       ,@(mapcan (lambda (elm)
-                   (let ((fn (intern
-                              (format "leaf-convert-contents-%s"
-                                      (substring (symbol-name elm) 1)))))
-                     (when (fboundp fn)
-                       (when-let (value (funcall fn contents))
-                         `(,elm
-                           ,@(cond
-                              ((memq elm '(:preface :init :config))
-                               value)
-                              (t
-                               (if (eq value :leaf-convert--nil) '(nil) `(,value)))))))))
+       ,@(mapcan (lambda (keyword)
+                   (let ((key (intern (substring (symbol-name keyword) 1))))
+                     (when t ;; (fboundp fn)
+                       (when-let (value (alist-get key contents))
+                         `(,keyword ,@value)))))
                  (leaf-available-keywords)))))
 
 ;;;###autoload
