@@ -123,19 +123,7 @@ Example:
       (prog1 "leaf"
         (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
      '(leaf leaf
-        :load-path* "site-lisp"))
-
-    ((leaf-convert
-      (with-eval-after-load 'leaf
-        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
-        (declare-function leaf1 "leaf-1")
-        (declare-function leaf2 "leaf-2")))
-     '(leaf leaf
-        :load-path* "site-lisp"
-        :defun
-        (leaf1 . leaf-1)
-        (leaf2 . leaf-2)
-        :after t))))
+        :load-path* "site-lisp"))))
 
 (cort-deftest-with-equal leaf-convert/load-path
   '(((leaf-convert
@@ -192,7 +180,7 @@ Example:
         '(progn
            (leaf-browser-init))))
      '(leaf leaf
-        :after t
+        :after leaf
         :config
         (leaf-browser-init)))
 
@@ -200,9 +188,20 @@ Example:
       (with-eval-after-load 'leaf
         (leaf-browser-init)))
      '(leaf leaf
-        :after t
+        :after leaf
         :config
-        (leaf-browser-init)))))
+        (leaf-browser-init)))
+
+    ((leaf-convert
+      (eval-after-load 'orglyth
+        '(eval-after-load 'org
+           '(eval-after-load 'leaf
+              '(progn
+                 (leaf-browser-init))))))
+     (leaf leaf
+       :after orglyth org leaf
+       :config
+       (leaf-browser-init)))))
 
 ;; (provide 'leaf-convert-test)
 
