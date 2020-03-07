@@ -99,6 +99,21 @@ If specified CONTENTS, add value to it instead of new instance."
      (dolist (elm body)
        (setq contents
              (leaf-convert-contents-new--sexp-1 elm contents))))
+    (`(eval-after-load ,(or `(quote ,name)
+                            (and (pred stringp) name))
+        (quote (progn . ,body)))
+     (setf (alist-get 'leaf-convert--name contents) name)
+     (push t (alist-get 'after contents))
+     (dolist (elm body)
+       (setq contents
+             (leaf-convert-contents-new--sexp-1 elm contents))))
+    (`(eval-after-load ,(or `(quote ,name)
+                            (and (pred stringp) name))
+        (quote . ,body))
+     (setf (alist-get 'leaf-convert--name contents) name)
+     (push t (alist-get 'after contents))
+     (setq contents
+           (leaf-convert-contents-new--sexp-1 body contents)))
     (_
      (setq contents
            (leaf-convert-contents-new--sexp-1 sexp contents))))

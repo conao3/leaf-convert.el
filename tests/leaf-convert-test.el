@@ -186,6 +186,24 @@ Example:
      '(leaf leaf-convert
         :defvar leaf-keywords))))
 
+(cort-deftest-with-equal leaf-convert/after
+  '(((leaf-convert
+      (eval-after-load 'leaf
+        '(progn
+           (leaf-browser-init))))
+     '(leaf leaf
+        :after t
+        :config
+        (leaf-browser-init)))
+
+    ((leaf-convert
+      (with-eval-after-load 'leaf
+        (leaf-browser-init)))
+     '(leaf leaf
+        :after t
+        :config
+        (leaf-browser-init)))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
