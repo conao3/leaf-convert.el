@@ -78,31 +78,30 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
 (defmacro leaf-convert-contents-new--sexp (sexp &optional contents)
   "Convert SEXP to leaf-convert-contents.
 If specified CONTENTS, add value to it instead of new instance."
-  (let ((contents* (eval contents)))
-    (pcase sexp
-      (`(progn . ,body)
-       (dolist (elm body)
-         (setq contents*
-               (leaf-convert-contents-new--sexp-1 elm contents*))))
-      (`(prog1 ,(or `(quote ,name)
-                    (and (pred stringp) name))
-          . ,body)
-       (setf (alist-get 'leaf-convert--name contents*) name)
-       (dolist (elm body)
-         (setq contents*
-               (leaf-convert-contents-new--sexp-1 elm contents*))))
-      (`(with-eval-after-load ,(or `(quote ,name)
-                                   (and (pred stringp) name))
-          . ,body)
-       (setf (alist-get 'leaf-convert--name contents*) name)
-       (push t (alist-get 'after contents*))
-       (dolist (elm body)
-         (setq contents*
-               (leaf-convert-contents-new--sexp-1 elm contents*))))
-      (_
-       (setq contents*
-             (leaf-convert-contents-new--sexp-1 sexp contents*))))
-    `',contents*))
+  (pcase sexp
+    (`(progn . ,body)
+     (dolist (elm body)
+       (setq contents
+             (leaf-convert-contents-new--sexp-1 elm contents))))
+    (`(prog1 ,(or `(quote ,name)
+                  (and (pred stringp) name))
+        . ,body)
+     (setf (alist-get 'leaf-convert--name contents) name)
+     (dolist (elm body)
+       (setq contents
+             (leaf-convert-contents-new--sexp-1 elm contents))))
+    (`(with-eval-after-load ,(or `(quote ,name)
+                                 (and (pred stringp) name))
+        . ,body)
+     (setf (alist-get 'leaf-convert--name contents) name)
+     (push t (alist-get 'after contents))
+     (dolist (elm body)
+       (setq contents
+             (leaf-convert-contents-new--sexp-1 elm contents))))
+    (_
+     (setq contents
+           (leaf-convert-contents-new--sexp-1 sexp contents))))
+  `',contents)
 
 (defun leaf-convert--fill-info (contents)
   "Add :doc, :file, :url information to CONTENTS."
