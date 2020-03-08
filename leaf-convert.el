@@ -78,7 +78,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
 (defun leaf-convert-contents-new--sexp-internal (sexp &optional contents toplevel)
   "Internal function of `leaf-convert-contents-new--sexp'.
 Convert SEXP to leaf-convert-contents.
-If specified CONTENTS, add value to it instead of new instance."
+If specified CONTENTS, add value to it instead of create new instance.
+When TOPLEVEL is non-nil, it converts sexp, which affects the
+whole block like `eval-after-load', into leaf keyword.'"
   (pcase sexp
     (`(progn . ,body)
      (dolist (elm body)
