@@ -200,7 +200,13 @@ Example:
     ((leaf-convert
       (defvar leaf-keywords))
      '(leaf leaf-convert
-        :defvar leaf-keywords))))
+        :defvar leaf-keywords))
+
+    ;; define variable and initialize convert to :setq
+    ((leaf-convert
+      (defvar leaf-keywords-optional '(:doc :url :tag)))
+     '(leaf leaf-convert
+        :setq (leaf-keywords-optional . '(:doc :url :tag))))))
 
 (cort-deftest-with-equal leaf-convert/after
   '(
@@ -234,6 +240,20 @@ Example:
         :after orglyth org leaf
         :config
         (leaf-browser-init)))))
+
+(cort-deftest-with-equal leaf-convert/setq
+  '(
+    ;; empty defvar convert to :defvar
+    ((leaf-convert
+      (defvar leaf-keywords))
+     '(leaf leaf-convert
+        :defvar leaf-keywords))
+
+    ;; define variable and initialize convert to :setq
+    ((leaf-convert
+      (defvar leaf-keywords-optional '(:doc :url :tag)))
+     '(leaf leaf-convert
+        :setq (leaf-keywords-optional . '(:doc :url :tag))))))
 
 ;; (provide 'leaf-convert-test)
 
