@@ -239,7 +239,24 @@ Example:
      '(leaf leaf
         :after orglyth org leaf
         :config
-        (leaf-browser-init)))))
+        (leaf-browser-init)))
+
+    ;; if the eval-after-load chain breaks, it will not be converted to the :after keyword
+    ((leaf-convert
+      (eval-after-load 'orglyth
+        '(progn
+           (orglyth-setup)
+           (eval-after-load 'org
+            '(eval-after-load 'leaf
+               '(progn
+                  (leaf-browser-init))))))))
+    (leaf orglyth
+      :after orglyth
+      :config
+      (orglyth-setup)
+      (eval-after-load 'leaf
+        '(progn
+           (leaf-browser-init))))))
 
 (cort-deftest-with-equal leaf-convert/setq
   '(

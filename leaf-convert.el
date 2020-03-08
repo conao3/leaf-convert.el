@@ -102,12 +102,14 @@ whole block like `eval-after-load', into leaf keyword.'"
     (`(eval-after-load ,(or `(quote ,name)
                             (and (pred stringp) name))
         (quote ,body))
-     (when toplevel
+     (if (not toplevel)
+         (setq contents
+               (leaf-convert-contents-new--sexp-1 body contents))
        (setf (alist-get 'leaf-convert--name contents) name)
-       (push name (alist-get 'after contents)))
-     (setq contents
-           (leaf-convert-contents-new--sexp-internal
-            body contents toplevel)))
+       (push name (alist-get 'after contents))
+       (setq contents
+             (leaf-convert-contents-new--sexp-internal
+              body contents toplevel))))
     (_
      (setq contents
            (leaf-convert-contents-new--sexp-1 sexp contents))))
