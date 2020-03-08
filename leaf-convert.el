@@ -60,11 +60,7 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
      (push elm (alist-get 'load-path* contents)))
 
     ;; :defun
-    (`(declare-function ,elm)
-     (push elm (alist-get 'defun contents)))
-    (`(declare-function ,elm ,(and (pred stringp) file))
-     (push `(,elm . ,(intern file)) (alist-get 'defun contents)))
-    (`(declare-function ,elm ,(and (pred stringp) file) ,_args)
+    (`(declare-function ,elm ,(and (pred stringp) file) . ,_args)
      (push `(,elm . ,(intern file)) (alist-get 'defun contents)))
 
     ;; :defvar

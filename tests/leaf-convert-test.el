@@ -70,34 +70,42 @@ Example:
 ;;; test definitions
 
 (cort-deftest-with-equal leaf-convert/convert-contents
-  '(((leaf-convert-from-contents
+  '(
+    ;; leaf-covnert from nil generates empty leaf
+    ((leaf-convert-from-contents
       nil)
      '(leaf leaf-convert))
 
+    ;; leaf-convert--name accepts string
     ((leaf-convert-from-contents
       '((leaf-convert--name . "some-package")))
      '(leaf some-package))
 
+    ;; leaf-convert--name also accepts symbol
     ((leaf-convert-from-contents
       '((leaf-convert--name . some-package)))
      '(leaf some-package))
 
+    ;; leaf-convert could handle symbol t
     ((leaf-convert-from-contents
       '((disabled . (t))))
      '(leaf leaf-convert
         :disabled t))
 
+    ;; leaf-convert could handle symbol nil
     ((leaf-convert-from-contents
       '((disabled . (nil))))
      '(leaf leaf-convert
         :disabled nil))
 
+    ;; leaf-convert splice values
     ((leaf-convert-from-contents
       '((config . ((leaf-keywords-init)))))
      '(leaf leaf-convert
         :config
         (leaf-keywords-init)))
 
+    ;; leaf-convert splice values (in multi values)
     ((leaf-convert-from-contents
       '((config . ((leaf-keywords-init)
                    (leaf-keywords-teardown)))))
@@ -107,40 +115,58 @@ Example:
         (leaf-keywords-init)))))
 
 (cort-deftest-with-equal leaf-convert/progn
-  '(((leaf-convert
+  '(
+    ;; accept progn
+    ((leaf-convert
       (progn
-        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf"))
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf-keywords"))))
      '(leaf leaf-convert
-        :load-path* "site-lisp"))
+        :load-path*
+        "site-lisp/leaf"
+        "site-lisp/leaf-keywords"))
 
+    ;; also accept prog1 and pick up 2th argument as leaf--name if symbol
     ((leaf-convert
       (prog1 'leaf
-        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf"))
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf-keywords"))))
      '(leaf leaf
-        :load-path* "site-lisp"))
+        :load-path*
+        "site-lisp/leaf"
+        "site-lisp/leaf-keywords"))
 
+    ;; also accept prog1 and pick up 2th argument as leaf--name if string
     ((leaf-convert
       (prog1 "leaf"
-        (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))))
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf"))
+        (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf-keywords"))))
      '(leaf leaf
-        :load-path* "site-lisp"))))
+        :load-path*
+        "site-lisp/leaf"
+        "site-lisp/leaf-keywords"))))
 
 (cort-deftest-with-equal leaf-convert/load-path
-  '(((leaf-convert
+  '(
+    ;; add-to-list load-path convert to :load-path keyword
+    ((leaf-convert
       (add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
      '(leaf leaf-convert
         :load-path "~/.emacs.d/local/26.3/site-lisp"))
 
+    ;; add-to-list load-path using locate-user-emacs-file convert to :load-path*
     ((leaf-convert
       (add-to-list 'load-path (locate-user-emacs-file "site-lisp")))
      '(leaf leaf-convert
         :load-path* "site-lisp"))
 
+    ;; add-to-list load-path using concat user-emacs-directory convert to :load-path*
     ((leaf-convert
       (add-to-list 'load-path (concat user-emacs-directory "site-lisp")))
      '(leaf leaf-convert
         :load-path* "site-lisp"))
 
+    ;; could convert multi add-to-list sexps
     ((leaf-convert
       (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf"))
       (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf-keywords"))
@@ -152,30 +178,34 @@ Example:
         "site-lisp/leaf-convert"))))
 
 (cort-deftest-with-equal leaf-convert/config
-  '(((leaf-convert
+  '(
+    ;; unknown sexp convert to :config
+    ((leaf-convert
       (leaf-keywords-init))
      '(leaf leaf-convert
-        :config (leaf-keywords-init)))))
+        :config
+        (leaf-keywords-init)))))
 
 (cort-deftest-with-equal leaf-convert/defun
-  '(((leaf-convert
-      (declare-function leaf))
-     '(leaf leaf-convert
-        :defun leaf))
-
+  '(
+    ;; declare-function convert to :defun
     ((leaf-convert
       (declare-function leaf "leaf"))
      '(leaf leaf-convert
         :defun (leaf . leaf)))))
 
 (cort-deftest-with-equal leaf-convert/defvar
-  '(((leaf-convert
+  '(
+    ;; empty defvar convert to :defvar
+    ((leaf-convert
       (defvar leaf-keywords))
      '(leaf leaf-convert
         :defvar leaf-keywords))))
 
 (cort-deftest-with-equal leaf-convert/after
-  '(((leaf-convert
+  '(
+    ;; eval-after-load convert to :after
+    ((leaf-convert
       (eval-after-load 'leaf
         '(progn
            (leaf-browser-init))))
@@ -184,6 +214,7 @@ Example:
         :config
         (leaf-browser-init)))
 
+    ;; with-eval-after-load also convert to :after
     ((leaf-convert
       (with-eval-after-load 'leaf
         (leaf-browser-init)))
@@ -192,6 +223,7 @@ Example:
         :config
         (leaf-browser-init)))
 
+    ;; eval-after-load chain convert to :after symbols
     ((leaf-convert
       (eval-after-load 'orglyth
         '(eval-after-load 'org
