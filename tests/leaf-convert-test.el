@@ -198,10 +198,10 @@ Example:
            '(eval-after-load 'leaf
               '(progn
                  (leaf-browser-init))))))
-     (leaf leaf
-       :after orglyth org leaf
-       :config
-       (leaf-browser-init)))))
+     '(leaf leaf
+        :after orglyth org leaf
+        :config
+        (leaf-browser-init)))))
 
 ;; (provide 'leaf-convert-test)
 

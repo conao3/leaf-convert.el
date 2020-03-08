@@ -104,21 +104,14 @@ If specified CONTENTS, add value to it instead of new instance."
               elm contents (and toplevel (equal elm (car body)))))))
     (`(eval-after-load ,(or `(quote ,name)
                             (and (pred stringp) name))
-        (quote (progn . ,body)))
-     (setf (alist-get 'leaf-convert--name contents) name)
-     (push name (alist-get 'after contents))
-     (dolist (elm body)
+        (quote ,body))
+     (if (not toplevel)
+         (setq contents (leaf-convert-contents-new--sexp-1 sexp contents))
+       (setf (alist-get 'leaf-convert--name contents) name)
+       (push name (alist-get 'after contents))
        (setq contents
              (leaf-convert-contents-new--sexp-internal
-              elm contents (and toplevel (equal elm (car body)))))))
-    (`(eval-after-load ,(or `(quote ,name)
-                            (and (pred stringp) name))
-        (quote ,body))
-     (setf (alist-get 'leaf-convert--name contents) name)
-     (push name (alist-get 'after contents))
-     (setq contents
-           (leaf-convert-contents-new--sexp-internal
-            body contents (and toplevel (equal elm (car body))))))
+              body contents toplevel))))
     (_
      (setq contents
            (leaf-convert-contents-new--sexp-1 sexp contents))))
