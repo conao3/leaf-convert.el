@@ -98,22 +98,18 @@ whole block like `eval-after-load', into leaf keyword.'"
     (`(with-eval-after-load ,(or `(quote ,name)
                                  (and (pred stringp) name))
         . ,body)
-     (setf (alist-get 'leaf-convert--name contents) name)
-     (push name (alist-get 'after contents))
-     (dolist (elm body)
-       (setq contents
-             (leaf-convert-contents-new--sexp-internal
-              elm contents (and toplevel (equal elm (car body)))))))
+     (setq contents
+           (leaf-convert-contents-new--sexp-internal
+            `(eval-after-load ',name '(progn ,@body)) contents toplevel)))
     (`(eval-after-load ,(or `(quote ,name)
                             (and (pred stringp) name))
         (quote ,body))
-     (if (not toplevel)
-         (setq contents (leaf-convert-contents-new--sexp-1 sexp contents))
+     (when toplevel
        (setf (alist-get 'leaf-convert--name contents) name)
-       (push name (alist-get 'after contents))
-       (setq contents
-             (leaf-convert-contents-new--sexp-internal
-              body contents toplevel))))
+       (push name (alist-get 'after contents)))
+     (setq contents
+           (leaf-convert-contents-new--sexp-internal
+            body contents toplevel)))
     (_
      (setq contents
            (leaf-convert-contents-new--sexp-1 sexp contents))))
