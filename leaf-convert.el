@@ -146,7 +146,10 @@ If specified CONTENTS, add value to it instead of new instance."
             (dolist (keyword (lm-keywords-list)) (push keyword tags))
             (setq reqs (when-let (str (lm-header "package-requires"))
                          (package--prepare-dependencies
-                          (package-read-from-string str)))))
+                          (package-read-from-string str))))
+            (if (or (package-built-in-p pkg) (string-match-p "/share/" file))
+                (push "builtin" tags)
+              (push "satellite" tags)))
         (push "satellite" tags)
         (push (intern (format "{{user}}/%s" pkg)) (alist-get 'el-get contents))))
      ((and pkg desc)
