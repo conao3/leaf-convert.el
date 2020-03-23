@@ -210,6 +210,7 @@ And kill generated leaf block to quick yank."
       (leaf-convert--fill-info
        (leaf-convert-contents-new--sexp-internal
         `(prog1 ',pkg) nil 'toplevel)))))
+  (delete-char -1)
   (backward-sexp)
   (indent-sexp)
   (forward-sexp))
