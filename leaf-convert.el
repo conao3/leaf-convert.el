@@ -165,7 +165,7 @@ If specified CONTENTS, add value to it instead of new instance."
     (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
     (dolist (doc docs)   (when doc (push doc (alist-get 'doc contents))))
     (dolist (tag tags)   (when tag (push tag (alist-get 'tag contents))))
-    (dolist (file files) (when file (push (concat "~/" (file-relative-name file "~/")) (alist-get 'file contents))))
+    ;; (dolist (file files) (when file (push (concat "~/" (file-relative-name file "~/")) (alist-get 'file contents))))
     (dolist (url urls)   (when url (push url (alist-get 'url contents))))
     
     (dolist (elm reqs)
