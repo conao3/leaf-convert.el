@@ -123,6 +123,7 @@ If specified CONTENTS, add value to it instead of new instance."
 (defun leaf-convert--fill-info (contents)
   "Add :doc, :file, :url information to CONTENTS."
   ;; see `describe-package-1'
+  (require 'lisp-mnt)
   (let* ((pkg (alist-get 'leaf-convert--name contents))
          (desc (when pkg
                  (or
@@ -137,8 +138,15 @@ If specified CONTENTS, add value to it instead of new instance."
      ((and (not pkg)))
      ((and pkg (not desc))
       (if-let (file (locate-file (format "%s.el" pkg) load-path load-file-rep-suffixes))
-          (progn
-            (push file files))
+          (with-temp-buffer
+            (insert-file-contents file)
+            (push file files)
+            (push (lm-summary) docs)
+            (push (lm-homepage) urls)
+            (dolist (keyword (lm-keywords-list)) (push keyword tags))
+            (setq reqs (when-let (str (lm-header "package-requires"))
+                         (package--prepare-dependencies
+                          (package-read-from-string str)))))
         (push "satellite" tags)
         (push (intern (format "{{user}}/%s" pkg)) (alist-get 'el-get contents))))
      ((and pkg desc)
