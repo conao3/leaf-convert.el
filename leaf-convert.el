@@ -142,7 +142,7 @@ If specified CONTENTS, add value to it instead of new instance."
       (when summary  (push summary (alist-get 'doc contents)))
       (when path     (push path (alist-get 'file contents)))
       (when url      (push url (alist-get 'url contents)))
-      (when keywords (push keywords (alist-get 'tag contents)))
+      (when keywords (dolist (keyword keywords) (push keyword (alist-get 'tag contents))))
       (dolist (elm reqs)
         (pcase elm
           (`(emacs ,ver)
