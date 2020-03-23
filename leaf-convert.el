@@ -154,6 +154,7 @@ If specified CONTENTS, add value to it instead of new instance."
            (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
              (push (format "%s-%s" pkg ver*) (alist-get 'req contents))
              (push (format "%s" pkg) (alist-get 'after contents)))))))
+    (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
     contents))
 
 
