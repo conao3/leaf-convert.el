@@ -160,10 +160,10 @@ If specified CONTENTS, add value to it instead of new instance."
         (push t (alist-get 'ensure contents)))))
 
     (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
-    (dolist (doc docs) (push doc (alist-get 'doc contents)))
-    (dolist (tag tags) (push tag (alist-get 'tag contents)))
-    (dolist (file files) (push (concat "~/" (file-relative-name file "~/")) (alist-get 'file contents)))
-    (dolist (url urls) (push url (alist-get 'url contents)))
+    (dolist (doc docs)   (when doc (push doc (alist-get 'doc contents))))
+    (dolist (tag tags)   (when tag (push tag (alist-get 'tag contents))))
+    (dolist (file files) (when file (push (concat "~/" (file-relative-name file "~/")) (alist-get 'file contents))))
+    (dolist (url urls)   (when url (push url (alist-get 'url contents))))
     
     (dolist (elm reqs)
       (pcase elm
