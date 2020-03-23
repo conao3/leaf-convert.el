@@ -145,8 +145,9 @@ If specified CONTENTS, add value to it instead of new instance."
             (push (lm-homepage) urls)
             (dolist (keyword (lm-keywords-list)) (push keyword tags))
             (setq reqs (when-let (str (lm-header "package-requires"))
-                         (package--prepare-dependencies
-                          (package-read-from-string str))))
+                         (mapcar #'(lambda (elt) `(,(car elt) ,(version-to-list (cadr elt))))
+                                 (package--prepare-dependencies
+                                  (package-read-from-string str)))))
             (if (or (package-built-in-p pkg) (string-match-p "/share/" file))
                 (push "builtin" tags)
               (push "satellite" tags)))
