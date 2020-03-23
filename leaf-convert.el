@@ -183,11 +183,14 @@ And kill generated leaf block to quick yank."
        (package-refresh-contents))
      (list (intern (completing-read
                     "Install package: "
-                    (delq nil
-                          (mapcar (lambda (elt)
-                                    (symbol-name (car elt)))
-                                  package-archive-contents))
-                    nil t)))))
+                    (delete-dups
+                     (mapcar
+                      (lambda (elm) (if (string-suffix-p "/" elm) nil elm))
+                      (append
+                       (mapcar (lambda (elm) (symbol-name (car elm))) package-archive-contents)
+
+                       ;; see `load-library'
+                       (locate-file-completion-table load-path (get-load-suffixes) "" nil t)))))))))
   (let ((standard-output (current-buffer)))
     (leaf-pp
      (leaf-convert-from-contents
