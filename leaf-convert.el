@@ -146,9 +146,13 @@ If specified CONTENTS, add value to it instead of new instance."
       (dolist (elm reqs)
         (pcase elm
           (`(emacs ,ver)
-           (let ((str (string-join (mapcar 'number-to-string ver) ".")))
-             (push (format "emacs>=%s" str) (alist-get 'tag contents))
-             (push str (alist-get 'emacs>= contents)))))))
+           (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
+             (push (format "emacs>=%s" ver*) (alist-get 'tag contents))
+             (push (format "emacs-%s" ver*) (alist-get 'req contents))
+             (push ver* (alist-get 'emacs>= contents))))
+          (`(,pkg ,ver)
+           (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
+             (push (format "%s-%s" pkg ver*) (alist-get 'req contents)))))))
     contents))
 
 
