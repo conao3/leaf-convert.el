@@ -122,8 +122,6 @@ If specified CONTENTS, add value to it instead of new instance."
 
 (defun leaf-convert--fill-info (contents)
   "Add :doc, :file, :url information to CONTENTS."
-  (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
-
   ;; see `describe-package-1'
   (let* ((pkg (alist-get 'leaf-convert--name contents))
          (desc (when pkg
@@ -133,39 +131,43 @@ If specified CONTENTS, add value to it instead of new instance."
                   (let ((built-in (assq pkg package--builtins)))
                     (if built-in
                         (package--from-builtin built-in)
-                      (cadr (assq pkg package-archive-contents))))))))
+                      (cadr (assq pkg package-archive-contents)))))))
+         docs reqs tags files urls)
     (cond
      ((and (not pkg)))
      ((and pkg (not desc))
-      (push "satellite" (alist-get 'tag contents))
-      (push (intern (format "{{user}}/%s" pkg)) (alist-get 'el-get contents)))
+      (if-let (file (locate-file (format "%s.el" pkg) load-path load-file-rep-suffixes))
+          (progn
+            (push file files))
+        (push "satellite" tags)
+        (push (intern (format "{{user}}/%s" pkg)) (alist-get 'el-get contents))))
      ((and pkg desc)
-      (let* ((summary (package-desc-summary desc))
-             (reqs (package-desc-reqs desc))
-             (extras (package-desc-extras desc))
-             (url (cdr (assoc :url extras)))
-             (keywords (package-desc--keywords desc))
-             (path (locate-file (format "%s.el" pkg)
-                                load-path
-                                load-file-rep-suffixes)))
-        (if (package-built-in-p desc)
-            (push "builtin" (alist-get 'tag contents))
-          (push t (alist-get 'ensure contents)))
-        (when summary  (push summary (alist-get 'doc contents)))
-        (when path     (push (concat "~/" (file-relative-name path "~/")) (alist-get 'file contents)))
-        (when url      (push url (alist-get 'url contents)))
-        (when keywords (dolist (keyword keywords) (push keyword (alist-get 'tag contents))))
-        (dolist (elm reqs)
-          (pcase elm
-            (`(emacs ,ver)
-             (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
-               (push (format "emacs>=%s" ver*) (alist-get 'tag contents))
-               (push (format "emacs-%s" ver*) (alist-get 'req contents))
-               (push (string-to-number ver*) (alist-get 'emacs>= contents))))
-            (`(,pkg ,ver)
-             (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
-               (push (format "%s-%s" pkg ver*) (alist-get 'req contents))
-               (push pkg (alist-get 'after contents)))))))))
+      (push (package-desc-summary desc) docs)
+      (push (locate-file (format "%s.el" pkg) load-path load-file-rep-suffixes) files)
+      (push (cdr (assoc :url (package-desc-extras desc))) urls)
+      (dolist (keyword (package-desc--keywords desc)) (push keyword tags))
+      (setq reqs (package-desc-reqs desc))
+      (if (package-built-in-p desc)
+          (push "builtin" tags)
+        (push t (alist-get 'ensure contents)))))
+
+    (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
+    (dolist (doc docs) (push doc (alist-get 'doc contents)))
+    (dolist (tag tags) (push tag (alist-get 'tag contents)))
+    (dolist (file files) (push (concat "~/" (file-relative-name file "~/")) (alist-get 'file contents)))
+    (dolist (url urls) (push url (alist-get 'url contents)))
+    
+    (dolist (elm reqs)
+      (pcase elm
+        (`(emacs ,ver)
+         (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
+           (push (format "emacs>=%s" ver*) (alist-get 'tag contents))
+           (push (format "emacs-%s" ver*) (alist-get 'req contents))
+           (push (string-to-number ver*) (alist-get 'emacs>= contents))))
+        (`(,pkg ,ver)
+         (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
+           (push (format "%s-%s" pkg ver*) (alist-get 'req contents))
+           (push pkg (alist-get 'after contents))))))
     contents))
 
 ;;;###autoload
