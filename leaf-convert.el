@@ -139,10 +139,10 @@ If specified CONTENTS, add value to it instead of new instance."
            (path (locate-file (format "%s.el" pkg)
                               load-path
                               load-file-rep-suffixes)))
-      (push summary (alist-get 'doc contents))
-      (push path (alist-get 'file contents))
-      (push url (alist-get 'url contents))
-      (push keywords (alist-get 'tag contents))
+      (when summary  (push summary (alist-get 'doc contents)))
+      (when path     (push path (alist-get 'file contents)))
+      (when url      (push url (alist-get 'url contents)))
+      (when keywords (push keywords (alist-get 'tag contents)))
       (dolist (elm reqs)
         (pcase elm
           (`(emacs ,ver)
