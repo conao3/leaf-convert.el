@@ -247,16 +247,16 @@ Example:
         '(progn
            (orglyth-setup)
            (eval-after-load 'org
-            '(eval-after-load 'leaf
-               '(progn
-                  (leaf-browser-init))))))))
-    (leaf orglyth
-      :after orglyth
-      :config
-      (orglyth-setup)
-      (eval-after-load 'leaf
-        '(progn
-           (leaf-browser-init))))))
+             '(eval-after-load 'leaf
+                '(progn
+                   (leaf-browser-init)))))))
+     '(leaf orglyth
+        :after orglyth
+        :config
+        (orglyth-setup)
+        (eval-after-load 'leaf
+          '(progn
+             (leaf-browser-init)))))))
 
 (cort-deftest-with-equal leaf-convert/setq
   '(
