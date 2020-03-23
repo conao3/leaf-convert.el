@@ -157,6 +157,36 @@ If specified CONTENTS, add value to it instead of new instance."
     (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
     contents))
 
+;;;###autoload
+(defun leaf-convert-generate-template (pkg)
+  "Generate template `leaf' block for PKG using package.el cache.
+And kill generated leaf block to quick yank."
+  (interactive
+   ;; see `package-install'
+   (progn
+     ;; Initialize the package system to get the list of package
+     ;; symbols for completion.
+     (unless package--initialized
+       (package-initialize t))
+     (unless package-archive-contents
+       (package-refresh-contents))
+     (list (intern (completing-read
+                    "Install package: "
+                    (delq nil
+                          (mapcar (lambda (elt)
+                                    (symbol-name (car elt)))
+                                  package-archive-contents))
+                    nil t)))))
+  (with-temp-buffer
+    (let ((standard-output (current-buffer)))
+      (leaf-pp
+       (leaf-convert-from-contents
+        (leaf-convert--fill-info
+         (leaf-convert-contents-new--sexp-internal
+          `(prog1 ',pkg) nil 'toplevel)))))
+    (kill-ring-save (point-min) (point-max))
+    (message (string-trim (buffer-string)))))
+
 
 ;;; Main
 
