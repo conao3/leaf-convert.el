@@ -152,7 +152,8 @@ If specified CONTENTS, add value to it instead of new instance."
              (push ver* (alist-get 'emacs>= contents))))
           (`(,pkg ,ver)
            (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
-             (push (format "%s-%s" pkg ver*) (alist-get 'req contents)))))))
+             (push (format "%s-%s" pkg ver*) (alist-get 'req contents))
+             (push (format "%s" pkg) (alist-get 'after contents)))))))
     contents))
 
 
