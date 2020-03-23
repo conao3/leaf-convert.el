@@ -135,7 +135,7 @@ If specified CONTENTS, add value to it instead of new instance."
            (reqs (package-desc-reqs desc))
            (extras (package-desc-extras desc))
            (url (cdr (assoc :url extras)))
-           (keywords (if desc (package-desc--keywords desc)))
+           (keywords (package-desc--keywords desc))
            (path (locate-file (format "%s.el" pkg)
                               load-path
                               load-file-rep-suffixes)))
