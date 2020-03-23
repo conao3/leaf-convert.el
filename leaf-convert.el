@@ -169,8 +169,8 @@ If specified CONTENTS, add value to it instead of new instance."
     contents))
 
 ;;;###autoload
-(defun leaf-convert-generate-template (pkg)
-  "Generate template `leaf' block for PKG using package.el cache.
+(defun leaf-convert-insert-template (pkg)
+  "Insert template `leaf' block for PKG using package.el cache.
 And kill generated leaf block to quick yank."
   (interactive
    ;; see `package-install'
@@ -188,15 +188,15 @@ And kill generated leaf block to quick yank."
                                     (symbol-name (car elt)))
                                   package-archive-contents))
                     nil t)))))
-  (with-temp-buffer
-    (let ((standard-output (current-buffer)))
-      (leaf-pp
-       (leaf-convert-from-contents
-        (leaf-convert--fill-info
-         (leaf-convert-contents-new--sexp-internal
-          `(prog1 ',pkg) nil 'toplevel)))))
-    (kill-ring-save (point-min) (point-max))
-    (message (string-trim (buffer-string)))))
+  (let ((standard-output (current-buffer)))
+    (leaf-pp
+     (leaf-convert-from-contents
+      (leaf-convert--fill-info
+       (leaf-convert-contents-new--sexp-internal
+        `(prog1 ',pkg) nil 'toplevel)))))
+  (backward-sexp)
+  (indent-sexp)
+  (forward-sexp))
 
 
 ;;; Main
