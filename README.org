@@ -76,7 +76,7 @@
   ;;    :pl-custom
   ;;    :auth-custom
   ;;    :custom-face
-  ;;    :require
+  ;;    :require                ; supported!!
   ;;    :hydra
   ;;    :transient
   ;;    :combo

@@ -377,6 +377,15 @@ Example:
      '(leaf leaf
         :ensure leaf))))
 
+(cort-deftest-with-equal leaf-convert/require
+  '(
+    ;; package-install will convert :ensure keyword
+    ((leaf-convert
+      (prog1 'leaf
+        (require 'leaf)))
+     '(leaf leaf
+        :require leaf))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:

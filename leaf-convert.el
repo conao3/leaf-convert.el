@@ -136,6 +136,10 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       (`(package-install ,(and (pred quotesymbolp) elm))
        (push (cadr elm) (alist-get 'ensure contents)))
 
+      ;; :require
+      (`(require ,(and (pred quotesymbolp) elm))
+       (push (cadr elm) (alist-get 'require contents)))
+
       ;; :diminish, :delight
       (`(,(and (pred (groupp '(diminish delight))) op) ,(and (pred quotesymbolp) elm))
        (push (cadr elm) (alist-get op contents)))
