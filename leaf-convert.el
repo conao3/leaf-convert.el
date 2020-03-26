@@ -114,11 +114,7 @@ ELM can be string or symbol."
 (defun leaf-convert-contents-new--sexp-1 (sexp contents)
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
-  (cl-flet ((quotep (elm) (member (car-safe elm) '(quote function)))
-            (quotesymbolp (elm) (and (= 2 (safe-length elm))
-                                     (eq 'quote (car-safe elm))
-                                     (atom (car-safe (cdr-safe elm)))))
-            (constp (elm) (or (atom elm)
+  (cl-flet ((constp (elm) (or (atom elm)
                               (member (car elm) '(quote function))))
             (groupp (group elm) (member elm group)))
     (pcase sexp
@@ -141,8 +137,8 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push `(,elm . ,val) (alist-get 'setq contents)))
 
       ;; :ensure
-      (`(package-install ,(and (pred quotesymbolp) elm))
-       (push (cadr elm) (alist-get 'ensure contents)))
+      (`(package-install ',(and (pred symbolp) elm))
+       (push elm (alist-get 'ensure contents)))
       (`(use-package-ensure-elpa ',(and (pred symbolp) elm) ',val 'nil)
        (dolist (v val)
          (if (eq t v)
@@ -150,16 +146,16 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
            (push v (alist-get 'ensure contents)))))
 
       ;; :require
-      (`(require ,(and (pred quotesymbolp) elm))
-       (push (cadr elm) (alist-get 'require contents)))
-      (`(require ,(and (pred quotesymbolp) elm) nil nil) ; use-package support
-       (push (cadr elm) (alist-get 'require contents)))
+      (`(require ',(and (pred symbolp) elm))
+       (push elm (alist-get 'require contents)))
+      (`(require ',(and (pred symbolp) elm) nil nil) ; use-package support
+       (push elm (alist-get 'require contents)))
 
       ;; :diminish, :delight
-      (`(,(and (pred (groupp '(diminish delight))) op) ,(and (pred quotesymbolp) elm))
-       (push (cadr elm) (alist-get op contents)))
-      (`(,(and (pred (groupp '(diminish delight))) op) ,(and (pred quotesymbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val))
-       (push `(,(cadr elm) . ,val) (alist-get op contents)))
+      (`(,(and (pred (groupp '(diminish delight))) op) ',(and (pred symbolp) elm))
+       (push elm (alist-get op contents)))
+      (`(,(and (pred (groupp '(diminish delight))) op) ',(and (pred symbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val))
+       (push `(,elm . ,val) (alist-get op contents)))
 
       ;; :setq, :setq-default
       (`(,(and (pred (groupp '(setq setq-default))) op) ,(and (pred atom) elm) ,(and (pred constp) val))
