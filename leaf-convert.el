@@ -81,6 +81,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
     (`(defvar ,elm ,val)
      (push `(,elm . ,val) (alist-get 'setq contents)))
 
+    ;; :setq
+    (`(setq ,elm ,val)
+     (push `(,elm . ,val) (alist-get 'setq contents)))
     ;; any
     (_ (push sexp (alist-get 'config contents))))
   contents)

@@ -270,7 +270,16 @@ Example:
     ((leaf-convert
       (defvar leaf-keywords-optional '(:doc :url :tag)))
      '(leaf leaf-convert
-        :setq (leaf-keywords-optional . '(:doc :url :tag))))))
+        :setq (leaf-keywords-optional . '(:doc :url :tag))))
+
+    ;; setq sexp convert to :setq keyword
+    ((leaf-convert
+      (prog1 'alloc
+        (setq gc-cons-threshold 536870912)
+        (setq garbage-collection-messages t)))
+     '(leaf alloc
+        :setq (gc-cons-threshold . 536870912)
+        (garbage-collection-messages . t)))))
 
 ;; (provide 'leaf-convert-test)
 
