@@ -148,7 +148,7 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :require
       (`(require ',(and (pred symbolp) elm))
        (push elm (alist-get 'require contents)))
-      (`(require ',(and (pred symbolp) elm) nil nil) ; use-package support
+      (`(require ',(and (pred symbolp) elm) nil ,_)
        (push elm (alist-get 'require contents)))
 
       ;; :diminish, :delight

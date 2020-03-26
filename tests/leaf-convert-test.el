@@ -404,12 +404,33 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/require
   '(
-    ;; package-install will convert :ensure keyword
+    ;; require will convert :require keyword
     ((leaf-convert
       (prog1 'leaf
         (require 'leaf)))
      '(leaf leaf
-        :require t))))
+        :require t))
+
+    ;; require with no-error will convert :require keyword
+    ((leaf-convert
+      (prog1 'leaf
+        (require 'leaf nil t)))
+     '(leaf leaf
+        :require t))
+
+    ;; empty use-package will convert :require keyword
+    ((leaf-convert-from-use-package
+      (use-package tex))
+     '(leaf tex
+        :require t))
+
+    ;; if second argument is non-nil, cannot convert :require keyword
+    ((leaf-convert
+      (prog1 'leaf
+        (require 'leaf "~/.emacs.d/site-lisp/leaf.el/leaf.el" t)))
+     '(leaf leaf
+        :config
+        (require 'leaf "~/.emacs.d/site-lisp/leaf.el/leaf.el" t)))))
 
 ;; (provide 'leaf-convert-test)
 
