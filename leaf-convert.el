@@ -321,6 +321,15 @@ And kill generated leaf block to quick yank."
   `(leaf-convert-from-contents
     (leaf-convert-contents-new--sexp (progn ,@sexp))))
 
+;;;###autoload
+(defmacro leaf-convert-from-use-package (sexp)
+  "Convert SEXP (as use-package) to leaf format."
+  `(leaf-convert-from-contents
+    (leaf-convert-contents-new--sexp
+     ,(let ((use-package-expand-minimally t))
+        (ignore use-package-expand-minimally)    ; silent byte-compiler
+        (macroexpand-1 sexp)))))
+
 (provide 'leaf-convert)
 
 ;; Local Variables:
