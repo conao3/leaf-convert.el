@@ -31,6 +31,7 @@
 (require 'cl-lib)
 (require 'subr-x)
 (require 'package)
+(require 'lisp-mnt)
 (require 'leaf)
 
 (defgroup leaf-convert nil
@@ -134,7 +135,6 @@ If specified CONTENTS, add value to it instead of new instance."
 (defun leaf-convert--fill-info (contents)
   "Add :doc, :file, :url information to CONTENTS."
   ;; see `describe-package-1'
-  (require 'lisp-mnt)
   (let* ((pkg (alist-get 'leaf-convert--name contents))
          (desc (when pkg
                  (or
