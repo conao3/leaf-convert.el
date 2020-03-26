@@ -279,7 +279,16 @@ Example:
         (setq garbage-collection-messages t)))
      '(leaf alloc
         :setq ((gc-cons-threshold . 536870912)
-               (garbage-collection-messages . t))))))
+               (garbage-collection-messages . t))))
+
+    ;; right value is non-atom, convert to :config
+    ((leaf-convert
+      (prog1 'alloc
+        (setq gc-cons-threshold (* 512 1024 1024))
+        (setq garbage-collection-messages t)))
+     (leaf alloc
+       :config (setq gc-cons-threshold (* 512 1024 1024))
+       :setq ((garbage-collection-messages . t))))))
 
 ;; (provide 'leaf-convert-test)
 

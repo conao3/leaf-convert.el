@@ -83,17 +83,17 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
      (push elm (alist-get 'load-path* contents)))
 
     ;; :defun
-    (`(declare-function ,elm ,(and (pred stringp) file) . ,_args)
+    (`(declare-function ,(and (pred atom) elm) ,(and (pred stringp) file) . ,_args)
      (push `(,elm . ,(intern file)) (alist-get 'defun contents)))
 
     ;; :defvar
-    (`(defvar ,elm)
+    (`(defvar ,(and (pred atom) elm))
      (push elm (alist-get 'defvar contents)))
-    (`(defvar ,elm ,val)
+    (`(defvar ,(and (pred atom) elm) ,(and (pred atom) val))
      (push `(,elm . ,val) (alist-get 'setq contents)))
 
     ;; :setq
-    (`(setq ,elm ,val)
+    (`(setq ,(and (pred atom) elm) ,(and (pred atom) val))
      (push `(,elm . ,val) (alist-get 'setq contents)))
 
     ;; any
