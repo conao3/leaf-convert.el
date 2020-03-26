@@ -206,7 +206,7 @@ Example:
     ((leaf-convert
       (defvar leaf-keywords-optional '(:doc :url :tag)))
      '(leaf leaf-convert
-        :setq (leaf-keywords-optional . '(:doc :url :tag))))))
+        :setq ((leaf-keywords-optional . '(:doc :url :tag)))))))
 
 (cort-deftest-with-equal leaf-convert/after
   '(
@@ -270,7 +270,7 @@ Example:
     ((leaf-convert
       (defvar leaf-keywords-optional '(:doc :url :tag)))
      '(leaf leaf-convert
-        :setq (leaf-keywords-optional . '(:doc :url :tag))))
+        :setq ((leaf-keywords-optional . '(:doc :url :tag)))))
 
     ;; setq sexp convert to :setq keyword
     ((leaf-convert
@@ -286,9 +286,29 @@ Example:
       (prog1 'alloc
         (setq gc-cons-threshold (* 512 1024 1024))
         (setq garbage-collection-messages t)))
-     (leaf alloc
-       :config (setq gc-cons-threshold (* 512 1024 1024))
-       :setq ((garbage-collection-messages . t))))))
+     '(leaf alloc
+        :config (setq gc-cons-threshold (* 512 1024 1024))
+        :setq ((garbage-collection-messages . t))))))
+
+(cort-deftest-with-equal leaf-convert/setq-default
+  '(
+    ;; setq-default sexp convert to :setq-default keyword
+    ((leaf-convert
+      (prog1 'alloc
+        (setq-default gc-cons-threshold 536870912)
+        (setq-default garbage-collection-messages t)))
+     '(leaf alloc
+        :setq-default ((gc-cons-threshold . 536870912)
+                       (garbage-collection-messages . t))))
+
+    ;; right value is non-atom, convert to :config
+    ((leaf-convert
+      (prog1 'alloc
+        (setq-default gc-cons-threshold (* 512 1024 1024))
+        (setq-default garbage-collection-messages t)))
+     '(leaf alloc
+        :config (setq-default gc-cons-threshold (* 512 1024 1024))
+        :setq-default ((garbage-collection-messages . t))))))
 
 ;; (provide 'leaf-convert-test)
 

@@ -95,6 +95,8 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
     ;; :setq
     (`(setq ,(and (pred atom) elm) ,(and (pred atom) val))
      (push `(,elm . ,val) (alist-get 'setq contents)))
+    (`(setq-default ,(and (pred atom) elm) ,(and (pred atom) val))
+     (push `(,elm . ,val) (alist-get 'setq-default contents)))
 
     ;; any
     (_ (push sexp (alist-get 'config contents))))

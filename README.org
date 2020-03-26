@@ -92,7 +92,7 @@
   ;;    :diminish
   ;;    :delight
   ;;    :setq                 ; supported!!
-  ;;    :setq-default
+  ;;    :setq-default         ; supoorted!!
   ;;    :pl-setq
   ;;    :auth-setq
   ;;    :pl-setq-default
