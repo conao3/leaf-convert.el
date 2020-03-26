@@ -138,11 +138,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       (`(,(and (pred (groupp '(diminish delight))) op) ,(and (pred quotesymbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val))
        (push `(,(cadr elm) . ,val) (alist-get op contents)))
 
-      ;; :setq
-      (`(setq ,(and (pred atom) elm) ,(and (pred constp) val))
-       (push `(,elm . ,val) (alist-get 'setq contents)))
-      (`(setq-default ,(and (pred atom) elm) ,(and (pred constp) val))
-       (push `(,elm . ,val) (alist-get 'setq-default contents)))
+      ;; :setq, :setq-default
+      (`(,(and (pred (groupp '(setq setq-default))) op) ,(and (pred atom) elm) ,(and (pred constp) val))
+       (push `(,elm . ,val) (alist-get op contents)))
 
       ;; any
       (_ (push sexp (alist-get 'config contents)))))
