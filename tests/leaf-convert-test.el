@@ -375,7 +375,14 @@ Example:
       (prog1 'leaf
         (package-install 'leaf)))
      '(leaf leaf
-        :ensure leaf))))
+        :ensure leaf))
+
+    ((leaf-convert-from-use-package
+      (use-package leaf
+        :ensure t))
+     '(leaf leaf
+        :ensure leaf
+        :require leaf))))
 
 (cort-deftest-with-equal leaf-convert/require
   '(

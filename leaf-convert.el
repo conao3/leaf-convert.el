@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Version: 0.0.1
 ;; Keywords: tools
-;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0"))
+;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (use-package "2.4"))
 ;; URL: https://github.com/conao3/leaf-convert.el
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -34,6 +34,7 @@
 (require 'lisp-mnt)
 (require 'leaf)
 (require 'leaf-keywords)
+(require 'use-package)
 
 (defgroup leaf-convert nil
   "Convert many format to leaf format."
@@ -135,9 +136,13 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :ensure
       (`(package-install ,(and (pred quotesymbolp) elm))
        (push (cadr elm) (alist-get 'ensure contents)))
+      (`(use-package-ensure-elpa ,(and (pred quotesymbolp) elm) '(t) 'nil)
+       (push (cadr elm) (alist-get 'ensure contents)))
 
       ;; :require
       (`(require ,(and (pred quotesymbolp) elm))
+       (push (cadr elm) (alist-get 'require contents)))
+      (`(require ,(and (pred quotesymbolp) elm) nil nil) ; use-package support
        (push (cadr elm) (alist-get 'require contents)))
 
       ;; :diminish, :delight
@@ -330,9 +335,10 @@ And kill generated leaf block to quick yank."
   "Convert SEXP (as use-package) to leaf format."
   `(leaf-convert-from-contents
     (leaf-convert-contents-new--sexp
-     ,(let ((use-package-expand-minimally t))
-        (ignore use-package-expand-minimally)    ; silent byte-compiler
-        (macroexpand-1 sexp)))))
+     (prog1 ',(cadr sexp)
+       ,(let ((use-package-expand-minimally t))
+          (ignore use-package-expand-minimally)    ; silent byte-compiler
+          (macroexpand-1 sexp))))))
 
 (provide 'leaf-convert)
 
