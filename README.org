@@ -51,9 +51,9 @@
   ;;    :emacs=
   ;;    :emacs>
   ;;    :emacs>=
-  ;;    :package
-  ;;    :ensure
-  ;;    :feather
+  ;;    :package                ; <converted to :ensure>
+  ;;    :ensure                 ; supported!!
+  ;;    :feather                ; <no corresponding sexp>
   ;;    :straight
   ;;    :el-get
   ;;    :after

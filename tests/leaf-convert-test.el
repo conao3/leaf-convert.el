@@ -368,6 +368,15 @@ Example:
      '(leaf rainbow-mode
         :diminish (rainbow-mode quote (2 " Rbow" "/" "s"))))))
 
+(cort-deftest-with-equal leaf-convert/ensure
+  '(
+    ;; package-install will convert :ensure keyword
+    ((leaf-convert
+      (prog1 'leaf
+        (package-install 'leaf)))
+     '(leaf leaf
+        :ensure leaf))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
