@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Version: 0.0.1
 ;; Keywords: tools
-;; Package-Requires: ((emacs "26.1") (leaf "3.6.0"))
+;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0"))
 ;; URL: https://github.com/conao3/leaf-convert.el
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@
 (require 'package)
 (require 'lisp-mnt)
 (require 'leaf)
+(require 'leaf-keywords)
 
 (defgroup leaf-convert nil
   "Convert many format to leaf format."
@@ -296,6 +297,8 @@ And kill generated leaf block to quick yank."
 
 (defun leaf-convert-from-contents (contents)
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
+  (unless leaf-keywords-init-frg
+    (leaf-keywords-init))
   `(leaf ,(leaf-convert--string-or-symbol
            (alist-get 'leaf-convert--name contents)
            'leaf-convert)
