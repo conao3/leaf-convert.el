@@ -91,7 +91,7 @@
   ;;    :global-minor-mode
   ;;    :diminish
   ;;    :delight
-  ;;    :setq
+  ;;    :setq                 ; supported!!
   ;;    :setq-default
   ;;    :pl-setq
   ;;    :auth-setq
