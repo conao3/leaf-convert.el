@@ -25,6 +25,79 @@
   - [[#special-thanks][Special Thanks]]
 
 * Description
+#+begin_src emacs-lisp
+  (leaf-available-keywords)
+  ;;=> (:disabled
+  ;;    :leaf-protect
+  ;;    :load-path
+  ;;    :load-path*
+  ;;    :leaf-autoload
+  ;;    :doc
+  ;;    :req
+  ;;    :tag
+  ;;    :file
+  ;;    :url
+  ;;    :added
+  ;;    :defun
+  ;;    :defvar
+  ;;    :leaf-defun
+  ;;    :leaf-defvar
+  ;;    :preface
+  ;;    :when
+  ;;    :unless
+  ;;    :if
+  ;;    :emacs<
+  ;;    :emacs<=
+  ;;    :emacs=
+  ;;    :emacs>
+  ;;    :emacs>=
+  ;;    :package
+  ;;    :ensure
+  ;;    :feather
+  ;;    :straight
+  ;;    :el-get
+  ;;    :after
+  ;;    :commands
+  ;;    :bind
+  ;;    :bind*
+  ;;    :mode
+  ;;    :interpreter
+  ;;    :magic
+  ;;    :magic-fallback
+  ;;    :hook
+  ;;    :advice
+  ;;    :advice-remove
+  ;;    :init
+  ;;    :pre-setq
+  ;;    :pl-pre-setq
+  ;;    :auth-pre-setq
+  ;;    :custom
+  ;;    :custom*
+  ;;    :pl-custom
+  ;;    :auth-custom
+  ;;    :custom-face
+  ;;    :require
+  ;;    :hydra
+  ;;    :transient
+  ;;    :combo
+  ;;    :combo*
+  ;;    :smartrep
+  ;;    :smartrep*
+  ;;    :chord
+  ;;    :chord*
+  ;;    :mode-hook
+  ;;    :leaf-defer
+  ;;    :config
+  ;;    :global-minor-mode
+  ;;    :diminish
+  ;;    :delight
+  ;;    :setq
+  ;;    :setq-default
+  ;;    :pl-setq
+  ;;    :auth-setq
+  ;;    :pl-setq-default
+  ;;    :auth-setq-default)
+#+end_src
 
 * Install
 ~leaf-convert~ is available via ~el-get~.
