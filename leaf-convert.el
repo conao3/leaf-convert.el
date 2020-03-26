@@ -73,33 +73,35 @@ ELM can be string or symbol."
 (defun leaf-convert-contents-new--sexp-1 (sexp contents)
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
-  (pcase sexp
-    ;; :load-path, :load-path*
-    (`(add-to-list 'load-path ,(and (pred stringp) elm))
-     (push elm (alist-get 'load-path contents)))
-    (`(add-to-list 'load-path (locate-user-emacs-file ,(and (pred stringp) elm)))
-     (push elm (alist-get 'load-path* contents)))
-    (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
-     (push elm (alist-get 'load-path* contents)))
+  (cl-flet ((constp (elm) (or (atom elm)
+                              (member (car elm) '(quote function)))))
+    (pcase sexp
+      ;; :load-path, :load-path*
+      (`(add-to-list 'load-path ,(and (pred stringp) elm))
+       (push elm (alist-get 'load-path contents)))
+      (`(add-to-list 'load-path (locate-user-emacs-file ,(and (pred stringp) elm)))
+       (push elm (alist-get 'load-path* contents)))
+      (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
+       (push elm (alist-get 'load-path* contents)))
 
-    ;; :defun
-    (`(declare-function ,(and (pred atom) elm) ,(and (pred stringp) file) . ,_args)
-     (push `(,elm . ,(intern file)) (alist-get 'defun contents)))
+      ;; :defun
+      (`(declare-function ,(and (pred atom) elm) ,(and (pred stringp) file) . ,_args)
+       (push `(,elm . ,(intern file)) (alist-get 'defun contents)))
 
-    ;; :defvar
-    (`(defvar ,(and (pred atom) elm))
-     (push elm (alist-get 'defvar contents)))
-    (`(defvar ,(and (pred atom) elm) ,(and (pred atom) val))
-     (push `(,elm . ,val) (alist-get 'setq contents)))
+      ;; :defvar
+      (`(defvar ,(and (pred atom) elm))
+       (push elm (alist-get 'defvar contents)))
+      (`(defvar ,(and (pred atom) elm) ,(and (pred constp) val))
+       (push `(,elm . ,val) (alist-get 'setq contents)))
 
-    ;; :setq
-    (`(setq ,(and (pred atom) elm) ,(and (pred atom) val))
-     (push `(,elm . ,val) (alist-get 'setq contents)))
-    (`(setq-default ,(and (pred atom) elm) ,(and (pred atom) val))
-     (push `(,elm . ,val) (alist-get 'setq-default contents)))
+      ;; :setq
+      (`(setq ,(and (pred atom) elm) ,(and (pred constp) val))
+       (push `(,elm . ,val) (alist-get 'setq contents)))
+      (`(setq-default ,(and (pred atom) elm) ,(and (pred constp) val))
+       (push `(,elm . ,val) (alist-get 'setq-default contents)))
 
-    ;; any
-    (_ (push sexp (alist-get 'config contents))))
+      ;; any
+      (_ (push sexp (alist-get 'config contents)))))
   contents)
 
 (defun leaf-convert-contents-new--sexp-internal (sexp &optional contents toplevel)
