@@ -40,6 +40,17 @@
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-convert.el"))
 
+(defcustom leaf-convert-prefer-list-keywords
+  (leaf-list
+   :bind :bind* :mode :interpreter :magic :magit-fallback
+   :custom :custom* :custom-face :pl-custom :auth-custom
+   :setq :pre-setq :setq-default
+   :pl-setq :pl-pre-setq :pl-setq-default
+   :auth-setq :auth-pre-setq :auth-setq-defualt)
+  "Prefer list output keywords."
+  :group 'leaf-convert
+  :type 'sexp)
+
 (defcustom leaf-convert-except-after
   (leaf-list
    cl-lib let-alist pkg-info json seq
@@ -243,7 +254,9 @@ And kill generated leaf block to quick yank."
      ,@(mapcan (lambda (keyword)
                  (let ((key (intern (substring (symbol-name keyword) 1))))
                    (when-let (value (alist-get key contents))
-                     `(,keyword ,@(nreverse value)))))
+                     (if (memq keyword leaf-convert-prefer-list-keywords)
+                         `(,keyword ,(nreverse value))
+                       `(,keyword ,@(nreverse value))))))
                (leaf-available-keywords))))
 
 ;;;###autoload

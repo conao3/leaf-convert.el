@@ -278,8 +278,8 @@ Example:
         (setq gc-cons-threshold 536870912)
         (setq garbage-collection-messages t)))
      '(leaf alloc
-        :setq (gc-cons-threshold . 536870912)
-        (garbage-collection-messages . t)))))
+        :setq ((gc-cons-threshold . 536870912)
+               (garbage-collection-messages . t))))))
 
 ;; (provide 'leaf-convert-test)
 
