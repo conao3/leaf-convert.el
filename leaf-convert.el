@@ -143,8 +143,11 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :ensure
       (`(package-install ,(and (pred quotesymbolp) elm))
        (push (cadr elm) (alist-get 'ensure contents)))
-      (`(use-package-ensure-elpa ,(and (pred quotesymbolp) elm) '(t) 'nil)
-       (push (cadr elm) (alist-get 'ensure contents)))
+      (`(use-package-ensure-elpa ',(and (pred symbolp) elm) ',val 'nil)
+       (dolist (v val)
+         (if (eq t v)
+             (push elm (alist-get 'ensure contents))
+           (push v (alist-get 'ensure contents)))))
 
       ;; :require
       (`(require ,(and (pred quotesymbolp) elm))

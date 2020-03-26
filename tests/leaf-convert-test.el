@@ -377,11 +377,29 @@ Example:
      '(leaf leaf
         :ensure t))
 
+    ;; could convert use-package :ensure t
     ((leaf-convert-from-use-package
       (use-package leaf
         :ensure t))
      '(leaf leaf
         :ensure t
+        :require t))
+
+    ;; could convert use-package :ensure argument
+    ((leaf-convert-from-use-package
+      (use-package tex
+        :ensure auctex))
+     '(leaf tex
+        :ensure auctex
+        :require t))
+
+    ;; could convert use-package :ensure arguments
+    ((leaf-convert-from-use-package
+      (use-package tex
+        :ensure t
+        :ensure auctex))
+     '(leaf tex
+        :ensure t auctex
         :require t))))
 
 (cort-deftest-with-equal leaf-convert/require
