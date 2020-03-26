@@ -310,6 +310,64 @@ Example:
         :config (setq-default gc-cons-threshold (* 512 1024 1024))
         :setq-default ((garbage-collection-messages . t))))))
 
+(cort-deftest-with-equal leaf-convert/diminish
+  '(
+    ;; hide minor-mode lighter
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode)))
+     '(leaf rainbow-mode
+        :diminish rainbow-mode))
+
+    ;; right value is string, converted cons-cell
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode "Rbow")))
+     '(leaf rainbow-mode
+        :diminish (rainbow-mode . "Rbow")))
+
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode 'rainbow-mode-lighter)))
+     '(leaf rainbow-mode
+        :diminish (rainbow-mode quote rainbow-mode-lighter)))
+
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode '(" " "R-" "bow"))))
+     '(leaf rainbow-mode
+        :diminish (rainbow-mode quote (" " "R-" "bow"))))
+
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode '((" " "R-") "/" "bow"))))
+     '(leaf rainbow-mode
+        :diminish (rainbow-mode quote ((" " "R-") "/" "bow"))))
+
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode '(:eval (format " Rbow/%s" (+ 2 3))))))
+     '(leaf rainbow-mode
+        :diminish (rainbow-mode quote (:eval (format " Rbow/%s" (+ 2 3))))))
+
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode '(:propertize " Rbow" face '(:foreground "green")))))
+     '(leaf rainbow-mode
+        :diminish (rainbow-mode quote (:propertize " Rbow" face '(:foreground "green")))))
+
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode '(rainbow-mode-mode-linep " Rbow/t" " Rbow/nil"))))
+     '(leaf rainbow-mode
+        :diminish (rainbow-mode quote (rainbow-mode-mode-linep " Rbow/t" " Rbow/nil"))))
+
+    ((leaf-convert
+      (prog1 'rainbow-mode
+        (diminish 'rainbow-mode '(2 " Rbow" "/" "s"))))
+     '(leaf rainbow-mode
+        :diminish (rainbow-mode quote (2 " Rbow" "/" "s"))))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:

@@ -64,6 +64,38 @@ see `leaf-convert--fill-info'"
 
 
 ;;; Functions
+(defun leaf-convert--mode-line-structp (elm)
+  "Return non-nil if ELM is varid mode-line structure.
+See https://www.gnu.org/software/emacs/manual/html_node/elisp/Mode-Line-Data.html"
+  (or (stringp elm)
+      (and (= 2 (safe-length elm))
+           (eq 'quote (car elm))
+           (atom (cadr elm)))
+      (and (= 2 (safe-length elm))
+           (eq 'quote (car elm))
+           (listp (cadr elm))
+           (stringp (car (cadr elm))))
+      (and (= 2 (safe-length elm))
+           (eq 'quote (car elm))
+           (listp (cadr elm))
+           (listp (car (cadr elm))))
+      (and (= 2 (safe-length elm))
+           (eq 'quote (car elm))
+           (listp (cadr elm))
+           (eq :eval (car (cadr elm))))
+      (and (= 2 (safe-length elm))
+           (eq 'quote (car elm))
+           (listp (cadr elm))
+           (eq :propertize (car (cadr elm))))
+      (and (= 2 (safe-length elm))
+           (eq 'quote (car elm))
+           (listp (cadr elm))
+           (symbolp (car (cadr elm))))
+      (and (= 2 (safe-length elm))
+           (eq 'quote (car elm))
+           (listp (cadr elm))
+           (integerp (car (cadr elm))))))
+
 (defun leaf-convert--string-or-symbol (elm default)
   "Convert ELM to symbol.  If ELM is nil, return DEFAULT.
 ELM can be string or symbol."
@@ -73,8 +105,13 @@ ELM can be string or symbol."
 (defun leaf-convert-contents-new--sexp-1 (sexp contents)
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
-  (cl-flet ((constp (elm) (or (atom elm)
-                              (member (car elm) '(quote function)))))
+  (cl-flet ((quotep (elm) (member (car-safe elm) '(quote function)))
+            (quotesymbolp (elm) (and (= 2 (safe-length elm))
+                                     (eq 'quote (car-safe elm))
+                                     (atom (car-safe (cdr-safe elm)))))
+            (constp (elm) (or (atom elm)
+                              (member (car elm) '(quote function))))
+            (groupp (group elm) (member elm group)))
     (pcase sexp
       ;; :load-path, :load-path*
       (`(add-to-list 'load-path ,(and (pred stringp) elm))
@@ -93,6 +130,12 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push elm (alist-get 'defvar contents)))
       (`(defvar ,(and (pred atom) elm) ,(and (pred constp) val))
        (push `(,elm . ,val) (alist-get 'setq contents)))
+
+      ;; :diminish, :delight
+      (`(,(and (pred (groupp '(diminish delight))) op) ,(and (pred quotesymbolp) elm))
+       (push (cadr elm) (alist-get op contents)))
+      (`(,(and (pred (groupp '(diminish delight))) op) ,(and (pred quotesymbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val))
+       (push `(,(cadr elm) . ,val) (alist-get op contents)))
 
       ;; :setq
       (`(setq ,(and (pred atom) elm) ,(and (pred constp) val))
