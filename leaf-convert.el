@@ -39,6 +39,17 @@
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-convert.el"))
 
+(defcustom leaf-convert-except-after
+  (leaf-list
+   cl-lib let-alist pkg-info json seq
+   dash dash-functional s f ht ov
+   bind-key async promise async-await
+   memoise popup popwin request simple-httpd transient htmlize)
+  "Except packages for :after keyword.
+see `leaf-convert--fill-info'"
+  :group 'leaf-convert
+  :type 'sexp)
+
 
 ;;; Functions
 (defun leaf-convert--string-or-symbol (elm default)
@@ -180,7 +191,8 @@ If specified CONTENTS, add value to it instead of new instance."
         (`(,pkg ,ver)
          (let ((ver* (string-join (mapcar 'number-to-string ver) ".")))
            (push (format "%s-%s" pkg ver*) (alist-get 'req contents))
-           (push pkg (alist-get 'after contents))))))
+           (unless (memq pkg leaf-convert-except-after)
+             (push pkg (alist-get 'after contents)))))))
     contents))
 
 ;;;###autoload
