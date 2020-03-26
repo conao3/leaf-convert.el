@@ -216,7 +216,7 @@ Example:
         '(progn
            (leaf-browser-init))))
      '(leaf leaf
-        :after leaf
+        :after t
         :config
         (leaf-browser-init)))
 
@@ -225,7 +225,7 @@ Example:
       (with-eval-after-load 'leaf
         (leaf-browser-init)))
      '(leaf leaf
-        :after leaf
+        :after t
         :config
         (leaf-browser-init)))
 
@@ -237,7 +237,7 @@ Example:
               '(progn
                  (leaf-browser-init))))))
      '(leaf leaf
-        :after orglyth org leaf
+        :after t orglyth org
         :config
         (leaf-browser-init)))
 
@@ -251,7 +251,7 @@ Example:
                 '(progn
                    (leaf-browser-init)))))))
      '(leaf orglyth
-        :after orglyth
+        :after t
         :config
         (orglyth-setup)
         (eval-after-load 'leaf
@@ -375,14 +375,14 @@ Example:
       (prog1 'leaf
         (package-install 'leaf)))
      '(leaf leaf
-        :ensure leaf))
+        :ensure t))
 
     ((leaf-convert-from-use-package
       (use-package leaf
         :ensure t))
      '(leaf leaf
-        :ensure leaf
-        :require leaf))))
+        :ensure t
+        :require t))))
 
 (cort-deftest-with-equal leaf-convert/require
   '(
@@ -391,7 +391,7 @@ Example:
       (prog1 'leaf
         (require 'leaf)))
      '(leaf leaf
-        :require leaf))))
+        :require t))))
 
 ;; (provide 'leaf-convert-test)
 

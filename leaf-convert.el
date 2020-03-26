@@ -53,6 +53,13 @@
   :group 'leaf-convert
   :type 'sexp)
 
+(defcustom leaf-convert-leaf-name-omittable-keywords
+  (leaf-list
+   :ensure :feather :package :require :after)
+  "Keywords that interpret t as leaf--name."
+  :group 'leaf-convert
+  :type 'sexp)
+
 (defcustom leaf-convert-except-after
   (leaf-list
    cl-lib let-alist pkg-info json seq
@@ -306,6 +313,21 @@ And kill generated leaf block to quick yank."
 
 ;;; Main
 
+(defun leaf-convert--leaf-name-to-t (key val contents)
+  "Convert leaf--name.
+KEY and VAL is the key and value currently trying to convert.
+CONTENTS is the value of all the leaf-convert-contents.
+
+If VAL contains the same value as leaf--name, replace it with t."
+  (let ((leaf--name (leaf-convert--string-or-symbol
+                     (alist-get 'leaf-convert--name contents)
+                     'leaf-convert)))
+    (if (not (memq key leaf-convert-leaf-name-omittable-keywords))
+        val
+      (if (memq leaf--name val)
+          (append '(t) (delq leaf--name val))
+        val))))
+
 (defun leaf-convert-from-contents (contents)
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
   (unless leaf-keywords-init-frg
@@ -317,8 +339,10 @@ And kill generated leaf block to quick yank."
                  (let ((key (intern (substring (symbol-name keyword) 1))))
                    (when-let (value (alist-get key contents))
                      (if (memq keyword leaf-convert-prefer-list-keywords)
-                         `(,keyword ,(nreverse value))
-                       `(,keyword ,@(nreverse value))))))
+                         `(,keyword ,(leaf-convert--leaf-name-to-t
+                                      keyword (nreverse value) contents))
+                       `(,keyword ,@(leaf-convert--leaf-name-to-t
+                                     keyword (nreverse value) contents))))))
                (leaf-available-keywords))))
 
 ;;;###autoload
