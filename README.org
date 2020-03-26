@@ -89,10 +89,10 @@
   ;;    :leaf-defer
   ;;    :config
   ;;    :global-minor-mode
-  ;;    :diminish             ; supported!!
-  ;;    :delight              ; supported!!
-  ;;    :setq                 ; supported!!
-  ;;    :setq-default         ; supoorted!!
+  ;;    :diminish               ; supported!!
+  ;;    :delight                ; supported!!
+  ;;    :setq                   ; supported!!
+  ;;    :setq-default           ; supoorted!!
   ;;    :pl-setq
   ;;    :auth-setq
   ;;    :pl-setq-default
