@@ -28,20 +28,20 @@
 #+begin_src emacs-lisp
   (leaf-available-keywords)
   ;;=> (:disabled
-  ;;    :leaf-protect
-  ;;    :load-path
-  ;;    :load-path*
-  ;;    :leaf-autoload
-  ;;    :doc
-  ;;    :req
-  ;;    :tag
-  ;;    :file
-  ;;    :url
-  ;;    :added
-  ;;    :defun
-  ;;    :defvar
-  ;;    :leaf-defun
-  ;;    :leaf-defvar
+  ;;    :leaf-protect           ; <leaf system keyword>
+  ;;    :load-path              ; supported!!
+  ;;    :load-path*             ; supported!!
+  ;;    :leaf-autoload          ; <leaf system keyword>
+  ;;    :doc                    ; <leaf doc keyword>
+  ;;    :req                    ; <leaf doc keyword>
+  ;;    :tag                    ; <leaf doc keyword>
+  ;;    :file                   ; <leaf doc keyword>
+  ;;    :url                    ; <leaf doc keyword>
+  ;;    :added                  ; <leaf doc keyword>
+  ;;    :defun                  ; supported!!
+  ;;    :defvar                 ; supported!!
+  ;;    :leaf-defun             ; <leaf system keyword>
+  ;;    :leaf-defvar            ; <leaf system keyword>
   ;;    :preface
   ;;    :when
   ;;    :unless
