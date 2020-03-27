@@ -188,16 +188,18 @@ whole block like `eval-after-load', into leaf keyword.'"
   (pcase sexp
     (`(progn . ,body)
      (dolist (elm body)
-       (setq contents
-             (leaf-convert-contents-new--sexp-internal
-              elm contents (and toplevel (equal elm (car body)))))))
+       (unless (atom elm)
+         (setq contents
+              (leaf-convert-contents-new--sexp-internal
+               elm contents (and toplevel (equal elm (car body))))))))
     (`(prog1 ,(or `',name (and (pred stringp) name))
         . ,body)
      (setf (alist-get 'leaf-convert--name contents) name)
      (dolist (elm body)
-       (setq contents
-             (leaf-convert-contents-new--sexp-internal
-              elm contents (and toplevel (equal elm (car body)))))))
+       (unless (atom elm)
+         (setq contents
+               (leaf-convert-contents-new--sexp-internal
+                elm contents (and toplevel (equal elm (car body))))))))
     (`(with-eval-after-load ,(or `',name (and (pred stringp) name))
         . ,body)
      (setq contents
@@ -338,6 +340,44 @@ If VAL contains the same value as leaf--name, replace it with t."
           (append '(t) (delq leaf--name val))
         val))))
 
+(defun leaf-convert--expand-use-package (sexp)
+  "Macroexpand-1 for use-package SEXP.
+
+  (ppp-sexp
+   (macroexpand-1
+    '(use-package color-moccur
+       :commands isearch-moccur
+       :config
+       (use-package moccur-edit))))
+  ;;=> (progn
+  ;;     (unless (fboundp 'isearch-moccur)
+  ;;       (autoload #'isearch-moccur \"color-moccur\" nil t))
+  ;;     (eval-after-load 'color-moccur
+  ;;       '(progn
+  ;;          (require 'moccur-edit nil nil)
+  ;;          t)))
+  
+  (ppp-sexp
+   (leaf-convert--expand-use-package
+    '(use-package color-moccur
+       :commands isearch-moccur
+       :config
+       (use-package moccur-edit))))
+  ;;=> (progn
+  ;;     (unless (fboundp 'isearch-moccur)
+  ;;       (autoload #'isearch-moccur \"color-moccur\" nil t))
+  ;;     (eval-after-load 'color-moccur
+  ;;       '(progn
+  ;;          (use-package moccur-edit)
+  ;;          t)))"
+  (let* ((sym (gensym))
+         (sexp* (cl-subst sym 'use-package sexp)))
+    (setf (car sexp*) 'use-package)
+    (cl-subst 'use-package sym
+              (let ((use-package-expand-minimally t))
+                (ignore use-package-expand-minimally) ; silent byte-compiler
+                (macroexpand-1 sexp*)))))
+
 (defun leaf-convert-from-contents (contents)
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
   (unless leaf-keywords-init-frg
@@ -370,10 +410,7 @@ If VAL contains the same value as leaf--name, replace it with t."
   `(leaf-convert-from-contents
     (leaf-convert-contents-new--sexp
      (prog1 ',(cadr sexp)
-       ,(delq t                         ; remove use-package needless constant
-              (let ((use-package-expand-minimally t))
-                (ignore use-package-expand-minimally)    ; silent byte-compiler
-                (macroexpand-1 sexp)))))))
+       ,(leaf-convert--expand-use-package sexp)))))
 
 (provide 'leaf-convert)
 
