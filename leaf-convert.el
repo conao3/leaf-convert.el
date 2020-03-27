@@ -341,6 +341,11 @@ whole block like `eval-after-load', into leaf keyword.'"
        (if (not toplevel*)
            (push sexp (alist-get 'config contents))
          (pcase condition
+           (`(not (not (not (not (symbol-value ',val))))) (push val (alist-get 'when contents)))
+           (`(not (not (not (symbol-value ',val))))       (push val (alist-get 'unless contents)))
+           (`(not (not (symbol-value ',val)))             (push val (alist-get 'when contents)))
+           (`(not (symbol-value ',val))                   (push val (alist-get 'unless contents)))
+           (`(symbol-value ',val)                         (push val (alist-get 'when contents)))
            (`(not (not (not (not ,condition)))) (push condition (alist-get 'when contents)))
            (`(not (not (not ,condition)))       (push condition (alist-get 'unless contents)))
            (`(not (not ,condition))             (push condition (alist-get 'when contents)))

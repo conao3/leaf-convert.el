@@ -401,7 +401,7 @@ Example:
         (add-hook 'after-init-hook 'server-start t)
         (add-hook 'after-init-hook 'edit-server-start t)))
      '(leaf edit-server
-        :when (symbol-value 'window-system)
+        :when window-system
         :hook ((after-init-hook . server-start)
                (after-init-hook . edit-server-start))
         :require t))
