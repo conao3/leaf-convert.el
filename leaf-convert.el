@@ -355,7 +355,7 @@ whole block like `eval-after-load', into leaf keyword.'"
      (setq contents (leaf-convert-contents-new--sexp-internal `(when ,condition ,body) contents toplevel)))
     (`(if ,condition nil . ,body)
      (setq contents (leaf-convert-contents-new--sexp-internal `(when (not ,condition) ,@body) contents toplevel)))
-    (`(if . ,body)
+    (`(if . ,_body)
      (push sexp (alist-get 'config contents)))
 
     ;; leaf--name, :after
