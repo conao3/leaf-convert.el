@@ -186,20 +186,17 @@ If specified CONTENTS, add value to it instead of create new instance.
 When TOPLEVEL is non-nil, it converts sexp, which affects the
 whole block like `eval-after-load', into leaf keyword.'"
   (pcase sexp
+    (`(prog1 ,(or `',name (and (pred stringp) name)) . ,body)
+     (setf (alist-get 'leaf-convert--name contents) name)
+     (setq contents
+           (leaf-convert-contents-new--sexp-internal
+            `(progn ,@body) contents toplevel)))
     (`(progn . ,body)
      (dolist (elm body)
        (unless (atom elm)
          (setq contents
               (leaf-convert-contents-new--sexp-internal
                elm contents (and toplevel (equal elm (car body))))))))
-    (`(prog1 ,(or `',name (and (pred stringp) name))
-        . ,body)
-     (setf (alist-get 'leaf-convert--name contents) name)
-     (dolist (elm body)
-       (unless (atom elm)
-         (setq contents
-               (leaf-convert-contents-new--sexp-internal
-                elm contents (and toplevel (equal elm (car body))))))))
     (`(with-eval-after-load ,(or `',name (and (pred stringp) name))
         . ,body)
      (setq contents
