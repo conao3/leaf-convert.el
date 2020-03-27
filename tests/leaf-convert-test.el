@@ -496,7 +496,24 @@ Example:
     ((leaf-convert
       (autoload #'moccur 'color-moccur nil t))
      '(leaf leaf-convert
-        :commands moccur))))
+        :commands moccur))
+
+    ;; unless-autoload pattern also converted :commands
+    ((leaf-convert
+      (unless (fboundp 'moccur)
+        (autoload #'moccur "color-moccur" nil t)))
+     '(leaf leaf-convert
+        :commands moccur))
+
+    ;; use-package :commands converted :commands
+    ((leaf-convert-from-use-package
+      (use-package color-moccur
+        :commands (isearch-moccur isearch-all)
+        :init
+        (setq isearch-lazy-highlight t)))
+     '(leaf color-moccur
+        :commands isearch-moccur isearch-all
+        :setq ((isearch-lazy-highlight . t))))))
 
 ;; (provide 'leaf-convert-test)
 

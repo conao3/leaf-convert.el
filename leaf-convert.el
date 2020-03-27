@@ -147,6 +147,11 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :commands
       (`(autoload ,(or `',(and (pred symbolp) elm) `#',(and (pred symbolp) elm)) . ,_args)
        (push elm (alist-get 'commands contents)))
+      (`(unless (fboundp ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn)))
+          (autoload ,(or `',(and (pred symbolp) elm) `#',(and (pred symbolp) elm)) . ,_args))
+       (if (eq fn elm)
+           (push elm (alist-get 'commands contents))
+         (push sexp (alist-get 'config contents))))
 
       ;; :require
       (`(require ',(and (pred symbolp) elm))
