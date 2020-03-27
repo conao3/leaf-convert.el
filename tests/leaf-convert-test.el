@@ -392,6 +392,40 @@ Example:
                (backquote (eruby-standard-face ((t ((\, (or :slant)) italic))))))
         :require t))))
 
+(cort-deftest-with-equal leaf-convert/use-package--condition-loading
+  '(
+    ((leaf-convert-from-use-package
+      (use-package edit-server
+        :if window-system
+        :init
+        (add-hook 'after-init-hook 'server-start t)
+        (add-hook 'after-init-hook 'edit-server-start t)))
+     '(leaf edit-server
+        :when (symbol-value 'window-system)
+        :hook ((after-init-hook . server-start)
+               (after-init-hook . edit-server-start))
+        :require t))
+
+    ((leaf-convert-from-use-package
+      (use-package exec-path-from-shell
+        :if (memq window-system '(mac ns))
+        :ensure t
+        :config
+        (exec-path-from-shell-initialize)))
+     '(leaf exec-path-from-shell
+        :ensure t
+        :config
+        (when (memq window-system '(mac ns))
+          (require 'exec-path-from-shell nil nil)
+          (exec-path-from-shell-initialize)
+          t)))
+
+    ((leaf-convert-from-use-package
+      (use-package ess-site
+        :disabled
+        :commands R))
+     '(leaf ess-site))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
