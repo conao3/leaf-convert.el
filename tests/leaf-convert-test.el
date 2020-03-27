@@ -373,6 +373,25 @@ Example:
                   (comint-prompt-read-only t "Make the prompt read only."))
         :require t))))
 
+(cort-deftest-with-equal leaf-convert/use-package--customizing-faces
+  '(
+    ((leaf-convert-from-use-package
+      (use-package eruby-mode
+        :custom-face
+        (eruby-standard-face ((t (:slant italic))))))
+     '(leaf eruby-mode
+        :custom-face ((eruby-standard-face . '((t (:slant italic)))))
+        :require t))
+
+    ((leaf-convert-from-use-package
+      (use-package eruby-mode
+        :custom-face
+        (eruby-standard-face ((t (,(or :slant) italic))))))
+     '(leaf eruby-mode
+        :init (custom-set-faces
+               (backquote (eruby-standard-face ((t ((\, (or :slant)) italic))))))
+        :require t))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn

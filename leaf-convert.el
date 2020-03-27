@@ -273,7 +273,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :custom-face
       (`(custom-set-faces . ,args)
        (pcase-dolist (`',elm args)
-         (push `(,(car elm) . ',(cadr elm)) (alist-get 'custom-face contents))))
+         (if (memq '\, (leaf-flatten args)) ; use-package accept right value include comma
+             (push `(custom-set-faces (backquote (,(car elm) ,(cadr elm)))) (alist-get 'config contents))
+           (push `(,(car elm) . ',(cadr elm)) (alist-get 'custom-face contents)))))
 
       ;; :require
       (`(require ',(and (pred symbolp) elm))
