@@ -253,6 +253,26 @@ Example:
                 ("M-p" . term-send-up)
                 ("M-n" . term-send-down)))))))
 
+(cort-deftest-with-equal leaf-convert/use-package--modes-and-interpreters
+  '(
+    ((leaf-convert-from-use-package
+      (use-package ruby-mode
+        :mode "\\.rb\\'"
+        :interpreter "ruby"))
+     '(leaf ruby-mode
+        :commands ruby-mode
+        :mode (("\\.rb\\'" . ruby-mode))
+        :interpreter (("ruby" . ruby-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package python
+        :mode ("\\.py\\'" . python-mode)
+        :interpreter ("python" . python-mode)))
+     '(leaf python
+        :commands python-mode
+        :mode (("\\.py\\'" . python-mode))
+        :interpreter (("python" . python-mode))))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
