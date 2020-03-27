@@ -59,7 +59,7 @@
   ;;    :after
   ;;    :commands               ; supported!!
   ;;    :bind                   ; supported!!
-  ;;    :bind*
+  ;;    :bind*                  ; supported!!
   ;;    :mode
   ;;    :interpreter
   ;;    :magic
