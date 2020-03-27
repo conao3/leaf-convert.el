@@ -484,7 +484,6 @@ If VAL contains the same value as leaf--name, replace it with t."
   ;;          t)))"
   (let* ((sym (gensym))
          (sexp* (cl-subst sym 'use-package sexp)))
-    (setf (car sexp*) 'use-package)
     (cl-subst 'use-package sym
               (let ((use-package-expand-minimally t))
                 (ignore use-package-expand-minimally) ; silent byte-compiler
