@@ -478,6 +478,26 @@ Example:
         :require t
         :config (foo-enable)))))
 
+(cort-deftest-with-equal leaf-convert/commands
+  '(
+    ;; autoload will convert :commands keyword
+    ((leaf-convert
+      (autoload #'moccur "color-moccur"))
+     '(leaf leaf-convert
+        :commands moccur))
+
+    ;; autoload second argumemnt may be symbol
+    ((leaf-convert
+      (autoload #'moccur 'color-moccur))
+     '(leaf leaf-convert
+        :commands moccur))
+
+    ;; autoload third, fourth argument are ignored
+    ((leaf-convert
+      (autoload #'moccur 'color-moccur nil t))
+     '(leaf leaf-convert
+        :commands moccur))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:

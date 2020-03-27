@@ -57,7 +57,7 @@
   ;;    :straight
   ;;    :el-get
   ;;    :after
-  ;;    :commands
+  ;;    :commands               ; supported!!
   ;;    :bind
   ;;    :bind*
   ;;    :mode

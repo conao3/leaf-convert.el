@@ -145,6 +145,10 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
              (push elm (alist-get 'ensure contents))
            (push v (alist-get 'ensure contents)))))
 
+      ;; :commands
+      (`(autoload ,(or `',(and (pred symbolp) elm) `#',(and (pred symbolp) elm)) . ,_args)
+       (push elm (alist-get 'commands contents)))
+
       ;; :require
       (`(require ',(and (pred symbolp) elm))
        (progn                           ; move :config sexp to :init section
