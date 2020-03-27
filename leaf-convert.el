@@ -259,6 +259,12 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       (`(add-hook ',(and (pred symbolp) elm) ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn)))
        (push `(,elm . ,fn) (alist-get 'hook contents)))
 
+      ;; :custom, :custom*
+      (`(customize-set-variable ',(and (pred symbolp) elm) ,(and (pred constp) val))
+       (push `(,elm . ,val) (alist-get 'custom contents)))
+      (`(customize-set-variable ',(and (pred symbolp) elm) ,(and (pred constp) val) ,(and (pred stringp) desc))
+       (push `(,elm ,val ,desc) (alist-get 'custom* contents)))
+
       ;; :require
       (`(require ',(and (pred symbolp) elm))
        (progn                           ; move :config sexp to :init section

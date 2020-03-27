@@ -71,8 +71,8 @@
   ;;    :pre-setq
   ;;    :pl-pre-setq
   ;;    :auth-pre-setq
-  ;;    :custom
-  ;;    :custom*
+  ;;    :custom                 ; supported!!
+  ;;    :custom*                ; supported!!
   ;;    :pl-custom
   ;;    :auth-custom
   ;;    :custom-face

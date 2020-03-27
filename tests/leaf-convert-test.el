@@ -861,6 +861,24 @@ Example:
      '(leaf ace-jump-mode
         :hook ((prog-mode-hook . ace-jump-mode))))))
 
+(cort-deftest-with-equal leaf-convert/custom
+  '(
+    ;; customize-set-variable convert to :custom keyword
+    ((leaf-convert
+      (prog1 'comint
+        (customize-set-variable 'comint-prompt-regexp "^")))
+     '(leaf comint
+        :custom ((comint-prompt-regexp . "^"))))))
+
+(cort-deftest-with-equal leaf-convert/custom*
+  '(
+    ;; if comment is non-nil, convert to custom*
+    ((leaf-convert
+      (prog1 'comint
+        (customize-set-variable 'comint-buffer-maximum-size 20000 "Increase comint buffer size.")))
+     '(leaf comint
+        :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size."))))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
