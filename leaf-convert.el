@@ -209,8 +209,7 @@ whole block like `eval-after-load', into leaf keyword.'"
                             (and (pred stringp) name))
         (quote ,body))
      (if (not toplevel)
-         (setq contents
-               (leaf-convert-contents-new--sexp-1 body contents))
+         (push sexp (alist-get 'config contents))
        (setf (alist-get 'leaf-convert--name contents) name)
        (push name (alist-get 'after contents))
        (setq contents
