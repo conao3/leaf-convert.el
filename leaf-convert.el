@@ -115,8 +115,7 @@ ELM can be string or symbol."
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (cl-flet ((constp (elm) (or (atom elm)
-                              (member (car elm) '(quote function))))
-            (groupp (group elm) (member elm group)))
+                              (member (car elm) '(quote function)))))
     (pcase sexp
       ;; :load-path, :load-path*
       (`(add-to-list 'load-path ,(and (pred stringp) elm))
@@ -162,13 +161,13 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push elm (alist-get 'require contents)))
 
       ;; :diminish, :delight
-      (`(,(and (pred (groupp '(diminish delight))) op) ',(and (pred symbolp) elm))
+      (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm))
        (push elm (alist-get op contents)))
-      (`(,(and (pred (groupp '(diminish delight))) op) ',(and (pred symbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val))
+      (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val))
        (push `(,elm . ,val) (alist-get op contents)))
 
       ;; :setq, :setq-default
-      (`(,(and (pred (groupp '(setq setq-default))) op) ,(and (pred atom) elm) ,(and (pred constp) val))
+      (`(,(and (or 'setq 'setq-default) op) ,(and (pred atom) elm) ,(and (pred constp) val))
        (push `(,elm . ,val) (alist-get op contents)))
 
       ;; any
