@@ -115,7 +115,10 @@ ELM can be string or symbol."
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (cl-flet ((constp (elm) (or (atom elm)
-                              (member (car elm) '(quote function)))))
+                              (member (car elm) '(quote function))))
+            (fnp (elm) (or (null elm)
+                           (and (= 2 (safe-length elm))
+                                (member (car elm) '(quote function))))))
     (pcase sexp
       ;; :load-path, :load-path*
       (`(add-to-list 'load-path ,(and (pred stringp) elm))
@@ -152,6 +155,14 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (if (eq fn elm)
            (push elm (alist-get 'commands contents))
          (push sexp (alist-get 'config contents))))
+
+      ;; :bind
+      (`(global-set-key ,(or `(kbd ,key) `,(and (pred vectorp) key)) ,(and (pred fnp) fn))
+       (push `(,key . ,(cadr fn)) (alist-get 'bind contents)))
+      (`(define-key global-map ,(or `(kbd ,key) `,(and (pred vectorp) key)) ,(and (pred fnp) fn))
+       (push `(,key . ,(cadr fn)) (alist-get 'bind contents)))
+      (`(define-key ,(and (pred symbolp) map) ,(or `(kbd ,key) `,(and (pred vectorp) key)) ,(and (pred fnp) fn))
+       (push `(,map (,key . ,(cadr fn))) (alist-get 'bind contents)))
 
       ;; :require
       (`(require ',(and (pred symbolp) elm))

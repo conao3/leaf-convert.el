@@ -58,7 +58,7 @@
   ;;    :el-get
   ;;    :after
   ;;    :commands               ; supported!!
-  ;;    :bind
+  ;;    :bind                   ; supported!!
   ;;    :bind*
   ;;    :mode
   ;;    :interpreter

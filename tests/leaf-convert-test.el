@@ -529,6 +529,45 @@ Example:
         :commands isearch-moccur isearch-all
         :setq ((isearch-lazy-highlight . t))))))
 
+(cort-deftest-with-equal leaf-convert/bind
+  '(
+    ;; global-set-key convert :bind keyword
+    ((leaf-convert
+      (prog1 'simple
+        (global-set-key (kbd "C-h") 'delete-backward-char)))
+     '(leaf simple
+        :bind (("C-h" . delete-backward-char))))
+
+    ;; define-key to global-map convert :bind keyword
+    ((leaf-convert
+      (prog1 'simple
+        (define-key global-map (kbd "C-h") 'delete-backward-char)))
+     '(leaf simple
+        :bind (("C-h" . delete-backward-char))))
+
+    ;; define-key nil to unset keybind
+    ((leaf-convert
+      (prog1 'simple
+        (define-key global-map (kbd "C-h") nil)))
+     '(leaf simple
+        :bind (("C-h" . nil))))
+
+    ;; define-key to specific keymap convert :bind keyword
+    ((leaf-convert
+      (prog1 'dired
+        (define-key dired-mode-map (kbd "C-t") nil)))
+     '(leaf dired
+        :bind ((dired-mode-map
+                ("C-t" . nil)))))
+
+    ;; define-key remap convert :bind keyword
+    ((leaf-convert
+      (prog1 'dired
+        (define-key dired-mode-map [remap next-line] 'dired-next-line)))
+     '(leaf dired
+        :bind ((dired-mode-map
+                ([remap next-line] . dired-next-line)))))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
