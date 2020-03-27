@@ -600,6 +600,13 @@ Example:
      '(leaf simple
         :bind (("C-h" . delete-backward-char))))
 
+    ;; global-unset-key convert :bind keyword
+    ((leaf-convert
+      (prog1 'simple
+        (global-unset-key (kbd "M-o"))))
+     '(leaf simple
+        :bind (("M-o"))))
+
     ;; define-key to global-map convert :bind keyword
     ((leaf-convert
       (prog1 'simple

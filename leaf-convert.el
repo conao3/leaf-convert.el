@@ -228,6 +228,8 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
          (push sexp (alist-get 'config contents))))
 
       ;; :bind, :bind*
+      (`(global-unset-key ,(or `(kbd ,key) `,(and (pred vectorp) key)))
+       (push `(,key . nil) (alist-get 'bind contents)))
       (`(global-set-key ,(or `(kbd ,key) `,(and (pred vectorp) key)) ,(and (pred fnp) fn))
        (push `(,key . ,(cadr fn)) (alist-get 'bind contents)))
       (`(define-key global-map ,(or `(kbd ,key) `,(and (pred vectorp) key)) ,(and (pred fnp) fn))
