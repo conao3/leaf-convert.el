@@ -785,6 +785,22 @@ Example:
      '(leaf pdf-tools
         :magic-fallback (("%PDF" . pdf-view-mode))))))
 
+(cort-deftest-with-equal leaf-convert/hook
+  '(
+    ;; add-hook convert to :hook keyword
+    ((leaf-convert
+      (prog1 'ace-jump-mode
+        (add-hook 'prog-mode-hook #'ace-jump-mode)))
+     '(leaf ace-jump-mode
+        :hook (prog-mode-hook . ace-jump-mode)))
+
+    ;; add-hook symbol also convert to :hook keyword
+    ((leaf-convert
+      (prog1 'ace-jump-mode
+        (add-hook 'prog-mode-hook 'ace-jump-mode)))
+     '(leaf ace-jump-mode
+        :hook (prog-mode-hook . ace-jump-mode)))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:

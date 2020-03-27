@@ -64,7 +64,7 @@
   ;;    :interpreter            ; supported!!
   ;;    :magic                  ; supported!!
   ;;    :magic-fallback         ; supported!!
-  ;;    :hook
+  ;;    :hook                   ; supported!!
   ;;    :advice
   ;;    :advice-remove
   ;;    :init

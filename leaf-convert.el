@@ -255,6 +255,10 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       (`(add-to-list 'magic-fallback-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
        (push `(,elm . ,fn) (alist-get 'magic-fallback contents)))
 
+      ;; :hook
+      (`(add-hook ',(and (pred symbolp) elm) ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn)))
+       (push `(,elm . ,fn) (alist-get 'hook contents)))
+
       ;; :require
       (`(require ',(and (pred symbolp) elm))
        (progn                           ; move :config sexp to :init section
