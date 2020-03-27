@@ -325,6 +325,43 @@ whole block like `eval-after-load', into leaf keyword.'"
               (leaf-convert-contents-new--sexp-internal
                elm contents (and toplevel (equal elm (car body))))))))
 
+    ;; :when, :unless, :if
+    (`(unless (fboundp ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn))) ; use-pakage :commands idiom
+          (autoload ,(or `',(and (pred symbolp) elm) `#',(and (pred symbolp) elm)) . ,_args))
+       (if (eq fn elm)
+           (push elm (alist-get 'commands contents))
+         (push sexp (alist-get 'config contents))))
+    (`(when (and . ,conditions) . ,body)
+     (let ((toplevel* (or toplevel)))   ; TODO
+       (if (not toplevel*)
+           (push sexp (alist-get 'config contents))
+         (dolist (condition conditions)
+           (push condition (alist-get 'when contents)))
+         (setq contents
+               (leaf-convert-contents-new--sexp-internal
+                `(progn ,@body) contents toplevel)))))
+    (`(when ,condition . ,body)
+     (let ((toplevel* (or toplevel)))   ; TODO
+       (if (not toplevel*)
+           (push sexp (alist-get 'config contents))
+         (pcase condition
+           (`(not (not (not (not ,condition)))) (push condition (alist-get 'when contents)))
+           (`(not (not (not ,condition)))       (push condition (alist-get 'unless contents)))
+           (`(not (not ,condition))             (push condition (alist-get 'when contents)))
+           (`(not ,condition)                   (push condition (alist-get 'unless contents)))
+           (`,condition                         (push condition (alist-get 'when contents))))
+         (setq contents (leaf-convert-contents-new--sexp-internal `(progn ,@body) contents toplevel*)))))
+    (`(unless ,condition . ,body)
+     (setq contents (leaf-convert-contents-new--sexp-internal `(when (not ,condition) ,@body) contents toplevel)))
+    (`(if ,condition ,body)
+     (setq contents (leaf-convert-contents-new--sexp-internal `(when ,condition ,body) contents toplevel)))
+    (`(if ,condition ,body nil)
+     (setq contents (leaf-convert-contents-new--sexp-internal `(when ,condition ,body) contents toplevel)))
+    (`(if ,condition nil . ,body)
+     (setq contents (leaf-convert-contents-new--sexp-internal `(when (not ,condition) ,@body) contents toplevel)))
+    (`(if . ,body)
+     (push sexp (alist-get 'config contents)))
+
     ;; leaf--name, :after
     (`(with-eval-after-load ,(or `',name (and (pred stringp) name))
         . ,body)

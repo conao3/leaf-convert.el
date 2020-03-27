@@ -43,9 +43,9 @@
   ;;    :leaf-defun             ; <leaf system keyword>
   ;;    :leaf-defvar            ; <leaf system keyword>
   ;;    :preface
-  ;;    :when
-  ;;    :unless
-  ;;    :if
+  ;;    :when                   ; supported!!
+  ;;    :unless                 ; supported!!
+  ;;    :if                     ; <convert to :when or :unless>
   ;;    :emacs<
   ;;    :emacs<=
   ;;    :emacs=

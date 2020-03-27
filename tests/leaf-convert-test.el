@@ -951,6 +951,95 @@ Example:
         :custom-face ((ac-candidate-face . '((t (:background "dark orange" :foreground "white"))))
                       (ac-selection-face . '((t (:background "blue" :foreground "white")))))))))
 
+(cort-deftest-with-equal leaf-convert/when
+  '(
+    ;; when convert to :when keyword
+    ((leaf-convert
+      (prog1 'jupyter
+        (when (executable-find "jupyter")
+          (package-install 'jupyter)
+          (require 'jupyter))))
+     '(leaf jupyter
+        :when (executable-find "jupyter")
+        :ensure t
+        :require t))
+
+    ;; when and convert to multi value :when keyword
+    ((leaf-convert
+      (prog1 'jupyter
+        (when (and (executable-find "python") (executable-find "jupyter"))
+          (package-install 'jupyter)
+          (require 'jupyter))))
+     '(leaf jupyter
+        :when (executable-find "python") (executable-find "jupyter")
+        :ensure t
+        :require t))))
+
+(cort-deftest-with-equal leaf-convert/unless
+  '(
+    ;; unless convert to :unless keyword
+    ((leaf-convert
+      (prog1 'servert
+        (unless (server-running-p)
+          (server-start))))
+     '(leaf servert
+        :unless (server-running-p)
+        :config (server-start)))))
+
+(cort-deftest-with-equal leaf-convert/if
+  '(
+    ;; if convert to :when keyword only second argument
+    ((leaf-convert
+      (prog1 'jupyter
+        (if (executable-find "jupyter")
+            (progn
+              (package-install 'jupyter)
+              (require 'jupyter)))))
+     '(leaf jupyter
+        :when (executable-find "jupyter")
+        :ensure t
+        :require t))
+
+    ;; if with not convert to :unless keyword only second argument
+    ((leaf-convert
+      (prog1 'jupyter
+        (if (not (executable-find "jupyter"))
+            (progn
+              (package-install 'jupyter)
+              (require 'jupyter)))))
+     '(leaf jupyter
+        :unless (executable-find "jupyter")
+        :ensure t
+        :require t))
+
+    ;; if second argument is nil convert to leaf keyword
+    ((leaf-convert
+      (prog1 'jupyter
+        (if (not (executable-find "jupyter"))
+            nil
+          (package-install 'jupyter)
+          (require 'jupyter))))
+     '(leaf jupyter
+        :when (executable-find "jupyter")
+        :ensure t
+        :require t))
+
+    ;; if second, theird argument is non-nil, convert to :config
+    ((leaf-convert
+      (prog1 'jupyter
+        (if (executable-find "jupyter")
+            (progn
+              (package-install 'jupyter)
+              (require 'jupyter))
+          (warn "jupyter is not found"))))
+     '(leaf jupyter
+        :config
+        (if (executable-find "jupyter")
+            (progn
+              (package-install 'jupyter)
+              (require 'jupyter))
+          (warn "jupyter is not found"))))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
