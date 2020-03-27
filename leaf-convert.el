@@ -204,14 +204,15 @@ whole block like `eval-after-load', into leaf keyword.'"
             `(eval-after-load ',name '(progn ,@body)) contents toplevel)))
     (`(eval-after-load ,(or `',name (and (pred stringp) name))
         ',body)
-     (if (not toplevel)
-         (push sexp (alist-get 'config contents))
-       (unless (alist-get 'leaf-convert--name contents)
-         (setf (alist-get 'leaf-convert--name contents) name))
-       (push name (alist-get 'after contents))
-       (setq contents
-             (leaf-convert-contents-new--sexp-internal
-              body contents toplevel))))
+     (let ((toplevel* (or toplevel)))   ; TODO
+       (if (not toplevel*)
+           (push sexp (alist-get 'config contents))
+         (unless (alist-get 'leaf-convert--name contents)
+           (setf (alist-get 'leaf-convert--name contents) name))
+         (push name (alist-get 'after contents))
+         (setq contents
+               (leaf-convert-contents-new--sexp-internal
+                body contents toplevel)))))
     (_
      (setq contents
            (leaf-convert-contents-new--sexp-1 sexp contents))))

@@ -144,7 +144,21 @@ Example:
      '(leaf foo
         :pre-setq ((foo-variable . t))
         :require t
-        :config (foo-mode 1)))))
+        :config (foo-mode 1))
+
+     ;; :comands keyword
+     ((leaf-convert-from-use-package    ; TODO
+       (use-package color-moccur
+         :commands isearch-moccur
+         :config
+         (use-package moccur-edit)))
+      '(leaf color-moccur
+         :commands isearch-moccur
+         :config
+         (eval-after-load 'color-moccur
+           '(progn
+              (use-package moccur-edit)
+              t)))))))
 
 (cort-deftest-with-equal leaf-convert/progn
   '(
