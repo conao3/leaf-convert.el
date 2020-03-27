@@ -183,7 +183,7 @@ Example:
           '(progn (use-package moccur-edit) t))
         :setq ((isearch-lazy-highlight . t))))))
 
-(cort-deftest-with-equal leaf-convert/use-package--Keybinding
+(cort-deftest-with-equal leaf-convert/use-package--keybinding
   '(
     ((leaf-convert-from-use-package
       (use-package ace-jump-mode
