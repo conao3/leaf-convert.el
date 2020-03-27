@@ -485,8 +485,10 @@ If VAL contains the same value as leaf--name, replace it with t."
   ;;       '(progn
   ;;          (use-package moccur-edit)
   ;;          t)))"
-  (let* ((sym (gensym))
+  (let* ((op (car sexp))
+         (sym (gensym))
          (sexp* (cl-subst sym 'use-package sexp)))
+    (setf (car sexp*) op)
     (cl-subst 'use-package sym
               (let ((use-package-expand-minimally t))
                 (ignore use-package-expand-minimally) ; silent byte-compiler
