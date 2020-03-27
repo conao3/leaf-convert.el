@@ -889,7 +889,17 @@ Example:
       (prog1 'comint
         (customize-set-variable 'comint-prompt-regexp "^" "Customized with use-package comint")))
      '(leaf comint
-        :custom ((comint-prompt-regexp . "^"))))))
+        :custom ((comint-prompt-regexp . "^"))))
+
+    ;; custom-set-variables also convert :custom keyword
+    ((leaf-convert
+      (prog1 'comint
+        (custom-set-variables
+         '(comint-buffer-maximum-size 20000)
+         '(comint-prompt-read-only t))))
+     '(leaf comint
+        :custom ((comint-buffer-maximum-size . 20000)
+                 (comint-prompt-read-only . t))))))
 
 (cort-deftest-with-equal leaf-convert/custom*
   '(
@@ -898,7 +908,17 @@ Example:
       (prog1 'comint
         (customize-set-variable 'comint-buffer-maximum-size 20000 "Increase comint buffer size.")))
      '(leaf comint
-        :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size."))))))
+        :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")))
+
+     ;; custom-set-variables also convert :custom* keyword
+     ((leaf-convert
+       (prog1 'comint
+         (custom-set-variables
+          '(comint-buffer-maximum-size 20000 "Increase comint buffer size.")
+          '(comint-prompt-read-only t "Make the prompt read only."))))
+      '(leaf comint
+         :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")
+                   (comint-prompt-read-only t "Make the prompt read only.")))))))
 
 ;; (provide 'leaf-convert-test)
 
