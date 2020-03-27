@@ -266,6 +266,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push `(,elm . ,val) (alist-get 'custom contents)))
       (`(customize-set-variable ',(and (pred symbolp) elm) ,(and (pred constp) val) ,(and (pred stringp) desc))
        (push `(,elm ,val ,desc) (alist-get 'custom* contents)))
+      (`(custom-set-variables . ,args)
+       (pcase-dolist (`',elm args)
+         (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',(car elm) ,@(cdr elm)) contents))))
 
       ;; :require
       (`(require ',(and (pred symbolp) elm))
