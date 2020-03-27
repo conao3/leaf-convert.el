@@ -430,7 +430,21 @@ Example:
         (require 'leaf "~/.emacs.d/site-lisp/leaf.el/leaf.el" t)))
      '(leaf leaf
         :config
-        (require 'leaf "~/.emacs.d/site-lisp/leaf.el/leaf.el" t)))))
+        (require 'leaf "~/.emacs.d/site-lisp/leaf.el/leaf.el" t)))
+
+    ;; Sexps that are executed before require are placed in the appropriate place
+    ((leaf-convert-from-use-package
+      (use-package foo
+        :init
+        (setq foo-variable t)
+        (foo-init)
+        :config
+        (foo-enable)))
+     '(leaf foo
+        :init (foo-init)
+        :pre-setq ((foo-variable . t))
+        :require t
+        :config (foo-enable)))))
 
 ;; (provide 'leaf-convert-test)
 

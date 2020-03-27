@@ -147,8 +147,14 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
 
       ;; :require
       (`(require ',(and (pred symbolp) elm))
+       (progn                           ; move :config sexp to :init section
+         (setf (alist-get 'pre-setq contents) (alist-get 'setq contents)) (setf (alist-get 'setq contents nil 'remove) nil)
+         (setf (alist-get 'init contents) (alist-get 'config contents)) (setf (alist-get 'config contents nil 'remove) nil))
        (push elm (alist-get 'require contents)))
       (`(require ',(and (pred symbolp) elm) nil ,_)
+       (progn                           ; move :config sexp to :init section
+         (setf (alist-get 'pre-setq contents) (alist-get 'setq contents)) (setf (alist-get 'setq contents nil 'remove) nil)
+         (setf (alist-get 'init contents) (alist-get 'config contents)) (setf (alist-get 'config contents nil 'remove) nil))
        (push elm (alist-get 'require contents)))
 
       ;; :diminish, :delight
@@ -359,9 +365,10 @@ If VAL contains the same value as leaf--name, replace it with t."
   `(leaf-convert-from-contents
     (leaf-convert-contents-new--sexp
      (prog1 ',(cadr sexp)
-       ,(let ((use-package-expand-minimally t))
-          (ignore use-package-expand-minimally)    ; silent byte-compiler
-          (macroexpand-1 sexp))))))
+       ,(delq t                         ; remove use-package needless constant
+              (let ((use-package-expand-minimally t))
+                (ignore use-package-expand-minimally)    ; silent byte-compiler
+                (macroexpand-1 sexp)))))))
 
 (provide 'leaf-convert)
 
