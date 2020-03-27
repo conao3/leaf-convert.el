@@ -359,6 +359,20 @@ Example:
         :hook ((prog-mode-hook . ace-jump-mode)
                (text-mode-hook . ace-jump-mode))))))
 
+(cort-deftest-with-equal leaf-convert/use-package--customizing-variables
+  '(
+    ((leaf-convert-from-use-package
+      (use-package comint
+        :custom
+        (comint-prompt-regexp "^")
+        (comint-buffer-maximum-size 20000 "Increase comint buffer size.")
+        (comint-prompt-read-only t "Make the prompt read only.")))
+     '(leaf comint
+        :custom ((comint-prompt-regexp . "^"))
+        :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")
+                  (comint-prompt-read-only t "Make the prompt read only."))
+        :require t))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
@@ -867,6 +881,13 @@ Example:
     ((leaf-convert
       (prog1 'comint
         (customize-set-variable 'comint-prompt-regexp "^")))
+     '(leaf comint
+        :custom ((comint-prompt-regexp . "^"))))
+
+    ;; ignore use-package template comment
+    ((leaf-convert
+      (prog1 'comint
+        (customize-set-variable 'comint-prompt-regexp "^" "Customized with use-package comint")))
      '(leaf comint
         :custom ((comint-prompt-regexp . "^"))))))
 
