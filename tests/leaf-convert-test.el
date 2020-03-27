@@ -268,8 +268,8 @@ Example:
            '(eval-after-load 'leaf
               '(progn
                  (leaf-browser-init))))))
-     '(leaf leaf
-        :after t orglyth org
+     '(leaf orglyth
+        :after t org leaf
         :config
         (leaf-browser-init)))
 
