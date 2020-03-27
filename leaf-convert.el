@@ -270,6 +270,11 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (pcase-dolist (`',elm args)
          (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',(car elm) ,@(cdr elm)) contents))))
 
+      ;; :custom-face
+      (`(custom-set-faces . ,args)
+       (pcase-dolist (`',elm args)
+         (push `(,(car elm) . ',(cadr elm)) (alist-get 'custom-face contents))))
+
       ;; :require
       (`(require ',(and (pred symbolp) elm))
        (progn                           ; move :config sexp to :init section

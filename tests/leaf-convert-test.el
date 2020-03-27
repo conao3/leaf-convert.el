@@ -920,6 +920,18 @@ Example:
          :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")
                    (comint-prompt-read-only t "Make the prompt read only.")))))))
 
+(cort-deftest-with-equal leaf-convert/custom-face
+  '(
+    ;; if comment is non-nil, convert to custom*
+    ((leaf-convert
+      (prog1 'auto-complete
+        (custom-set-faces
+         '(ac-candidate-face ((t (:background "dark orange" :foreground "white"))))
+         '(ac-selection-face ((t (:background "blue" :foreground "white")))))))
+     '(leaf auto-complete
+        :custom-face ((ac-candidate-face . '((t (:background "dark orange" :foreground "white"))))
+                      (ac-selection-face . '((t (:background "blue" :foreground "white")))))))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
