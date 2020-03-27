@@ -114,6 +114,38 @@ Example:
         (leaf-keywords-teardown)
         (leaf-keywords-init)))))
 
+(cort-deftest-with-equal leaf-convert/use-package-readme
+  '(
+    ;;; Getting started
+    ;;; https://github.com/jwiegley/use-package#getting-started
+
+    ;; simplest use-package
+    ((leaf-convert-from-use-package
+      (use-package foo))
+     '(leaf foo
+        :require t))
+
+    ;; :init keyword
+    ((leaf-convert-from-use-package
+      (use-package foo
+        :init
+        (setq foo-variable t)))
+     '(leaf foo
+        :pre-setq ((foo-variable . t))
+        :require t))
+
+    ;; :config keyword
+    ((leaf-convert-from-use-package
+      (use-package foo
+        :init
+        (setq foo-variable t)
+        :config
+        (foo-mode 1)))
+     '(leaf foo
+        :pre-setq ((foo-variable . t))
+        :require t
+        :config (foo-mode 1)))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
