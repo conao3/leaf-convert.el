@@ -44,7 +44,7 @@
 
 (defcustom leaf-convert-prefer-list-keywords
   (leaf-list
-   :bind :bind* :mode :interpreter :magic :magit-fallback
+   :bind :bind* :mode :interpreter :magic :magic-fallback
    :custom :custom* :custom-face :pl-custom :auth-custom
    :setq :pre-setq :setq-default
    :pl-setq :pl-pre-setq :pl-setq-default
