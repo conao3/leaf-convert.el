@@ -313,17 +313,13 @@ whole block like `eval-after-load', into leaf keyword.'"
     ;; leaf--name, progn
     (`(prog1 ,(or `',name (and (pred stringp) name)) . ,body)
      (setf (alist-get 'leaf-convert--name contents) name)
-     (setq contents
-           (leaf-convert-contents-new--sexp-internal
-            `(progn ,@body) contents toplevel)))
+     (setq contents (leaf-convert-contents-new--sexp-internal `(progn ,@body) contents toplevel)))
 
     ;; progn
     (`(progn . ,body)
      (dolist (elm body)
        (unless (atom elm)
-         (setq contents
-              (leaf-convert-contents-new--sexp-internal
-               elm contents (and toplevel (equal elm (car body))))))))
+         (setq contents (leaf-convert-contents-new--sexp-internal elm contents (and toplevel (equal elm (car body))))))))
 
     ;; :when, :unless, :if
     (`(unless (fboundp ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn))) ; use-pakage :commands idiom
@@ -337,9 +333,7 @@ whole block like `eval-after-load', into leaf keyword.'"
            (push sexp (alist-get 'config contents))
          (dolist (condition conditions)
            (push condition (alist-get 'when contents)))
-         (setq contents
-               (leaf-convert-contents-new--sexp-internal
-                `(progn ,@body) contents toplevel)))))
+         (setq contents (leaf-convert-contents-new--sexp-internal `(progn ,@body) contents toplevel)))))
     (`(when ,condition . ,body)
      (let ((toplevel* (or toplevel)))   ; TODO
        (if (not toplevel*)
@@ -365,9 +359,7 @@ whole block like `eval-after-load', into leaf keyword.'"
     ;; leaf--name, :after
     (`(with-eval-after-load ,(or `',name (and (pred stringp) name))
         . ,body)
-     (setq contents
-           (leaf-convert-contents-new--sexp-internal
-            `(eval-after-load ',name '(progn ,@body)) contents toplevel)))
+     (setq contents (leaf-convert-contents-new--sexp-internal `(eval-after-load ',name '(progn ,@body)) contents toplevel)))
 
     ;; leaf--name, :after
     (`(eval-after-load ,(or `',name (and (pred stringp) name))
@@ -378,14 +370,11 @@ whole block like `eval-after-load', into leaf keyword.'"
          (unless (alist-get 'leaf-convert--name contents)
            (setf (alist-get 'leaf-convert--name contents) name))
          (push name (alist-get 'after contents))
-         (setq contents
-               (leaf-convert-contents-new--sexp-internal
-                body contents toplevel)))))
+         (setq contents (leaf-convert-contents-new--sexp-internal body contents toplevel)))))
 
     ;; any
     (_
-     (setq contents
-           (leaf-convert-contents-new--sexp-1 sexp contents))))
+     (setq contents (leaf-convert-contents-new--sexp-1 sexp contents))))
   contents)
 
 (defmacro leaf-convert-contents-new--sexp (sexp &optional contents)
@@ -499,9 +488,7 @@ KEY and VAL is the key and value currently trying to convert.
 CONTENTS is the value of all the leaf-convert-contents.
 
 If VAL contains the same value as leaf--name, replace it with t."
-  (let ((leaf--name (leaf-convert--string-or-symbol
-                     (alist-get 'leaf-convert--name contents)
-                     'leaf-convert)))
+  (let ((leaf--name (leaf-convert--string-or-symbol (alist-get 'leaf-convert--name contents) 'leaf-convert)))
     (if (not (memq key leaf-convert-leaf-name-omittable-keywords))
         val
       (if (memq leaf--name val)
@@ -558,10 +545,8 @@ If VAL contains the same value as leaf--name, replace it with t."
                  (let ((key (intern (substring (symbol-name keyword) 1))))
                    (when-let (value (alist-get key contents))
                      (if (memq keyword leaf-convert-prefer-list-keywords)
-                         `(,keyword ,(leaf-convert--leaf-name-to-t
-                                      keyword (nreverse value) contents))
-                       `(,keyword ,@(leaf-convert--leaf-name-to-t
-                                     keyword (nreverse value) contents))))))
+                         `(,keyword ,(leaf-convert--leaf-name-to-t keyword (nreverse value) contents))
+                       `(,keyword ,@(leaf-convert--leaf-name-to-t keyword (nreverse value) contents))))))
                (leaf-available-keywords))))
 
 ;;;###autoload
