@@ -702,6 +702,42 @@ Example:
      '(leaf simple
         :bind* (("C-h" . delete-backward-char))))))
 
+(cort-deftest-with-equal leaf-convert/mode
+  '(
+    ;; add-to-list 'auto-mode-alist to :mode keyword
+    ((leaf-convert
+      (prog1 'ruby-mode
+        (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))))
+     '(leaf ruby-mode
+        :mode (("\\.rb\\'" . ruby-mode))))))
+
+(cort-deftest-with-equal leaf-convert/interpreter
+  '(
+    ;; add-to-list 'interpreter-alist to :interpreter keyword
+    ((leaf-convert
+      (prog1 'ruby-mode
+        (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))))
+     '(leaf ruby-mode
+        :interpreter (("ruby" . ruby-mode))))))
+
+(cort-deftest-with-equal leaf-convert/magic
+  '(
+    ;; add-to-list 'magic-mode-alist to :magic keyword
+    ((leaf-convert
+      (prog1 'pdf-tools
+        (add-to-list 'magic-mode-alist '("%PDF" . pdf-view-mode))))
+     '(leaf pdf-tools
+        :magic (("%PDF" . pdf-view-mode))))))
+
+(cort-deftest-with-equal leaf-convert/magic-fallback
+  '(
+    ;; add-to-list 'magic-fallback-mode-alist to :magic-fallback keyword
+    ((leaf-convert
+      (prog1 'pdf-tools
+        (add-to-list 'magic-fallback-mode-alist '("%PDF" . pdf-view-mode))))
+     '(leaf pdf-tools
+        :magic-fallback (("%PDF" . pdf-view-mode))))))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:

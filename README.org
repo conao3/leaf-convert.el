@@ -60,10 +60,10 @@
   ;;    :commands               ; supported!!
   ;;    :bind                   ; supported!!
   ;;    :bind*                  ; supported!!
-  ;;    :mode
-  ;;    :interpreter
-  ;;    :magic
-  ;;    :magic-fallback
+  ;;    :mode                   ; supported!!
+  ;;    :interpreter            ; supported!!
+  ;;    :magic                  ; supported!!
+  ;;    :magic-fallback         ; supported!!
   ;;    :hook
   ;;    :advice
   ;;    :advice-remove

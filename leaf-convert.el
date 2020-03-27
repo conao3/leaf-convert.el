@@ -245,6 +245,16 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       (`(,(and (or 'bind-keys 'bind-keys*) op) . ,args)
        (setq contents (leaf-convert-contents--parse-bind-keys op args contents)))
 
+      ;; :mode, :interpreter, :magic, :magic-fallback
+      (`(add-to-list 'auto-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
+       (push `(,elm . ,fn) (alist-get 'mode contents)))
+      (`(add-to-list 'interpreter-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
+       (push `(,elm . ,fn) (alist-get 'interpreter contents)))
+      (`(add-to-list 'magic-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
+       (push `(,elm . ,fn) (alist-get 'magic contents)))
+      (`(add-to-list 'magic-fallback-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
+       (push `(,elm . ,fn) (alist-get 'magic-fallback contents)))
+
       ;; :require
       (`(require ',(and (pred symbolp) elm))
        (progn                           ; move :config sexp to :init section
