@@ -566,7 +566,31 @@ Example:
         (define-key dired-mode-map [remap next-line] 'dired-next-line)))
      '(leaf dired
         :bind ((dired-mode-map
-                ([remap next-line] . dired-next-line)))))))
+                ([remap next-line] . dired-next-line)))))
+
+    ;; bind-key convert :bind keyword
+    ((leaf-convert
+      (prog1 'simple
+        (bind-key "C-h" 'delete-backward-char)))
+     '(leaf simple
+        :bind (("C-h" . delete-backward-char))))
+
+    ;; bind-key specific keymap convert :bind keyword
+    ((leaf-convert
+      (prog1 'simple
+        (bind-key "C-h" 'delete-backward-char prog-mode-map)))
+     '(leaf simple
+        :bind ((prog-mode-map
+                ("C-h" . delete-backward-char)))))))
+
+(cort-deftest-with-equal leaf-convert/bind*
+  '(
+    ;; bind-key* convert :bind* keyword
+    ((leaf-convert
+      (prog1 'simple
+        (bind-key* "C-h" 'delete-backward-char)))
+     '(leaf simple
+        :bind* (("C-h" . delete-backward-char))))))
 
 ;; (provide 'leaf-convert-test)
 
