@@ -114,10 +114,10 @@ Example:
         (leaf-keywords-teardown)
         (leaf-keywords-init)))))
 
-(cort-deftest-with-equal leaf-convert/use-package-readme
+(cort-deftest-with-equal leaf-convert/use-package--getting-started
   '(
     ;;; Getting started
-    ;;; https://github.com/jwiegley/use-package#getting-started
+    ;;; https://github.com/jwiegley/use-package#
 
     ;; simplest use-package
     ((leaf-convert-from-use-package
@@ -181,9 +181,10 @@ Example:
         :config
         (eval-after-load 'color-moccur
           '(progn (use-package moccur-edit) t))
-        :setq ((isearch-lazy-highlight . t))))
+        :setq ((isearch-lazy-highlight . t))))))
 
-     ;;; Keybinding
+(cort-deftest-with-equal leaf-convert/use-package--Keybinding
+  '(
     ((leaf-convert-from-use-package
       (use-package ace-jump-mode
         :bind ("C-." . ace-jump-mode)))
