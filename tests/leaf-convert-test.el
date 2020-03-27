@@ -273,6 +273,32 @@ Example:
         :mode (("\\.py\\'" . python-mode))
         :interpreter (("python" . python-mode))))))
 
+(cort-deftest-with-equal leaf-convert/use-package--magic-handlers
+  '(
+    ((leaf-convert-from-use-package
+      (use-package pdf-tools
+        :magic ("%PDF" . pdf-view-mode)
+        :config
+        (pdf-tools-install :no-query)))
+     '(leaf pdf-tools
+        :commands pdf-view-mode
+        :magic (("%PDF" . pdf-view-mode))
+        :config
+        (eval-after-load 'pdf-tools
+          '(progn (pdf-tools-install :no-query) t))))
+
+    ((leaf-convert-from-use-package
+      (use-package pdf-tools
+        :magic-fallback ("%PDF" . pdf-view-mode)
+        :config
+        (pdf-tools-install :no-query)))
+     '(leaf pdf-tools
+        :commands pdf-view-mode
+        :magic-fallback (("%PDF" . pdf-view-mode))
+        :config
+        (eval-after-load 'pdf-tools
+          '(progn (pdf-tools-install :no-query) t))))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
