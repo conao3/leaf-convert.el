@@ -299,6 +299,66 @@ Example:
         (eval-after-load 'pdf-tools
           '(progn (pdf-tools-install :no-query) t))))))
 
+(cort-deftest-with-equal leaf-convert/use-package--hooks
+  '(((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :hook prog-mode))
+     '(leaf ace-jump-mode
+        :commands ace-jump-mode
+        :hook ((prog-mode-hook . ace-jump-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :hook (prog-mode . ace-jump-mode)))
+     '(leaf ace-jump-mode
+        :commands ace-jump-mode
+        :hook ((prog-mode-hook . ace-jump-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :commands ace-jump-mode
+        :init
+        (add-hook 'prog-mode-hook #'ace-jump-mode)))
+     '(leaf ace-jump-mode
+        :commands ace-jump-mode
+        :hook ((prog-mode-hook . ace-jump-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :hook (prog-mode text-mode)))
+     '(leaf ace-jump-mode
+        :commands ace-jump-mode
+        :hook ((prog-mode-hook . ace-jump-mode)
+               (text-mode-hook . ace-jump-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :hook ((prog-mode text-mode) . ace-jump-mode)))
+     '(leaf ace-jump-mode
+        :commands ace-jump-mode
+        :hook ((prog-mode-hook . ace-jump-mode)
+               (text-mode-hook . ace-jump-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :hook ((prog-mode . ace-jump-mode)
+               (text-mode . ace-jump-mode))))
+     '(leaf ace-jump-mode
+        :commands ace-jump-mode
+        :hook ((prog-mode-hook . ace-jump-mode)
+               (text-mode-hook . ace-jump-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :commands ace-jump-mode
+        :init
+        (add-hook 'prog-mode-hook #'ace-jump-mode)
+        (add-hook 'text-mode-hook #'ace-jump-mode)))
+     '(leaf ace-jump-mode
+        :commands ace-jump-mode
+        :hook ((prog-mode-hook . ace-jump-mode)
+               (text-mode-hook . ace-jump-mode))))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
@@ -792,14 +852,14 @@ Example:
       (prog1 'ace-jump-mode
         (add-hook 'prog-mode-hook #'ace-jump-mode)))
      '(leaf ace-jump-mode
-        :hook (prog-mode-hook . ace-jump-mode)))
+        :hook ((prog-mode-hook . ace-jump-mode))))
 
     ;; add-hook symbol also convert to :hook keyword
     ((leaf-convert
       (prog1 'ace-jump-mode
         (add-hook 'prog-mode-hook 'ace-jump-mode)))
      '(leaf ace-jump-mode
-        :hook (prog-mode-hook . ace-jump-mode)))))
+        :hook ((prog-mode-hook . ace-jump-mode))))))
 
 ;; (provide 'leaf-convert-test)
 
