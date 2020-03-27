@@ -144,21 +144,83 @@ Example:
      '(leaf foo
         :pre-setq ((foo-variable . t))
         :require t
-        :config (foo-mode 1))
+        :config (foo-mode 1)))
 
-     ;; :comands keyword
-     ((leaf-convert-from-use-package    ; TODO
-       (use-package color-moccur
-         :commands isearch-moccur
-         :config
-         (use-package moccur-edit)))
-      '(leaf color-moccur
-         :commands isearch-moccur
-         :config
-         (eval-after-load 'color-moccur
-           '(progn
-              (use-package moccur-edit)
-              t)))))))
+    ;; :comands keyword
+    ((leaf-convert-from-use-package    ; TODO
+      (use-package color-moccur
+        :commands isearch-moccur
+        :config
+        (use-package moccur-edit)))
+     '(leaf color-moccur
+        :commands isearch-moccur
+        :config
+        (eval-after-load 'color-moccur
+          '(progn
+             (use-package moccur-edit)
+             t))))
+
+    ;; init, :config, :bind
+    ((leaf-convert-from-use-package
+      (use-package color-moccur
+        :commands (isearch-moccur isearch-all)
+        :bind (("M-s O" . moccur)
+               :map isearch-mode-map
+               ("M-o" . isearch-moccur)
+               ("M-O" . isearch-moccur-all))
+        :init
+        (setq isearch-lazy-highlight t)
+        :config
+        (use-package moccur-edit)))
+     '(leaf color-moccur
+        :commands moccur isearch-moccur isearch-moccur-all isearch-all
+        :bind (("M-s O" . moccur)
+               (isearch-mode-map
+                ("M-o" . isearch-moccur)
+                ("M-O" . isearch-moccur-all)))
+        :config
+        (eval-after-load 'color-moccur
+          '(progn (use-package moccur-edit) t))
+        :setq ((isearch-lazy-highlight . t))))
+
+     ;;; Keybinding
+    ((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :bind ("C-." . ace-jump-mode)))
+     '(leaf ace-jump-mode
+        :commands ace-jump-mode
+        :bind (("C-." . ace-jump-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package hi-lock
+        :bind (("M-o l" . highlight-lines-matching-regexp)
+               ("M-o r" . highlight-regexp)
+               ("M-o w" . highlight-phrase))))
+     '(leaf hi-lock
+        :commands highlight-lines-matching-regexp highlight-regexp highlight-phrase
+        :bind (("M-o l" . highlight-lines-matching-regexp)
+               ("M-o r" . highlight-regexp)
+               ("M-o w" . highlight-phrase))))
+
+    ((leaf-convert-from-use-package
+      (use-package helm
+        :bind (("M-x" . helm-M-x)
+               ("M-<f5>" . helm-find-files)
+               ([f10] . helm-buffers-list)
+               ([S-f10] . helm-recentf))))
+     '(leaf helm
+        :commands helm-M-x helm-find-files helm-buffers-list helm-recentf
+        :bind (("M-x" . helm-M-x)
+               ("M-<f5>" . helm-find-files)
+               ([f10] . helm-buffers-list)
+               ([S-f10] . helm-recentf))))
+
+    ((leaf-convert-from-use-package
+      (use-package unfill
+        :bind ([remap fill-paragraph] . unfill-toggle)))
+     '(leaf unfill
+        :commands unfill-toggle
+        :bind (([remap fill-paragraph] . unfill-toggle))))))
 
 (cort-deftest-with-equal leaf-convert/progn
   '(
@@ -581,7 +643,18 @@ Example:
         (bind-key "C-h" 'delete-backward-char prog-mode-map)))
      '(leaf simple
         :bind ((prog-mode-map
-                ("C-h" . delete-backward-char)))))))
+                ("C-h" . delete-backward-char)))))
+
+    ;; simple bind-keys convert :bind keyword
+    ((leaf-convert
+      (prog1 'dired
+        (bind-keys :map dired-mode-map
+                   ("o" . dired-omit-mode)
+                   ("a" . some-custom-dired-function))))
+     '(leaf dired
+        :bind ((dired-mode-map
+                ("o" . dired-omit-mode)
+                ("a" . some-custom-dired-function)))))))
 
 (cort-deftest-with-equal leaf-convert/bind*
   '(

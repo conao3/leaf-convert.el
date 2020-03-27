@@ -111,6 +111,77 @@ ELM can be string or symbol."
   (or (if (stringp elm) (intern elm) elm)
       default))
 
+(defun leaf-convert-contents--parse-bind-keys (op bind-keys-args contents)
+  "Parse bind-keys argument and push values to CONTENTS.
+OP is bind-keys or bind-keys* symbol.
+BIND-KEYS-ARGS is bind-keys' all argument."
+  (let* ((keyword (pcase op ('bind-keys 'bind) ('bind-keys* 'bind*)))
+         (leaf-keys-args (alist-get keyword contents))
+         keyalist mapalist
+         rawargs unknownfrg)
+    (setq rawargs bind-keys-args)
+    (while leaf-keys-args
+      (pcase (pop leaf-keys-args)
+        (`(,(or `,(and (pred stringp) key) `,(and (pred vectorp) key)))
+         (push `(,key . nil) (alist-get 'global-map keyalist)))
+        (`(,(or `,(and (pred stringp) key) `,(and (pred vectorp) key)) . ,fn)
+         (push `(,key . ,fn) (alist-get 'global-map keyalist)))
+        (`(,(and (pred symbolp) map) :package ,(and (pred symbolp) pkg) . ,cells)
+         (when-let (p (alist-get map mapalist))
+           (unless (eq p pkg)
+             (setq unknownfrg t)))
+         (setf (alist-get map mapalist) pkg)
+         (dolist (cell cells)
+           (pcase cell
+             (`(,(or `,(and (pred stringp) key) `,(and (pred vectorp) key)))
+              (push `(,key . nil) (alist-get map keyalist)))
+             (`(,(or `,(and (pred stringp) key) `,(and (pred vectorp) key)) . ,fn)
+              (push `(,key . ,fn) (alist-get map keyalist)))
+             (_
+              (setq unknownfrg t)))))
+        (`(,(and (pred symbolp) map) . ,cells)
+         (dolist (cell cells)
+           (pcase cell
+             (`(,(or `,(and (pred stringp) key) `,(and (pred vectorp) key)))
+              (push `(,key . nil) (alist-get map keyalist)))
+             (`(,(or `,(and (pred stringp) key) `,(and (pred vectorp) key)) . ,fn)
+              (push `(,key . ,fn) (alist-get map keyalist)))
+             (_
+              (setq unknownfrg t)))))
+        (_
+         (setq unknownfrg t))))
+    (let ((map 'global-map) pkg)
+      (while bind-keys-args
+        (pcase (pop bind-keys-args)
+          ((or :prefix :prefix-map)
+           (setq unknownfrg t))
+          (:map
+           (setq map (pop bind-keys-args)))
+          (:package
+           (setq pkg (pop bind-keys-args))
+           (unless (eq 'global-map map)
+             (when-let (p (alist-get map mapalist))
+               (unless (eq p pkg)
+                 (setq unknownfrg t)))
+             (setf (alist-get map mapalist) pkg)))
+          (`(,key . ,(and (pred symbolp) fn))
+           (push `(,key . ,fn) (alist-get map keyalist)))
+          (_
+           (setq unknownfrg t)))))
+    (if (and (or unknownfrg (not keyword)) rawargs)
+        (push `(,op ,@rawargs) (alist-get 'config contents))
+      (let (tmp)
+        (setq tmp `(,@(let (lst)
+                        (pcase-dolist (`(,map . ,keys) keyalist)
+                          (unless (eq 'global-map map)
+                            (if-let ((mappkg (alist-get map mapalist)))
+                                (setf (alist-get map lst) `(:package ,mappkg ,@(nreverse (delete-dups keys))))
+                              (setf (alist-get map lst) (nreverse (delete-dups keys))))))
+                        (nreverse lst))
+                    ,@(delete-dups (alist-get 'global-map keyalist))))
+        (setf (alist-get keyword contents) tmp)))
+    contents))
+
 (defun leaf-convert-contents-new--sexp-1 (sexp contents)
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
@@ -169,6 +240,8 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push `(,map (,key . ,(cadr fn))) (alist-get 'bind contents)))
       (`(bind-key* ,key ,(and (pred fnp) fn))
        (push `(,key . ,(cadr fn)) (alist-get 'bind* contents)))
+      (`(,(and (or 'bind-keys 'bind-keys*) op) . ,args)
+       (setq contents (leaf-convert-contents--parse-bind-keys op args contents)))
 
       ;; :require
       (`(require ',(and (pred symbolp) elm))
