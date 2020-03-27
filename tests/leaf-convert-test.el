@@ -220,7 +220,37 @@ Example:
         :bind ([remap fill-paragraph] . unfill-toggle)))
      '(leaf unfill
         :commands unfill-toggle
-        :bind (([remap fill-paragraph] . unfill-toggle))))))
+        :bind (([remap fill-paragraph] . unfill-toggle))))
+
+    ((leaf-convert-from-use-package
+      (use-package helm
+        :bind (:map helm-command-map
+                    ("C-c h" . helm-execute-persistent-action))))
+     '(leaf helm
+        :commands helm-execute-persistent-action
+        :bind ((helm-command-map
+                ("C-c h" . helm-execute-persistent-action)))))
+
+    ((leaf-convert-from-use-package
+      (use-package term
+        :bind (("C-c t" . term)
+               :map term-mode-map
+               ("M-p" . term-send-up)
+               ("M-n" . term-send-down)
+               :map term-raw-map
+               ("M-o" . other-window)
+               ("M-p" . term-send-up)
+               ("M-n" . term-send-down))))
+     '(leaf term
+        :commands term term-send-up term-send-down other-window
+        :bind (("C-c t" . term)
+               (term-mode-map
+                ("M-p" . term-send-up)
+                ("M-n" . term-send-down))
+               (term-raw-map
+                ("M-o" . other-window)
+                ("M-p" . term-send-up)
+                ("M-n" . term-send-down)))))))
 
 (cort-deftest-with-equal leaf-convert/progn
   '(
