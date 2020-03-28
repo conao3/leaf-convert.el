@@ -77,7 +77,8 @@ see `leaf-convert--fill-info'"
   :type 'sexp)
 
 
-;;; Functions
+;;; Patterns
+
 (defun leaf-convert--mode-line-structp (elm)
   "Return non-nil if ELM is varid mode-line structure.
 See https://www.gnu.org/software/emacs/manual/html_node/elisp/Mode-Line-Data.html"
@@ -109,11 +110,6 @@ See https://www.gnu.org/software/emacs/manual/html_node/elisp/Mode-Line-Data.htm
            (eq 'quote (car elm))
            (listp (cadr elm))
            (integerp (car (cadr elm))))))
-
-(defun leaf-convert--symbol-from-string (elm)
-  "Convert ELM to symbol.  If ELM is nil, return DEFAULT.
-ELM can be string or symbol."
-  (if (stringp elm) (intern elm) elm))
 
 (defun leaf-convert-contents--parse-bind-keys (op bind-keys-args contents)
   "Parse bind-keys argument and push values to CONTENTS.
@@ -492,28 +488,7 @@ And kill generated leaf block to quick yank."
   (forward-sexp))
 
 
-;;; Main
-
-(defun leaf-convert--remove-constant (key val)
-  "Remove constant in VAL if KEY is the member of remove-constant-keywords."
-  (if (memq key leaf-convert-remove-constant-keywords)
-      (thread-last val
-        (mapcar (lambda (elm) (if (atom elm) nil elm)))
-        (delq nil))
-    val))
-
-(defun leaf-convert--leaf-name-to-t (pkg key val)
-  "Convert PKG symbol to t if KEY is the menber of omittable-keywords.
-KEY and VAL is the key and value currently trying to convert.
-CONTENTS is the value of all the leaf-convert-contents.
-
-If VAL contains the same value as leaf--name, replace it with t."
-  (pcase (list
-          (memq key leaf-convert-leaf-name-omittable-keywords)
-          (memq pkg val))
-    (`(nil ,_) val)
-    (`(,_ nil) val)
-    (`(,_ ,_)  (append '(t) (delq pkg val)))))
+;;; Functions
 
 (defun leaf-convert--expand-use-package (sexp)
   "Macroexpand-1 for use-package SEXP.
@@ -578,6 +553,35 @@ If VAL contains the same value as leaf--name, replace it with t."
        (if extra `(progn ,@(nreverse extra) ,@body) form))
       (_
        (if extra `(progn ,@(nreverse extra) ,form) form)))))
+
+(defun leaf-convert--symbol-from-string (elm)
+  "Convert ELM to symbol.  If ELM is nil, return DEFAULT.
+ELM can be string or symbol."
+  (if (stringp elm) (intern elm) elm))
+
+(defun leaf-convert--remove-constant (key val)
+  "Remove constant in VAL if KEY is the member of remove-constant-keywords."
+  (if (memq key leaf-convert-remove-constant-keywords)
+      (thread-last val
+        (mapcar (lambda (elm) (if (atom elm) nil elm)))
+        (delq nil))
+    val))
+
+(defun leaf-convert--leaf-name-to-t (pkg key val)
+  "Convert PKG symbol to t if KEY is the menber of omittable-keywords.
+KEY and VAL is the key and value currently trying to convert.
+CONTENTS is the value of all the leaf-convert-contents.
+
+If VAL contains the same value as leaf--name, replace it with t."
+  (pcase (list
+          (memq key leaf-convert-leaf-name-omittable-keywords)
+          (memq pkg val))
+    (`(nil ,_) val)
+    (`(,_ nil) val)
+    (`(,_ ,_)  (append '(t) (delq pkg val)))))
+
+
+;;; Main
 
 (defun leaf-convert-from-contents (contents)
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
