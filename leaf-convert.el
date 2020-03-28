@@ -250,14 +250,14 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (setq contents (leaf-convert-contents--parse-bind-keys op args contents)))
 
       ;; :mode, :interpreter, :magic, :magic-fallback
-      (`(add-to-list 'auto-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
-       (push `(,elm . ,fn) (alist-get 'mode contents)))
-      (`(add-to-list 'interpreter-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
-       (push `(,elm . ,fn) (alist-get 'interpreter contents)))
-      (`(add-to-list 'magic-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
-       (push `(,elm . ,fn) (alist-get 'magic contents)))
-      (`(add-to-list 'magic-fallback-mode-alist '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
-       (push `(,elm . ,fn) (alist-get 'magic-fallback contents)))
+      (`(add-to-list ',(and (or 'auto-mode-alist 'interpreter-mode-alist 'magic-mode-alist 'magic-fallback-mode-alist) lst)
+                     '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
+       (push `(,elm . ,fn) (alist-get (pcase lst
+                                        ('auto-mode-alist 'mode)
+                                        ('interpreter-mode-alist 'interpreter)
+                                        ('magic-mode-alist 'magic)
+                                        ('magic-fallback-mode-alist 'magic-fallback))
+                                      contents)))
 
       ;; :hook
       (`(add-hook ',(and (pred symbolp) elm) ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn)))
