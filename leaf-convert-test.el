@@ -430,6 +430,22 @@ Example:
 ;; (cort-deftest-with-equal leaf-convert/use-package--conditional-loading-before-:preface
 ;;   '())
 
+(cort-deftest-with-equal leaf-convert/use-package--prevent-loading-if-dependencies-are-missing
+  '(
+    ((leaf-convert-from-use-package
+      (use-package abbrev
+        :requires foo))
+     '(leaf abbrev
+        :when (featurep 'foo)
+        :require t))
+
+    ((leaf-convert-from-use-package
+      (use-package abbrev
+        :requires (foo bar baz)))
+     '(leaf abbrev
+        :unless (member nil (mapcar (function featurep) '(foo bar baz)))
+        :require t))))
+
 (cort-deftest-with-equal leaf-convert/use-package--extending-the-load-path
   '(
     ((leaf-convert-from-use-package
