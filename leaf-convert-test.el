@@ -426,6 +426,10 @@ Example:
         :commands R))
      '(leaf ess-site))))
 
+;; no use-packages in this section
+;; (cort-deftest-with-equal leaf-convert/use-package--conditional-loading-before-:preface
+;;   '())
+
 (cort-deftest-with-equal leaf-convert/use-package--extending-the-load-path
   '(
     ((leaf-convert-from-use-package
