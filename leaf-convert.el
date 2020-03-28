@@ -574,10 +574,12 @@ If VAL contains the same value as leaf--name, replace it with t."
     `(leaf ,pkg
        ,@(mapcan (lambda (keyword)
                    (let ((key (intern (substring (symbol-name keyword) 1))))
-                     (when-let (value (alist-get key contents))
+                     (when-let (value (thread-last (alist-get key contents)
+                                        (nreverse)
+                                        (leaf-convert--leaf-name-to-t pkg keyword)))
                        (if (memq keyword leaf-convert-prefer-list-keywords)
-                           `(,keyword ,(leaf-convert--leaf-name-to-t pkg keyword (nreverse value)))
-                         `(,keyword ,@(leaf-convert--leaf-name-to-t pkg keyword (nreverse value)))))))
+                           `(,keyword ,value)
+                         `(,keyword ,@value)))))
                  (leaf-available-keywords)))))
 
 ;;;###autoload
