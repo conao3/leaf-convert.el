@@ -582,6 +582,7 @@ If VAL contains the same value as leaf--name, replace it with t."
           (lambda (key)
             (let ((sym (intern (substring (symbol-name key) 1))))
               (when-let (value (thread-last (alist-get sym contents)
+                                 (delete-dups)
                                  (nreverse)
                                  (leaf-convert--leaf-name-to-t pkg key)))
                 (if (memq key leaf-convert-prefer-list-keywords)
