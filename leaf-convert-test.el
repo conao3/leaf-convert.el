@@ -359,7 +359,7 @@ Example:
         :hook ((prog-mode-hook . ace-jump-mode)
                (text-mode-hook . ace-jump-mode))))))
 
-(cort-deftest-with-equal leaf-convert/use-package--customizing-variables
+(cort-deftest-with-equal leaf-convert/use-package--package-customization
   '(
     ((leaf-convert-from-use-package
       (use-package comint
@@ -371,10 +371,8 @@ Example:
         :custom ((comint-prompt-regexp . "^"))
         :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")
                   (comint-prompt-read-only t "Make the prompt read only."))
-        :require t))))
+        :require t))
 
-(cort-deftest-with-equal leaf-convert/use-package--customizing-faces
-  '(
     ((leaf-convert-from-use-package
       (use-package eruby-mode
         :custom-face
@@ -424,14 +422,8 @@ Example:
       (use-package ess-site
         :disabled
         :commands R))
-     '(leaf ess-site))))
+     '(leaf ess-site))
 
-;; no use-packages in this section
-;; (cort-deftest-with-equal leaf-convert/use-package--conditional-loading-before-:preface
-;;   '())
-
-(cort-deftest-with-equal leaf-convert/use-package--prevent-loading-if-dependencies-are-missing
-  '(
     ((leaf-convert-from-use-package
       (use-package abbrev
         :requires foo))
