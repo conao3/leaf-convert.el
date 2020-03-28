@@ -481,11 +481,10 @@ And kill generated leaf block to quick yank."
                        ;; see `load-library'
                        (locate-file-completion-table load-path (get-load-suffixes) "" nil t)))))))))
   (let ((standard-output (current-buffer)))
-    (leaf-pp
-     (leaf-convert-from-contents
-      (leaf-convert--fill-info
-       (leaf-convert-contents-new--sexp-internal
-        `(prog1 ',pkg) nil 'toplevel)))))
+    (thread-last (leaf-convert-contents-new--sexp-internal `(prog1 ',pkg) nil 'toplevel)
+      (leaf-convert--fill-info)
+      (leaf-convert-from-contents)
+      (leaf-pp)))
   (delete-char -1)
   (backward-sexp)
   (indent-sexp)
