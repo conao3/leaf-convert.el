@@ -550,7 +550,7 @@ If VAL contains the same value as leaf--name, replace it with t."
                   (funcall (lambda (elm)
                              (let ((use-package-expand-minimally t)
                                    (leaf-expand-minimally t)
-                                   (byte-compile-current-file t)
+                                   (byte-compile-current-file t)  ; use-package hack
                                    (use-package-ensure-function 'ignore))
                                (macroexpand-1 elm))))
                   (cl-subst 'use-package sym)))
