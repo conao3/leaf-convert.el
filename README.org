@@ -42,7 +42,7 @@
   ;;    :defvar                 ; supported!!
   ;;    :leaf-defun             ; <leaf system keyword>
   ;;    :leaf-defvar            ; <leaf system keyword>
-  ;;    :preface
+  ;;    :preface                ; supported!!
   ;;    :when                   ; supported!!
   ;;    :unless                 ; supported!!
   ;;    :if                     ; <convert to :when or :unless>
@@ -67,7 +67,7 @@
   ;;    :hook                   ; supported!!
   ;;    :advice
   ;;    :advice-remove
-  ;;    :init
+  ;;    :init                   ; supported!!
   ;;    :pre-setq
   ;;    :pl-pre-setq
   ;;    :auth-pre-setq
@@ -87,7 +87,7 @@
   ;;    :chord*
   ;;    :mode-hook
   ;;    :leaf-defer
-  ;;    :config
+  ;;    :config                 ; supported!!
   ;;    :global-minor-mode
   ;;    :diminish               ; supported!!
   ;;    :delight                ; supported!!
