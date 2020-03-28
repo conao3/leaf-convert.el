@@ -539,12 +539,35 @@ If VAL contains the same value as leaf--name, replace it with t."
   ;;          t)))"
   (let* ((op (car sexp))
          (sym (gensym))
-         (sexp* (cl-subst sym 'use-package sexp)))
-    (setf (car sexp*) op)
-    (cl-subst 'use-package sym
-              (let ((use-package-expand-minimally t))
-                (ignore use-package-expand-minimally) ; silent byte-compiler
-                (macroexpand-1 sexp*)))))
+         (form (thread-last sexp
+                 (cl-subst sym 'use-package)
+                 (funcall (lambda (elm) (setf (car elm) op) elm))
+                 (funcall (lambda (elm)
+                            (let ((use-package-expand-minimally t))
+                              (macroexpand-1 elm))))
+                 (cl-subst 'use-package sym)))
+         (form* (thread-last sexp
+                  (cl-subst sym 'use-package)
+                  (funcall (lambda (elm) (setf (car elm) op) elm))
+                  (funcall (lambda (elm)
+                             (let ((use-package-expand-minimally t)
+                                   (byte-compile-current-file t)
+                                   (use-package-ensure-function 'ignore))
+                               (macroexpand-1 elm))))
+                  (cl-subst 'use-package sym)))
+         extra)
+    (dolist (elm form*)
+      (pcase elm
+        (`(eval-and-compile . ,forms)
+         (dolist (e forms)
+           (pcase e
+             (`(defvar ,(and (pred symbolp) sym))
+              (push `(defvar ,sym) extra)))))))
+    (pcase form
+      (`(progn . ,body)
+       (if extra `(progn ,@(nreverse extra) ,@body) form))
+      (_
+       (if extra `(progn ,@(nreverse extra) ,form) form)))))
 
 (defun leaf-convert-from-contents (contents)
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
