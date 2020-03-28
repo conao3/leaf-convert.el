@@ -333,12 +333,12 @@ whole block like `eval-after-load', into leaf keyword.'"
      (if (eq fn elm)
          (push elm (alist-get 'commands contents))
        (push sexp (alist-get 'config contents))))
-    (`(when (and . ,conditions) . ,body)
+    (`(,(and (or 'when 'unless) op) (and . ,conditions) . ,body)
      (let ((toplevel* (or toplevel)))   ; TODO
        (if (not toplevel*)
            (push sexp (alist-get 'config contents))
          (dolist (condition conditions)
-           (push condition (alist-get 'when contents)))
+           (push condition (alist-get op contents)))
          (setq contents (leaf-convert-contents-new--sexp-internal `(progn ,@body) contents toplevel)))))
     (`(when ,condition . ,body)
      (let ((toplevel* (or toplevel)))   ; TODO
