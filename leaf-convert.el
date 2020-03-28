@@ -198,6 +198,11 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push elm (alist-get 'load-path* contents)))
       (`(add-to-list 'load-path (concat user-emacs-directory ,(and (pred stringp) elm)))
        (push elm (alist-get 'load-path* contents)))
+      (`(eval-and-compile (add-to-list 'load-path ,(and (pred stringp) elm))) ; use-package's :load-path
+       (let ((relpath (file-relative-name elm user-emacs-directory)))
+         (if (not (string-match "\\.\\./" relpath))
+             (push relpath (alist-get 'load-path* contents))
+           (push elm (alist-get 'load-path contents)))))
 
       ;; :defun
       (`(declare-function ,(and (pred atom) elm) ,(and (pred stringp) file) . ,_args)

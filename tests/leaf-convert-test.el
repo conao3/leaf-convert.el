@@ -426,6 +426,16 @@ Example:
         :commands R))
      '(leaf ess-site))))
 
+(cort-deftest-with-equal leaf-convert/use-package--extending-the-load-path
+  '(
+    ((leaf-convert-from-use-package
+      (use-package ess-site
+        :load-path "site-lisp/ess/lisp/"
+        :commands R))
+     '(leaf ess-site
+        :load-path* "site-lisp/ess/lisp/"
+        :commands R))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
