@@ -492,18 +492,17 @@ And kill generated leaf block to quick yank."
 
 ;;; Main
 
-(defun leaf-convert--leaf-name-to-t (key val contents)
-  "Convert leaf--name.
+(defun leaf-convert--leaf-name-to-t (pkg key val)
+  "Convert PKG symbol to t if KEY is the menber of omittable-keywords.
 KEY and VAL is the key and value currently trying to convert.
 CONTENTS is the value of all the leaf-convert-contents.
 
 If VAL contains the same value as leaf--name, replace it with t."
-  (let ((leaf--name (or (alist-get 'leaf-convert--name contents) 'leaf-convert)))
-    (if (not (memq key leaf-convert-leaf-name-omittable-keywords))
-        val
-      (if (memq leaf--name val)
-          (append '(t) (delq leaf--name val))
-        val))))
+  (if (not (memq key leaf-convert-leaf-name-omittable-keywords))
+      val
+    (if (memq pkg val)
+        (append '(t) (delq pkg val))
+      val)))
 
 (defun leaf-convert--expand-use-package (sexp)
   "Macroexpand-1 for use-package SEXP.
@@ -571,14 +570,15 @@ If VAL contains the same value as leaf--name, replace it with t."
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
   (unless leaf-keywords-init-frg
     (leaf-keywords-init))
-  `(leaf ,(or (alist-get 'leaf-convert--name contents) 'leaf-convert)
-     ,@(mapcan (lambda (keyword)
-                 (let ((key (intern (substring (symbol-name keyword) 1))))
-                   (when-let (value (alist-get key contents))
-                     (if (memq keyword leaf-convert-prefer-list-keywords)
-                         `(,keyword ,(leaf-convert--leaf-name-to-t keyword (nreverse value) contents))
-                       `(,keyword ,@(leaf-convert--leaf-name-to-t keyword (nreverse value) contents))))))
-               (leaf-available-keywords))))
+  (let ((pkg (or (alist-get 'leaf-convert--name contents) 'leaf-convert)))
+    `(leaf ,pkg
+       ,@(mapcan (lambda (keyword)
+                   (let ((key (intern (substring (symbol-name keyword) 1))))
+                     (when-let (value (alist-get key contents))
+                       (if (memq keyword leaf-convert-prefer-list-keywords)
+                           `(,keyword ,(leaf-convert--leaf-name-to-t pkg keyword (nreverse value)))
+                         `(,keyword ,@(leaf-convert--leaf-name-to-t pkg keyword (nreverse value)))))))
+                 (leaf-available-keywords)))))
 
 ;;;###autoload
 (defalias 'leaf-convert 'leaf-convert-from-sexp)
