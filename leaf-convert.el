@@ -105,11 +105,10 @@ See https://www.gnu.org/software/emacs/manual/html_node/elisp/Mode-Line-Data.htm
            (listp (cadr elm))
            (integerp (car (cadr elm))))))
 
-(defun leaf-convert--symbol-from-string (elm default)
+(defun leaf-convert--symbol-from-string (elm)
   "Convert ELM to symbol.  If ELM is nil, return DEFAULT.
 ELM can be string or symbol."
-  (or (if (stringp elm) (intern elm) elm)
-      default))
+  (if (stringp elm) (intern elm) elm))
 
 (defun leaf-convert-contents--parse-bind-keys (op bind-keys-args contents)
   "Parse bind-keys argument and push values to CONTENTS.
@@ -319,7 +318,7 @@ whole block like `eval-after-load', into leaf keyword.'"
   (pcase sexp
     ;; leaf--name, progn
     (`(prog1 ,(or `',name (and (pred stringp) name)) . ,body)
-     (setf (alist-get 'leaf-convert--name contents) name)
+     (setf (alist-get 'leaf-convert--name contents) (leaf-convert--symbol-from-string name))
      (setq contents (leaf-convert-contents-new--sexp-internal `(progn ,@body) contents toplevel)))
 
     ;; progn
@@ -380,7 +379,7 @@ whole block like `eval-after-load', into leaf keyword.'"
        (if (not toplevel*)
            (push sexp (alist-get 'config contents))
          (unless (alist-get 'leaf-convert--name contents)
-           (setf (alist-get 'leaf-convert--name contents) name))
+           (setf (alist-get 'leaf-convert--name contents) (leaf-convert--symbol-from-string name)))
          (push name (alist-get 'after contents))
          (setq contents (leaf-convert-contents-new--sexp-internal body contents toplevel)))))
 
@@ -499,7 +498,7 @@ KEY and VAL is the key and value currently trying to convert.
 CONTENTS is the value of all the leaf-convert-contents.
 
 If VAL contains the same value as leaf--name, replace it with t."
-  (let ((leaf--name (leaf-convert--symbol-from-string (alist-get 'leaf-convert--name contents) 'leaf-convert)))
+  (let ((leaf--name (or (alist-get 'leaf-convert--name contents) 'leaf-convert)))
     (if (not (memq key leaf-convert-leaf-name-omittable-keywords))
         val
       (if (memq leaf--name val)
@@ -572,9 +571,7 @@ If VAL contains the same value as leaf--name, replace it with t."
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
   (unless leaf-keywords-init-frg
     (leaf-keywords-init))
-  `(leaf ,(leaf-convert--symbol-from-string
-           (alist-get 'leaf-convert--name contents)
-           'leaf-convert)
+  `(leaf ,(or (alist-get 'leaf-convert--name contents) 'leaf-convert)
      ,@(mapcan (lambda (keyword)
                  (let ((key (intern (substring (symbol-name keyword) 1))))
                    (when-let (value (alist-get key contents))

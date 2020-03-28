@@ -76,11 +76,6 @@ Example:
       nil)
      '(leaf leaf-convert))
 
-    ;; leaf-convert--name accepts string
-    ((leaf-convert-from-contents
-      '((leaf-convert--name . "some-package")))
-     '(leaf some-package))
-
     ;; leaf-convert--name also accepts symbol
     ((leaf-convert-from-contents
       '((leaf-convert--name . some-package)))
