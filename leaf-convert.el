@@ -299,6 +299,8 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push elm (alist-get op contents)))
       (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val))
        (push `(,elm . ,val) (alist-get op contents)))
+      (`(delight ',(and (pred symbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val) :major)
+       (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',elm ,val) contents)))
 
       ;; :setq, :setq-default
       (`(,(and (or 'setq 'setq-default) op) ,(and (pred atom) elm) ,(and (pred constp) val))
