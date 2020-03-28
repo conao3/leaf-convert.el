@@ -498,11 +498,12 @@ KEY and VAL is the key and value currently trying to convert.
 CONTENTS is the value of all the leaf-convert-contents.
 
 If VAL contains the same value as leaf--name, replace it with t."
-  (if (not (memq key leaf-convert-leaf-name-omittable-keywords))
-      val
-    (if (memq pkg val)
-        (append '(t) (delq pkg val))
-      val)))
+  (pcase (list
+          (memq key leaf-convert-leaf-name-omittable-keywords)
+          (memq pkg val))
+    (`(nil ,_) val)
+    (`(,_ nil) val)
+    (`(,_ ,_)  (append '(t) (delq pkg val)))))
 
 (defun leaf-convert--expand-use-package (sexp)
   "Macroexpand-1 for use-package SEXP.
