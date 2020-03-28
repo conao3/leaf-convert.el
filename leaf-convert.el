@@ -292,10 +292,7 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
          (setf (alist-get 'init contents) (alist-get 'config contents)) (setf (alist-get 'config contents nil 'remove) nil))
        (push elm (alist-get 'require contents)))
       (`(require ',(and (pred symbolp) elm) nil ,_)
-       (progn                           ; move :config sexp to :init section
-         (setf (alist-get 'pre-setq contents) (alist-get 'setq contents)) (setf (alist-get 'setq contents nil 'remove) nil)
-         (setf (alist-get 'init contents) (alist-get 'config contents)) (setf (alist-get 'config contents nil 'remove) nil))
-       (push elm (alist-get 'require contents)))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(require ',elm) contents)))
 
       ;; :diminish, :delight
       (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm))
