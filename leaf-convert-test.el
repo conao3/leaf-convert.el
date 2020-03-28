@@ -481,7 +481,7 @@ Example:
     ((leaf-convert
       (add-to-list 'load-path "~/.emacs.d/local/26.3/site-lisp"))
      '(leaf leaf-convert
-        :load-path "~/.emacs.d/local/26.3/site-lisp"))
+        :load-path* "local/26.3/site-lisp"))
 
     ;; add-to-list load-path using locate-user-emacs-file convert to :load-path*
     ((leaf-convert
