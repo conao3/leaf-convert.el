@@ -269,7 +269,7 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       (`(customize-set-variable ',(and (pred symbolp) elm) ,(and (pred constp) val))
        (push `(,elm . ,val) (alist-get 'custom contents)))
       (`(customize-set-variable ',(and (pred symbolp) elm) ,(and (pred constp) val) ,(pred (string-match "^Customized with use-package")))
-       (push `(,elm . ,val) (alist-get 'custom contents)))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',elm ,val) contents)))
       (`(customize-set-variable ',(and (pred symbolp) elm) ,(and (pred constp) val) ,(and (pred stringp) desc))
        (push `(,elm ,val ,desc) (alist-get 'custom* contents)))
       (`(custom-set-variables . ,args)
