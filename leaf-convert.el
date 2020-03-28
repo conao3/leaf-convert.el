@@ -53,7 +53,7 @@
   :group 'leaf-convert
   :type 'sexp)
 
-(defcustom leaf-convert-leaf-name-omittable-keywords
+(defcustom leaf-convert-omit-leaf-name-keywords
   (leaf-list
    :ensure :feather :package :require :after)
   "Keywords that interpret t as leaf--name."
@@ -567,14 +567,14 @@ ELM can be string or symbol."
         (delq nil))
     val))
 
-(defun leaf-convert--leaf-name-to-t (pkg key val)
+(defun leaf-convert--omit-leaf-name (pkg key val)
   "Convert PKG symbol to t if KEY is the menber of omittable-keywords.
 KEY and VAL is the key and value currently trying to convert.
 CONTENTS is the value of all the leaf-convert-contents.
 
 If VAL contains the same value as leaf--name, replace it with t."
   (pcase (list
-          (memq key leaf-convert-leaf-name-omittable-keywords)
+          (memq key leaf-convert-omit-leaf-name-keywords)
           (memq pkg val))
     (`(nil ,_) val)
     (`(,_ nil) val)
@@ -602,7 +602,7 @@ If VAL contains the same value as leaf--name, replace it with t."
                                  (delete-dups)
                                  (nreverse)
                                  (leaf-convert--remove-constant key)
-                                 (leaf-convert--leaf-name-to-t pkg key)))
+                                 (leaf-convert--omit-leaf-name pkg key)))
                 (if (memq key leaf-convert-prefer-list-keywords)
                     `(,key ,value)
                   `(,key ,@value)))))
