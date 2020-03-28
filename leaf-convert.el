@@ -585,6 +585,7 @@ If VAL contains the same value as leaf--name, replace it with t."
     (when-let (unknown (thread-last (mapcar #'car contents)
                          (mapcar (lambda (key)
                                    (unless (memq (intern (format ":%s" key)) all-keywords) key)))
+                         (delq 'leaf-convert--name)
                          (delq nil)))
       (error "Unknown keyword%s included.  Unknown: %s"
              (if (= 1 (length unknown)) "" "s") unknown))
