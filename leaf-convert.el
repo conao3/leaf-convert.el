@@ -384,8 +384,7 @@ whole block like `eval-after-load', into leaf keyword.'"
          (setq contents (leaf-convert-contents-new--sexp-internal body contents toplevel)))))
 
     ;; any
-    (_
-     (setq contents (leaf-convert-contents-new--sexp-1 sexp contents))))
+    (_ (setq contents (leaf-convert-contents-new--sexp-1 sexp contents))))
   contents)
 
 (defmacro leaf-convert-contents-new--sexp (sexp &optional contents)
