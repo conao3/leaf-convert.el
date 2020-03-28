@@ -330,10 +330,10 @@ whole block like `eval-after-load', into leaf keyword.'"
 
     ;; :when, :unless, :if
     (`(unless (fboundp ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn))) ; use-pakage :commands idiom
-          (autoload ,(or `',(and (pred symbolp) elm) `#',(and (pred symbolp) elm)) . ,_args))
-       (if (eq fn elm)
-           (push elm (alist-get 'commands contents))
-         (push sexp (alist-get 'config contents))))
+        (autoload ,(or `',(and (pred symbolp) elm) `#',(and (pred symbolp) elm)) . ,_args))
+     (if (eq fn elm)
+         (push elm (alist-get 'commands contents))
+       (push sexp (alist-get 'config contents))))
     (`(when (and . ,conditions) . ,body)
      (let ((toplevel* (or toplevel)))   ; TODO
        (if (not toplevel*)
