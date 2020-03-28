@@ -341,9 +341,10 @@ whole block like `eval-after-load', into leaf keyword.'"
      (let ((toplevel* (or toplevel)))   ; TODO
        (if (not toplevel*)
            (push sexp (alist-get 'config contents))
-         (dolist (condition conditions)
-           (push condition (alist-get op contents)))
-         (setq contents (leaf-convert-contents-new--sexp-internal `(progn ,@body) contents toplevel)))))
+         (let ((form body))
+           (dolist (elm (reverse conditions))
+             (setq form `((,(if (eq 'when op) 'when 'unless) ,elm ,@form))))
+           (setq contents (leaf-convert-contents-new--sexp-internal (car form) contents toplevel))))))
     (`(,(and (or 'when 'unless) op) ,condition . ,body)
      (let ((toplevel* (or toplevel)))   ; TODO
        (if (not toplevel*)
