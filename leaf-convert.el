@@ -105,7 +105,7 @@ See https://www.gnu.org/software/emacs/manual/html_node/elisp/Mode-Line-Data.htm
            (listp (cadr elm))
            (integerp (car (cadr elm))))))
 
-(defun leaf-convert--string-or-symbol (elm default)
+(defun leaf-convert--symbol-from-string (elm default)
   "Convert ELM to symbol.  If ELM is nil, return DEFAULT.
 ELM can be string or symbol."
   (or (if (stringp elm) (intern elm) elm)
@@ -499,7 +499,7 @@ KEY and VAL is the key and value currently trying to convert.
 CONTENTS is the value of all the leaf-convert-contents.
 
 If VAL contains the same value as leaf--name, replace it with t."
-  (let ((leaf--name (leaf-convert--string-or-symbol (alist-get 'leaf-convert--name contents) 'leaf-convert)))
+  (let ((leaf--name (leaf-convert--symbol-from-string (alist-get 'leaf-convert--name contents) 'leaf-convert)))
     (if (not (memq key leaf-convert-leaf-name-omittable-keywords))
         val
       (if (memq leaf--name val)
@@ -572,7 +572,7 @@ If VAL contains the same value as leaf--name, replace it with t."
   "Convert CONTENTS (as leaf-convert-contents) to leaf format."
   (unless leaf-keywords-init-frg
     (leaf-keywords-init))
-  `(leaf ,(leaf-convert--string-or-symbol
+  `(leaf ,(leaf-convert--symbol-from-string
            (alist-get 'leaf-convert--name contents)
            'leaf-convert)
      ,@(mapcan (lambda (keyword)
