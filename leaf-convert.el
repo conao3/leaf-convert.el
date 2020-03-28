@@ -60,6 +60,11 @@
   :group 'leaf-convert
   :type 'sexp)
 
+(defcustom leaf-convert-remove-constant-keywords '(:preface :init :config)
+  "Keywords that constant is useless."
+  :group 'leaf-convert
+  :type 'sexp)
+
 (defcustom leaf-convert-except-after
   (leaf-list
    cl-lib let-alist pkg-info json seq
@@ -324,8 +329,7 @@ whole block like `eval-after-load', into leaf keyword.'"
     ;; progn
     (`(progn . ,body)
      (dolist (elm body)
-       (unless (atom elm)
-         (setq contents (leaf-convert-contents-new--sexp-internal elm contents (and toplevel (equal elm (car body))))))))
+       (setq contents (leaf-convert-contents-new--sexp-internal elm contents (and toplevel (equal elm (car body)))))))
 
     ;; :when, :unless, :if
     (`(unless (fboundp ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn))) ; use-pakage :commands idiom
@@ -490,6 +494,14 @@ And kill generated leaf block to quick yank."
 
 ;;; Main
 
+(defun leaf-convert--remove-constant (key val)
+  "Remove constant in VAL if KEY is the member of remove-constant-keywords."
+  (if (memq key leaf-convert-remove-constant-keywords)
+      (thread-last val
+        (mapcar (lambda (elm) (if (atom elm) nil elm)))
+        (delq nil))
+    val))
+
 (defun leaf-convert--leaf-name-to-t (pkg key val)
   "Convert PKG symbol to t if KEY is the menber of omittable-keywords.
 KEY and VAL is the key and value currently trying to convert.
@@ -585,6 +597,7 @@ If VAL contains the same value as leaf--name, replace it with t."
               (when-let (value (thread-last (alist-get sym contents)
                                  (delete-dups)
                                  (nreverse)
+                                 (leaf-convert--remove-constant key)
                                  (leaf-convert--leaf-name-to-t pkg key)))
                 (if (memq key leaf-convert-prefer-list-keywords)
                     `(,key ,value)
