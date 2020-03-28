@@ -598,10 +598,16 @@ If VAL contains the same value as leaf--name, replace it with t."
 ;;;###autoload
 (defmacro leaf-convert-from-use-package (sexp)
   "Convert SEXP (as use-package) to leaf format."
-  `(leaf-convert-from-contents
-    (leaf-convert-contents-new--sexp
-     (prog1 ',(cadr sexp)
-       ,(leaf-convert--expand-use-package sexp)))))
+  (pcase sexp
+    (`(,(or 'use-package 'leaf) ,(and (pred symbolp) pkg) . ,_body)
+     (let* ((form (leaf-convert--expand-use-package sexp))
+            (target (pcase form
+                      (`(progn . ,body) `(prog1 ',pkg ,@body))
+                      (_ `(prog1 ',pkg ,form)))))
+       `(leaf-convert-from-contents
+         (leaf-convert-contents-new--sexp ,target))))
+    (_
+     (error "Toplevel sexp is not use-package or leaf.  sexp: %s" sexp))))
 
 (provide 'leaf-convert)
 
