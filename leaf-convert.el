@@ -540,7 +540,8 @@ If VAL contains the same value as leaf--name, replace it with t."
                  (cl-subst sym 'use-package)
                  (funcall (lambda (elm) (setf (car elm) op) elm))
                  (funcall (lambda (elm)
-                            (let ((use-package-expand-minimally t))
+                            (let ((use-package-expand-minimally t)
+                                  (leaf-expand-minimally t))
                               (macroexpand-1 elm))))
                  (cl-subst 'use-package sym)))
          (form* (thread-last sexp
@@ -548,6 +549,7 @@ If VAL contains the same value as leaf--name, replace it with t."
                   (funcall (lambda (elm) (setf (car elm) op) elm))
                   (funcall (lambda (elm)
                              (let ((use-package-expand-minimally t)
+                                   (leaf-expand-minimally t)
                                    (byte-compile-current-file t)
                                    (use-package-ensure-function 'ignore))
                                (macroexpand-1 elm))))
