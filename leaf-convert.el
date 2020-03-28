@@ -434,7 +434,7 @@ If specified CONTENTS, add value to it instead of new instance."
       (setq reqs (package-desc-reqs desc))
       (if (package-built-in-p desc)
           (push "builtin" tags)
-        (push t (alist-get 'ensure contents)))))
+        (push pkg (alist-get 'ensure contents)))))
 
     (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
     (dolist (doc docs)   (when doc (push doc (alist-get 'doc contents))))
