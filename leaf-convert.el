@@ -566,6 +566,9 @@ If VAL contains the same value as leaf--name, replace it with t."
     (leaf-convert-contents-new--sexp (progn ,@sexp))))
 
 ;;;###autoload
+(defalias 'leaf-convert-from-leaf 'leaf-convert-from-use-package)
+
+;;;###autoload
 (defmacro leaf-convert-from-use-package (sexp)
   "Convert SEXP (as use-package) to leaf format."
   `(leaf-convert-from-contents
