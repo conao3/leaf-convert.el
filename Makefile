@@ -20,7 +20,7 @@ all:
 REPO_USER    := conao3
 PACKAGE_NAME := leaf-convert
 REPO_NAME    := leaf-convert.el
-TESTFILE     := tests/leaf-convert-test.el
+TESTFILE     := leaf-convert-test.el
 
 EMACS        ?= emacs
 ELS          := $(shell cask files)
