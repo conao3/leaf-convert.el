@@ -470,7 +470,7 @@ And kill generated leaf block to quick yank."
      (unless package-archive-contents
        (package-refresh-contents))
      (list (intern (completing-read
-                    "Install package: "
+                    "Package name: "
                     (delete-dups
                      (mapcar
                       (lambda (elm) (if (string-suffix-p "/" elm) nil elm))
