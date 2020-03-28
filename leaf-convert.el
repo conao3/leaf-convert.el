@@ -471,14 +471,13 @@ And kill generated leaf block to quick yank."
        (package-refresh-contents))
      (list (intern (completing-read
                     "Package name: "
-                    (delete-dups
-                     (mapcar
-                      (lambda (elm) (if (string-suffix-p "/" elm) nil elm))
-                      (append
-                       (mapcar (lambda (elm) (symbol-name (car elm))) package-archive-contents)
+                    (thread-last (append
+                                  (mapcar (lambda (elm) (symbol-name (car elm))) package-archive-contents)
 
-                       ;; see `load-library'
-                       (locate-file-completion-table load-path (get-load-suffixes) "" nil t)))))))))
+                                  ;; see `load-library'
+                                  (locate-file-completion-table load-path (get-load-suffixes) "" nil t))
+                      (mapcar (lambda (elm) (if (string-suffix-p "/" elm) nil elm)))
+                      (delete-dups)))))))
   (let ((standard-output (current-buffer)))
     (thread-last (leaf-convert-contents-new--sexp-internal `(prog1 ',pkg) nil 'toplevel)
       (leaf-convert--fill-info)
