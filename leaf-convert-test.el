@@ -1136,6 +1136,40 @@ Example:
               (require 'jupyter))
           (warn "jupyter is not found"))))))
 
+(cort-deftest-with-equal leaf-convert/diminish
+  '(
+    ;; simple diminish convert just symbol in :diminish
+    ((leaf-convert
+      (diminish 'jiggle-mode))
+     '(leaf leaf-convert
+        :diminish jiggle-mode))
+
+    ;; if specify custom string convert cons cell in :diminish
+    ((leaf-convert
+      (diminish 'abbrev-mode "Abv"))
+     '(leaf leaf-convert
+        :diminish (abbrev-mode . "Abv")))))
+
+(cort-deftest-with-equal leaf-convert/delight
+  '(
+    ;; simple delight convert just symbol in :delight
+    ((leaf-convert
+      (delight 'jiggle-mode))
+     '(leaf leaf-convert
+        :delight jiggle-mode))
+
+    ;; if specify custom string convert list in :diminish
+    ((leaf-convert
+      (delight 'abbrev-mode " Abv" "abbrev"))
+     '(leaf leaf-convert
+        :delight (abbrev-mode " Abv" "abbrev")))
+
+    ;; modify majro-mode string is well converted
+    ((leaf-convert
+      (delight 'emacs-lisp-mode "Elisp" :major))
+     '(leaf leaf-convert
+        :delight (emacs-lisp-mode "Elisp" :major)))))
+
 (cort-deftest-with-equal leaf-convert/mode-line-structp
   ;; see https://github.com/myrjola/diminish.el
   '(((leaf-convert--mode-line-structp " Rbow") t)

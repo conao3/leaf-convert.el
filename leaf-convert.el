@@ -282,10 +282,14 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :diminish, :delight
       (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm))
        (push elm (alist-get op contents)))
-      (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm) ,(and (pred modelinep) val))
-       (push `(,elm . ,val) (alist-get op contents)))
+      (`(diminish ',(and (pred symbolp) elm) ,(and (pred modelinep) val))
+       (push `(,elm . ,val) (alist-get 'diminish contents)))
+      (`(delight ',(and (pred symbolp) elm) ,(and (pred modelinep) val))
+       (push `(,elm ,val) (alist-get 'delight contents)))
       (`(delight ',(and (pred symbolp) elm) ,(and (pred modelinep) val) :major)
-       (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',elm ,val) contents)))
+       (push `(,elm ,val :major) (alist-get 'delight contents)))
+      (`(delight ',(and (pred symbolp) elm) ,(and (pred modelinep) val) ,(or (and (pred stringp) pkg) `',(and (pred symbolp) pkg)))
+       (push `(,elm ,val ,pkg) (alist-get 'delight contents)))
 
       ;; :setq, :setq-default
       (`(,(and (or 'setq 'setq-default) op) ,(and (pred atom) elm) ,(and (pred constp) val))
