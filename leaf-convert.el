@@ -290,6 +290,18 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push `(,elm ,val :major) (alist-get 'delight contents)))
       (`(delight ',(and (pred symbolp) elm) ,(and (pred modelinep) val) ,(or (and (pred stringp) pkg) `',(and (pred symbolp) pkg)))
        (push `(,elm ,val ,pkg) (alist-get 'delight contents)))
+      (`(delight ',(and (pred listp) spec))
+       (dolist (args spec)
+         (pcase args
+           (`(,(and (pred symbolp) mode))
+            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode) contents)))
+           (`(,(and (pred symbolp) mode) ,(and (pred modelinep) val))
+            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,val) contents)))
+           (`(,(and (pred symbolp) mode) ,(and (pred modelinep) val) ,(and (pred symbolp) pkg))
+            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,val ',pkg) contents)))
+           (`(,(and (pred symbolp) mode) ,(and (pred modelinep) val) ,(and (pred stringp) file))
+            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,val ,file) contents)))
+           (_ (push `(delight ,@args) (alist-get 'config contents))))))
 
       ;; :setq, :setq-default
       (`(,(and (or 'setq 'setq-default) op) ,(and (pred atom) elm) ,(and (pred constp) val))

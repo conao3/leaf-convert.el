@@ -1168,7 +1168,24 @@ Example:
     ((leaf-convert
       (delight 'emacs-lisp-mode "Elisp" :major))
      '(leaf leaf-convert
-        :delight (emacs-lisp-mode "Elisp" :major)))))
+        :delight (emacs-lisp-mode "Elisp" :major)))
+
+    ;; multiple arg is well converted
+    ((leaf-convert
+      (delight '((abbrev-mode " Abv" "abbrev")
+                 (smart-tab-mode " \\t" "smart-tab")
+                 (eldoc-mode nil "eldoc")
+                 (rainbow-mode)
+                 (overwrite-mode " Ov" t)
+                 (emacs-lisp-mode "Elisp" :major))))
+     '(leaf leaf-convert
+        :delight
+        (abbrev-mode " Abv" "abbrev")
+        (smart-tab-mode " \\t" "smart-tab")
+        (eldoc-mode nil "eldoc")
+        rainbow-mode
+        (overwrite-mode " Ov" t)
+        (emacs-lisp-mode "Elisp" :major)))))
 
 (cort-deftest-with-equal leaf-convert/mode-line-structp
   ;; see https://github.com/myrjola/diminish.el
