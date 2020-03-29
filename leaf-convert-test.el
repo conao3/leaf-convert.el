@@ -150,10 +150,8 @@ Example:
      '(leaf color-moccur
         :commands isearch-moccur
         :config
-        (eval-after-load 'color-moccur
-          '(progn
-             (use-package moccur-edit)
-             t))))
+        (with-eval-after-load 'color-moccur
+          (use-package moccur-edit))))
 
     ;; init, :config, :bind
     ((leaf-convert-from-use-package
@@ -174,8 +172,8 @@ Example:
                 ("M-o" . isearch-moccur)
                 ("M-O" . isearch-moccur-all)))
         :config
-        (eval-after-load 'color-moccur
-          '(progn (use-package moccur-edit) t))
+        (with-eval-after-load 'color-moccur
+          (use-package moccur-edit))
         :setq ((isearch-lazy-highlight . t))))))
 
 (cort-deftest-with-equal leaf-convert/use-package--keybinding
@@ -279,8 +277,8 @@ Example:
         :commands pdf-view-mode
         :magic (("%PDF" . pdf-view-mode))
         :config
-        (eval-after-load 'pdf-tools
-          '(progn (pdf-tools-install :no-query) t))))
+        (with-eval-after-load 'pdf-tools
+          (pdf-tools-install :no-query))))
 
     ((leaf-convert-from-use-package
       (use-package pdf-tools
@@ -291,8 +289,8 @@ Example:
         :commands pdf-view-mode
         :magic-fallback (("%PDF" . pdf-view-mode))
         :config
-        (eval-after-load 'pdf-tools
-          '(progn (pdf-tools-install :no-query) t))))))
+        (with-eval-after-load 'pdf-tools
+          (pdf-tools-install :no-query))))))
 
 (cort-deftest-with-equal leaf-convert/use-package--hooks
   '(((leaf-convert-from-use-package
@@ -444,7 +442,30 @@ Example:
      '(leaf texinfo
         :defvar texinfo-section-list
         :commands texinfo-mode
-        :mode (("\\.texi$" . texinfo-mode))))))
+        :mode (("\\.texi$" . texinfo-mode))))
+
+    ((leaf-convert-from-use-package
+      (use-package ruby-mode
+        :mode "\\.rb\\'"
+        :interpreter "ruby"
+        :functions inf-ruby-keys
+        :config
+        (defun my-ruby-mode-hook ()
+          (require 'inf-ruby)
+          (inf-ruby-keys))
+
+        (add-hook 'ruby-mode-hook 'my-ruby-mode-hook)))
+     '(leaf ruby-mode
+        :commands ruby-mode
+        :mode (("\\.rb\\'" . ruby-mode))
+        :interpreter (("ruby" . ruby-mode))
+        :config
+        (with-eval-after-load 'ruby-mode
+          (defun my-ruby-mode-hook ()
+            (require 'inf-ruby)
+            (inf-ruby-keys))
+
+          (add-hook 'ruby-mode-hook 'my-ruby-mode-hook))))))
 
 (cort-deftest-with-equal leaf-convert/use-package--extending-the-load-path
   '(
@@ -596,9 +617,10 @@ Example:
         :after t
         :config
         (orglyth-setup)
-        (eval-after-load 'org
-          '(eval-after-load 'leaf
-             '(progn (leaf-browser-init))))))))
+        (with-eval-after-load 'org
+          (eval-after-load 'leaf
+            '(progn
+               (leaf-browser-init))))))))
 
 (cort-deftest-with-equal leaf-convert/setq
   '(
