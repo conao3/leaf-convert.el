@@ -704,43 +704,43 @@ Example:
       (prog1 'rainbow-mode
         (diminish 'rainbow-mode 'rainbow-mode-lighter)))
      '(leaf rainbow-mode
-        :diminish (rainbow-mode quote rainbow-mode-lighter)))
+        :diminish (rainbow-mode . 'rainbow-mode-lighter)))
 
     ((leaf-convert
       (prog1 'rainbow-mode
         (diminish 'rainbow-mode '(" " "R-" "bow"))))
      '(leaf rainbow-mode
-        :diminish (rainbow-mode quote (" " "R-" "bow"))))
+        :diminish (rainbow-mode . '(" " "R-" "bow"))))
 
     ((leaf-convert
       (prog1 'rainbow-mode
         (diminish 'rainbow-mode '((" " "R-") "/" "bow"))))
      '(leaf rainbow-mode
-        :diminish (rainbow-mode quote ((" " "R-") "/" "bow"))))
+        :diminish (rainbow-mode . '((" " "R-") "/" "bow"))))
 
     ((leaf-convert
       (prog1 'rainbow-mode
         (diminish 'rainbow-mode '(:eval (format " Rbow/%s" (+ 2 3))))))
      '(leaf rainbow-mode
-        :diminish (rainbow-mode quote (:eval (format " Rbow/%s" (+ 2 3))))))
+        :diminish (rainbow-mode . '(:eval (format " Rbow/%s" (+ 2 3))))))
 
     ((leaf-convert
       (prog1 'rainbow-mode
         (diminish 'rainbow-mode '(:propertize " Rbow" face '(:foreground "green")))))
      '(leaf rainbow-mode
-        :diminish (rainbow-mode quote (:propertize " Rbow" face '(:foreground "green")))))
+        :diminish (rainbow-mode . '(:propertize " Rbow" face '(:foreground "green")))))
 
     ((leaf-convert
       (prog1 'rainbow-mode
         (diminish 'rainbow-mode '(rainbow-mode-mode-linep " Rbow/t" " Rbow/nil"))))
      '(leaf rainbow-mode
-        :diminish (rainbow-mode quote (rainbow-mode-mode-linep " Rbow/t" " Rbow/nil"))))
+        :diminish (rainbow-mode . '(rainbow-mode-mode-linep " Rbow/t" " Rbow/nil"))))
 
     ((leaf-convert
       (prog1 'rainbow-mode
         (diminish 'rainbow-mode '(2 " Rbow" "/" "s"))))
      '(leaf rainbow-mode
-        :diminish (rainbow-mode quote (2 " Rbow" "/" "s"))))))
+        :diminish (rainbow-mode . '(2 " Rbow" "/" "s"))))))
 
 (cort-deftest-with-equal leaf-convert/ensure
   '(
