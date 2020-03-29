@@ -79,10 +79,11 @@ see `leaf-convert--fill-info'"
 
 ;;; Patterns
 
-(defun leaf-convert--mode-line-structp (elm)
+(defun leaf-convert--mode-line-structp (elm &optional addquote)
   "Return non-nil if ELM is varid mode-line structure.
+If ADDQUOTE is non-nill, check pattern after quoted ELM.
 See https://www.gnu.org/software/emacs/manual/html_node/elisp/Mode-Line-Data.html"
-  (pcase elm
+  (pcase (if addquote `',elm elm)
     ((pred null) t)
     ((pred stringp) t)
     (`',(pred null) t)
@@ -171,7 +172,8 @@ BIND-KEYS-ARGS is bind-keys' all argument."
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (cl-flet ((constp (elm) (pcase elm ((pred atom) t) (`(quote ,_) t) (`(function ,_) t)))
             (fnp (elm) (pcase elm ('nil t) (`(quote ,_) t) (`(function ,_) t)))
-            (modelinep (elm) (leaf-convert--mode-line-structp elm)))
+            (modelinep (elm) (leaf-convert--mode-line-structp elm))
+            (quotemodelinep (elm) (leaf-convert--mode-line-structp elm t)))
     (pcase sexp
       ;; :load-path, :load-path*
       (`(add-to-list 'load-path ,(and (pred stringp) elm))
@@ -295,13 +297,13 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
          (pcase args
            (`(,(and (pred symbolp) mode))
             (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode) contents)))
-           (`(,(and (pred symbolp) mode) ,(and (pred modelinep) val))
-            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,val) contents)))
-           (`(,(and (pred symbolp) mode) ,(and (pred modelinep) val) ,(and (pred symbolp) pkg))
-            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,val ',pkg) contents)))
-           (`(,(and (pred symbolp) mode) ,(and (pred modelinep) val) ,(and (pred stringp) file))
-            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,val ,file) contents)))
-           (_ (push `(delight ,@args) (alist-get 'config contents))))))
+           (`(,(and (pred symbolp) mode) ,(and (pred quotemodelinep) val))
+            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,(if (or (stringp val) (null val)) val `',val)) contents)))
+           (`(,(and (pred symbolp) mode) ,(and (pred quotemodelinep) val) ,(and (pred symbolp) pkg))
+            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,(if (or (stringp val) (null val)) val `',val) ',pkg) contents)))
+           (`(,(and (pred symbolp) mode) ,(and (pred quotemodelinep) val) ,(and (pred stringp) file))
+            (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',mode ,(if (or (stringp val) (null val)) val `',val) ,file) contents)))
+           (_ (push `(delight '(,args)) (alist-get 'config contents))))))
 
       ;; :setq, :setq-default
       (`(,(and (or 'setq 'setq-default) op) ,(and (pred atom) elm) ,(and (pred constp) val))
@@ -334,6 +336,11 @@ whole block like `eval-after-load', into leaf keyword.'"
      (if (eq fn elm)
          (push elm (alist-get 'commands contents))
        (push sexp (alist-get 'config contents))))
+    (`(when (fboundp ',(and (or 'diminish 'delight) fn)) (,(and (or 'diminish 'delight) op) . ,body))
+     (if (eq fn op)
+         (setq contents (leaf-convert-contents-new--sexp-1 `(,op ,@body) contents))
+       (push sexp (alist-get 'config contents))))
+
     (`(,(and (or 'when 'unless) op) (symbol-value ',sym) . ,body)
      (setq contents (leaf-convert-contents-new--sexp-internal `(,(if (eq 'when op) 'when 'unless) ,sym ,@body) contents toplevel)))
     (`(,(and (or 'when 'unless) op) (not ,condition) . ,body)

@@ -487,6 +487,52 @@ Example:
 ;; (cort-deftest-with-equal leaf-convert/use-package--catching-errors-during-use-package-expansion
 ;;   '())
 
+(cort-deftest-with-equal leaf-convert/use-package--diminishing-and-delighting-minor-modes
+  '(((leaf-convert-from-use-package
+      (use-package abbrev
+        :diminish abbrev-mode
+        :config
+        (if (file-exists-p abbrev-file-name)
+            (quietly-read-abbrev-file))))
+     '(leaf abbrev
+        :require t
+        :config
+        (when (file-exists-p abbrev-file-name)
+          (quietly-read-abbrev-file))
+        :diminish abbrev-mode))
+
+    ((leaf-convert-from-use-package
+      (use-package rainbow-mode
+        :delight))
+     '(leaf rainbow-mode
+        :require t
+        :delight (rainbow-mode nil rainbow-mode)))
+
+    ((leaf-convert-from-use-package
+      (use-package autorevert
+        :delight auto-revert-mode))
+     '(leaf autorevert
+        :require t
+        :delight (auto-revert-mode nil autorevert)))
+
+    ((leaf-convert-from-use-package
+      (use-package projectile
+        :delight '(:eval (concat " " (projectile-project-name)))))
+     '(leaf projectile
+        :require t
+        :delight (projectile-mode '(:eval (concat " " (projectile-project-name))) projectile)))
+
+    ((leaf-convert-from-use-package
+      (use-package emacs
+        :delight
+        (auto-fill-function " AF")
+        (visual-line-mode)))
+     '(leaf emacs
+        :require t
+        :delight
+        (auto-fill-function " AF" emacs)
+        (visual-line-mode nil emacs)))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
