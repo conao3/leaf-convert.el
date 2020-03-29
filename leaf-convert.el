@@ -83,6 +83,7 @@ see `leaf-convert--fill-info'"
   "Return non-nil if ELM is varid mode-line structure.
 See https://www.gnu.org/software/emacs/manual/html_node/elisp/Mode-Line-Data.html"
   (pcase elm
+    ((pred nll) t)
     ((pred stringp) t)
     (`',(pred symbolp) t)
     (`'(,(pred stringp) . ,_rest) t)
