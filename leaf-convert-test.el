@@ -111,9 +111,6 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/use-package--getting-started
   '(
-    ;;; Getting started
-    ;;; https://github.com/jwiegley/use-package#
-
     ;; simplest use-package
     ((leaf-convert-from-use-package
       (use-package foo))
