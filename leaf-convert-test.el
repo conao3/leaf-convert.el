@@ -1136,6 +1136,17 @@ Example:
               (require 'jupyter))
           (warn "jupyter is not found"))))))
 
+(cort-deftest-with-equal leaf-convert/mode-line-structp
+  ;; see https://github.com/myrjola/diminish.el
+  '(((leaf-convert--mode-line-structp " Rbow") t)
+    ((leaf-convert--mode-line-structp ''rainbow-mode-lighter) t)
+    ((leaf-convert--mode-line-structp ''(" " "R-" "bow")) t)
+    ((leaf-convert--mode-line-structp ''((" " "R") "/" "bow")) t)
+    ((leaf-convert--mode-line-structp ''(:eval (format " Rbow/%s" (+ 2 3)))) t)
+    ((leaf-convert--mode-line-structp ''(:propertize " Rbow" face '(:foreground "green"))) t)
+    ((leaf-convert--mode-line-structp ''(rainbow-mode-mode-linep " Rbow/t" " Rbow/nil")) t)
+    ((leaf-convert--mode-line-structp ''(3 " Rbow" "/" "s")) t)))
+
 ;; (provide 'leaf-convert-test)
 
 ;; Local Variables:
