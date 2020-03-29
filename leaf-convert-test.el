@@ -465,7 +465,16 @@ Example:
             (require 'inf-ruby)
             (inf-ruby-keys))
 
-          (add-hook 'ruby-mode-hook 'my-ruby-mode-hook))))))
+          (add-hook 'ruby-mode-hook 'my-ruby-mode-hook))))
+
+    ((leaf-convert-from-use-package
+      (use-package foo
+        :no-require t
+        :config
+        (message "This is evaluated when `foo' is loaded")))
+     '(leaf foo
+        :config
+        (message "This is evaluated when `foo' is loaded")))))
 
 (cort-deftest-with-equal leaf-convert/use-package--extending-the-load-path
   '(
