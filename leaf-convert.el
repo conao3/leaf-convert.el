@@ -611,16 +611,16 @@ If VAL contains the same value as leaf--name, replace it with t."
     `(leaf ,pkg
        ,@(mapcan
           (lambda (key)
-            (let ((sym (intern (substring (symbol-name key) 1))))
-              (when-let (value (thread-last (alist-get sym contents)
-                                 (nreverse)
-                                 (leaf-convert--remove-constant key)
-                                 (leaf-convert--optimize-per-keyword key)
-                                 (leaf-convert--omit-leaf-name pkg key)
-                                 (delete-dups)))
-                (if (memq key leaf-convert-prefer-list-keywords)
-                    `(,key ,value)
-                  `(,key ,@value)))))
+            (when-let* ((value (alist-get (leaf-sym-from-keyword key) contents))
+                        (value* (thread-last value
+                                  (nreverse)
+                                  (leaf-convert--remove-constant key)
+                                  (leaf-convert--optimize-per-keyword key)
+                                  (leaf-convert--omit-leaf-name pkg key)
+                                  (delete-dups))))
+              (if (memq key leaf-convert-prefer-list-keywords)
+                  `(,key ,value*)
+                `(,key ,@value*))))
           all-keywords))))
 
 ;;;###autoload
