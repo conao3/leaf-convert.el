@@ -25,6 +25,19 @@
   - [[#special-thanks][Special Thanks]]
 
 * Description
+Convert from a plain Elisp to an expression using a ~leaf~.
+
+This is accomplished by not just converting ~use-package~'s keywords, but by converting them once they have been expanded to a plain Elisp.
+
+This may result in a simpler ~leaf~ expression, but if there is no corresponding keyword, most of it will be converted to a ~:config~ section.
+
+Since the source is Elisp, it is possible to convert the ~leaf~ to Elisp once and then convert it to ~leaf~ again.
+
+This can be used to convert miscellaneous settings in the ~:config~ section into ~leaf~ expressions with appropriate keywords.
+It is also possible to optimize settings that are not needed.
+
+Currently, the following ~leaf~ keywords are supported for automatic conversion.
+
 #+begin_src emacs-lisp
   (leaf-available-keywords)
   ;;=> (:disabled
@@ -103,17 +116,63 @@
 ~leaf-convert~ is available via ~el-get~.
 
 #+begin_src emacs-lisp
-  (leaf leaf-convert :el-get conao3/leaf-convert)
+  (leaf leaf-convert :ensure t)
 #+end_src
 
 * Usage
-Please use ~leaf-convert~ and pass any sexp.
+Pass any S-exps to ~leaf-convert~ to get a ~leaf~ expression.
 
 #+begin_src emacs-lisp
   (leaf-convert
-   (add-to-list a "a"))
+   (defvar leaf-covert-variable)
+   (bind-key "C-c x" 'my-ctrl-c-x-command)
+   (bind-key "C-c x" 'my-ctrl-c-x-command some-other-mode-map)
+   (bind-keys :map dired-mode-map
+              ("o" . dired-omit-mode)
+              ("a" . some-custom-dired-function)))
   ;;=> (leaf leaf-convert
-  ;;     :config (add-to-list a "a"))
+  ;;     :defvar leaf-covert-variable
+  ;;     :bind (("C-c x" . my-ctrl-c-x-command)
+  ;;            (some-other-mode-map
+  ;;             ("C-c x" . my-ctrl-c-x-command))
+  ;;            (dired-mode-map
+  ;;             ("o" . dired-omit-mode)
+  ;;             ("a" . some-custom-dired-function))))
+#+end_src
+
+If you want to convert ~use-package~ to ~leaf~, you can use ~leaf-convert-from-use-package~.
+
+~leaf-convert-from-leaf~ is as alias for ~leaf-convert-from-use-package~.
+
+#+begin_src emacs-lisp
+  (leaf-convert-from-use-package
+   (use-package edit-server
+     :if window-system
+     :init
+     (add-hook 'after-init-hook 'server-start t)
+     (add-hook 'after-init-hook 'edit-server-start t)))
+  ;;=> (leaf edit-server
+  ;;     :when window-system
+  ;;     :hook ((after-init-hook . server-start)
+  ;;            (after-init-hook . edit-server-start))
+  ;;     :require t)
+
+  (leaf-convert-from-leaf
+   (leaf markdown-mode
+     ;;:mode ("\\.md\\'" . commonmark-gfm-mode)
+     :config
+     (with-eval-after-load 'markdown-mode
+       (require 'org-table)
+       (add-hook 'markdown-mode-hook 'orgtbl-mode)
+       (unbind-key "`" gfm-mode-map)
+       (visual-line-mode nil))))
+  ;;=> (leaf markdown-mode
+  ;;     :after t
+  ;;     :hook ((markdown-mode-hook . orgtbl-mode))
+  ;;     :require org-table
+  ;;     :config
+  ;;     (unbind-key "`" gfm-mode-map)
+  ;;     (visual-line-mode nil))
 #+end_src
 
 * Customize
