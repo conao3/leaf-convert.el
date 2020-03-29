@@ -483,6 +483,10 @@ Example:
         :load-path* "site-lisp/ess/lisp/"
         :commands R))))
 
+;; unsupported for now...
+;; (cort-deftest-with-equal leaf-convert/use-package--catching-errors-during-use-package-expansion
+;;   '())
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
