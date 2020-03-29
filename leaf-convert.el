@@ -170,7 +170,8 @@ BIND-KEYS-ARGS is bind-keys' all argument."
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (cl-flet ((constp (elm) (pcase elm ((pred atom) t) (`(quote ,_) t) (`(function ,_) t)))
-            (fnp (elm) (pcase elm ('nil t) (`(quote ,_) t) (`(function ,_) t))))
+            (fnp (elm) (pcase elm ('nil t) (`(quote ,_) t) (`(function ,_) t)))
+            (modelinep (elm) (leaf-convert--mode-line-structp elm)))
     (pcase sexp
       ;; :load-path, :load-path*
       (`(add-to-list 'load-path ,(and (pred stringp) elm))
@@ -281,9 +282,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :diminish, :delight
       (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm))
        (push elm (alist-get op contents)))
-      (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val))
+      (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm) ,(and (pred modelinep) val))
        (push `(,elm . ,val) (alist-get op contents)))
-      (`(delight ',(and (pred symbolp) elm) ,(and (pred leaf-convert--mode-line-structp) val) :major)
+      (`(delight ',(and (pred symbolp) elm) ,(and (pred modelinep) val) :major)
        (setq contents (leaf-convert-contents-new--sexp-1 `(delight ',elm ,val) contents)))
 
       ;; :setq, :setq-default
