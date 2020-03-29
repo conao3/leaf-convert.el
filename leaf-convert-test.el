@@ -533,6 +533,33 @@ Example:
         (auto-fill-function " AF" emacs)
         (visual-line-mode nil emacs)))))
 
+(cort-deftest-with-equal leaf-convert/use-package--package-installation
+  '(((leaf-convert-from-use-package
+      (use-package magit
+        :ensure t))
+     '(leaf magit
+        :ensure t
+        :require t))
+
+    ((leaf-convert-from-use-package
+      (use-package tex
+        :ensure auctex))
+     '(leaf tex
+        :ensure auctex
+        :require t))
+
+    ((leaf-convert-from-use-package
+      (use-package auto-package-update
+        :config
+        (setq auto-package-update-delete-old-versions t)
+        (setq auto-package-update-hide-results t)
+        (auto-package-update-maybe)))
+     '(leaf auto-package-update
+        :require t
+        :config (auto-package-update-maybe)
+        :setq ((auto-package-update-delete-old-versions . t)
+               (auto-package-update-hide-results . t))))))
+
 (cort-deftest-with-equal leaf-convert/progn
   '(
     ;; accept progn
