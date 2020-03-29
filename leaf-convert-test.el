@@ -433,6 +433,19 @@ Example:
         :unless (member nil (mapcar (function featurep) '(foo bar baz)))
         :require t))))
 
+(cort-deftest-with-equal leaf-convert/use-package--byte-compiling-your-emacs
+  '(
+    ((leaf-convert-from-use-package
+      (use-package texinfo
+        :defines texinfo-section-list
+        :commands texinfo-mode
+        :init
+        (add-to-list 'auto-mode-alist '("\\.texi$" . texinfo-mode))))
+     '(leaf texinfo
+        :defvar texinfo-section-list
+        :commands texinfo-mode
+        :mode (("\\.texi$" . texinfo-mode))))))
+
 (cort-deftest-with-equal leaf-convert/use-package--extending-the-load-path
   '(
     ((leaf-convert-from-use-package
