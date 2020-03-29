@@ -29,6 +29,8 @@
 
 (require 'cort-test)
 (require 'leaf-convert)
+(require 'use-package)
+(require 'use-package-chords)
 
 (defmacro cort-deftest-with-equal (name form)
   "Return `cort-deftest' compare by `equal' for NAME, FORM.
@@ -559,6 +561,16 @@ Example:
         :config (auto-package-update-maybe)
         :setq ((auto-package-update-delete-old-versions . t)
                (auto-package-update-hide-results . t))))))
+
+(cort-deftest-with-equal leaf-convert/use-package--chords
+  '(((leaf-convert-from-use-package
+      (use-package use-package-chords
+        :ensure t
+        :config (key-chord-mode 1)))
+     '(leaf use-package-chords
+        :ensure t
+        :require t
+        :config (key-chord-mode 1)))))
 
 (cort-deftest-with-equal leaf-convert/progn
   '(
