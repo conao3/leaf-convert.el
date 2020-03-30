@@ -261,12 +261,12 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :mode, :interpreter, :magic, :magic-fallback
       (`(add-to-list ',(and (or 'auto-mode-alist 'interpreter-mode-alist 'magic-mode-alist 'magic-fallback-mode-alist) lst)
                      '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))
-       (push `(,elm . ,fn) (alist-get (pcase lst
-                                        ('auto-mode-alist 'mode)
-                                        ('interpreter-mode-alist 'interpreter)
-                                        ('magic-mode-alist 'magic)
-                                        ('magic-fallback-mode-alist 'magic-fallback))
-                                      contents)))
+       (let ((key (pcase lst
+                    ('auto-mode-alist 'mode)
+                    ('interpreter-mode-alist 'interpreter)
+                    ('magic-mode-alist 'magic)
+                    ('magic-fallback-mode-alist 'magic-fallback))))
+         (push `(,elm . ,fn) (alist-get key contents))))
 
       ;; :hook
       (`(add-hook ',(and (pred symbolp) elm) ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn)))
