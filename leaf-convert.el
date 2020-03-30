@@ -696,6 +696,25 @@ If VAL contains the same value as leaf--name, replace it with t."
     (indent-region
      (save-excursion (thing-at-point--beginning-of-sexp) (point)) (point))))
 
+;;;###autoload
+(defun leaf-convert-pop-region (beg end)
+  "Pop a buffer showing the result of converting Elisp BEG to END to a leaf."
+  (interactive "r")
+  (let* ((str (format "(progn %s)" (buffer-substring beg end)))
+         (form (read str))
+         (res (eval `(leaf-convert ,form))))
+    (with-help-window "*leaf-convert*"
+      (lisp-mode-variables nil nil 'elisp)
+      (princ ";; Selected Elisp\n")
+      (princ ";; --------------------------------------------------\n")
+      (princ str)
+      (indent-region
+       (save-excursion (thing-at-point--beginning-of-sexp) (point)) (point))
+      (princ "\n\n")
+      (princ ";; Converted Leaf format\n")
+      (princ ";; --------------------------------------------------\n")
+      (leaf-pp res))))
+
 (provide 'leaf-convert)
 
 ;; Local Variables:
