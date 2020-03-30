@@ -677,10 +677,10 @@ If VAL contains the same value as leaf--name, replace it with t."
             all-keywords)))))
 
 ;;;###autoload
-(defmacro leaf-convert (&rest sexp)
-  "Convert SEXP (as plain Elisp) to leaf format."
+(defmacro leaf-convert (&rest body)
+  "Convert BODY as plain Elisp to leaf format."
   `(leaf-convert-from-contents
-    (leaf-convert-contents-new--sexp (progn ,@sexp))))
+    (leaf-convert-contents-new--sexp (progn ,@body))))
 
 (provide 'leaf-convert)
 
