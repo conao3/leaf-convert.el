@@ -56,6 +56,7 @@
 (require 'lisp-mnt)
 (require 'leaf)
 (require 'leaf-keywords)
+(require 'thingatpt)
 
 (defgroup leaf-convert nil
   "Convert many format to leaf format."
@@ -681,6 +682,19 @@ If VAL contains the same value as leaf--name, replace it with t."
   "Convert BODY as plain Elisp to leaf format."
   `(leaf-convert-from-contents
     (leaf-convert-contents-new--sexp (progn ,@body))))
+
+;;;###autoload
+(defun leaf-convert-replace-region (beg end)
+  "Replace Elisp BEG to END to leaf format."
+  (interactive "r")
+  (let* ((str (format "(progn %s)" (buffer-substring beg end)))
+         (form (read str))
+         (res (eval `(leaf-convert ,form))))
+    (delete-region beg end)
+    (insert (leaf-pp-to-string res))
+    (delete-char -1)
+    (indent-region
+     (save-excursion (thing-at-point--beginning-of-sexp) (point)) (point))))
 
 (provide 'leaf-convert)
 
