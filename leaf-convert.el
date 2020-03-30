@@ -684,7 +684,7 @@ If VAL contains the same value as leaf--name, replace it with t."
     (leaf-convert-contents-new--sexp (progn ,@body))))
 
 ;;;###autoload
-(defun leaf-convert-replace-region (beg end)
+(defun leaf-convert-region-replace (beg end)
   "Replace Elisp BEG to END to leaf format."
   (interactive "r")
   (let* ((str (format "(progn %s)" (buffer-substring beg end)))
@@ -697,7 +697,7 @@ If VAL contains the same value as leaf--name, replace it with t."
      (save-excursion (thing-at-point--beginning-of-sexp) (point)) (point))))
 
 ;;;###autoload
-(defun leaf-convert-pop-region (beg end)
+(defun leaf-convert-region-pop (beg end)
   "Pop a buffer showing the result of converting Elisp BEG to END to a leaf."
   (interactive "r")
   (let* ((str (format "(progn %s)" (buffer-substring beg end)))
