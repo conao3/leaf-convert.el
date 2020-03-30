@@ -337,6 +337,15 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       (`(,(and (or 'setq 'setq-default) op) ,(and (pred atom) elm) ,(and (pred constp) val))
        (push `(,elm . ,val) (alist-get op contents)))
 
+      ;; use-package, leaf
+      (`(,(or 'use-package 'leaf) ,(and (pred symbolp) pkg) . ,_body)
+       (let* ((form (leaf-convert--expand-use-package sexp))
+              (target (pcase form
+                        (`(progn . ,body) `(prog1 ',pkg ,@body))
+                        (_ `(prog1 ',pkg ,form))))
+              (leaf* (eval `(leaf-convert-from-contents (leaf-convert-contents-new--sexp ,target)))))
+         (push leaf* (alist-get 'config contents))))
+
       ;; any
       (_ (push sexp (alist-get 'config contents)))))
   contents)
@@ -648,20 +657,24 @@ If VAL contains the same value as leaf--name, replace it with t."
                          (delq nil)))
       (error "Unknown keyword%s included.  Unknown: %s"
              (if (= 1 (length unknown)) "" "s") unknown))
-    `(leaf ,pkg
-       ,@(mapcan
-          (lambda (key)
-            (when-let* ((value (alist-get (leaf-sym-from-keyword key) contents))
-                        (value* (thread-last value
-                                  (nreverse)
-                                  (leaf-convert--remove-constant key)
-                                  (leaf-convert--optimize-per-keyword key)
-                                  (leaf-convert--omit-leaf-name pkg key)
-                                  (delete-dups))))
-              (if (memq key leaf-convert-prefer-list-keywords)
-                  `(,key ,value*)
-                `(,key ,@value*))))
-          all-keywords))))
+    (if-let ((body (and (equal '(config) (mapcar #'car contents))
+                        (pcase (alist-get 'config contents)
+                          (`((leaf . ,body)) body)))))
+        `(leaf ,@body)
+      `(leaf ,pkg
+         ,@(mapcan
+            (lambda (key)
+              (when-let* ((value (alist-get (leaf-sym-from-keyword key) contents))
+                          (value* (thread-last value
+                                    (nreverse)
+                                    (leaf-convert--remove-constant key)
+                                    (leaf-convert--optimize-per-keyword key)
+                                    (leaf-convert--omit-leaf-name pkg key)
+                                    (delete-dups))))
+                (if (memq key leaf-convert-prefer-list-keywords)
+                    `(,key ,value*)
+                  `(,key ,@value*))))
+            all-keywords)))))
 
 ;;;###autoload
 (defalias 'leaf-convert 'leaf-convert-from-sexp)
@@ -671,23 +684,6 @@ If VAL contains the same value as leaf--name, replace it with t."
   "Convert SEXP (as plain Elisp) to leaf format."
   `(leaf-convert-from-contents
     (leaf-convert-contents-new--sexp (progn ,@sexp))))
-
-;;;###autoload
-(defalias 'leaf-convert-from-leaf 'leaf-convert-from-use-package)
-
-;;;###autoload
-(defmacro leaf-convert-from-use-package (sexp)
-  "Convert SEXP (as use-package) to leaf format."
-  (pcase sexp
-    (`(,(or 'use-package 'leaf) ,(and (pred symbolp) pkg) . ,_body)
-     (let* ((form (leaf-convert--expand-use-package sexp))
-            (target (pcase form
-                      (`(progn . ,body) `(prog1 ',pkg ,@body))
-                      (_ `(prog1 ',pkg ,form)))))
-       `(leaf-convert-from-contents
-         (leaf-convert-contents-new--sexp ,target))))
-    (_
-     (error "Toplevel sexp is not use-package or leaf.  sexp: %s" sexp))))
 
 (provide 'leaf-convert)
 

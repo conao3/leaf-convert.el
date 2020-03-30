@@ -138,14 +138,8 @@ Pass any S-exps to ~leaf-convert~ to get a ~leaf~ expression.
   ;;            (dired-mode-map
   ;;             ("o" . dired-omit-mode)
   ;;             ("a" . some-custom-dired-function))))
-#+end_src
 
-If you want to convert ~use-package~ to ~leaf~, you can use ~leaf-convert-from-use-package~.
-
-~leaf-convert-from-leaf~ is as alias for ~leaf-convert-from-use-package~.
-
-#+begin_src emacs-lisp
-  (leaf-convert-from-use-package
+  (leaf-convert
    (use-package edit-server
      :if window-system
      :init
@@ -157,7 +151,7 @@ If you want to convert ~use-package~ to ~leaf~, you can use ~leaf-convert-from-u
   ;;            (after-init-hook . edit-server-start))
   ;;     :require t)
 
-  (leaf-convert-from-leaf
+  (leaf-convert
    (leaf markdown-mode
      ;;:mode ("\\.md\\'" . commonmark-gfm-mode)
      :config

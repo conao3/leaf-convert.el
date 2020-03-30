@@ -114,13 +114,13 @@ Example:
 (cort-deftest-with-equal leaf-convert/use-package--getting-started
   '(
     ;; simplest use-package
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package foo))
      '(leaf foo
         :require t))
 
     ;; :init keyword
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package foo
         :init
         (setq foo-variable t)))
@@ -129,7 +129,7 @@ Example:
         :require t))
 
     ;; :config keyword
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package foo
         :init
         (setq foo-variable t)
@@ -141,7 +141,7 @@ Example:
         :config (foo-mode 1)))
 
     ;; :comands keyword
-    ((leaf-convert-from-use-package    ; TODO
+    ((leaf-convert    ; TODO
       (use-package color-moccur
         :commands isearch-moccur
         :config
@@ -153,7 +153,7 @@ Example:
           (use-package moccur-edit))))
 
     ;; init, :config, :bind
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package color-moccur
         :commands (isearch-moccur isearch-all)
         :bind (("M-s O" . moccur)
@@ -177,14 +177,14 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/use-package--keybinding
   '(
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ace-jump-mode
         :bind ("C-." . ace-jump-mode)))
      '(leaf ace-jump-mode
         :commands ace-jump-mode
         :bind (("C-." . ace-jump-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package hi-lock
         :bind (("M-o l" . highlight-lines-matching-regexp)
                ("M-o r" . highlight-regexp)
@@ -195,7 +195,7 @@ Example:
                ("M-o r" . highlight-regexp)
                ("M-o w" . highlight-phrase))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package helm
         :bind (("M-x" . helm-M-x)
                ("M-<f5>" . helm-find-files)
@@ -208,14 +208,14 @@ Example:
                ([f10] . helm-buffers-list)
                ([S-f10] . helm-recentf))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package unfill
         :bind ([remap fill-paragraph] . unfill-toggle)))
      '(leaf unfill
         :commands unfill-toggle
         :bind (([remap fill-paragraph] . unfill-toggle))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package helm
         :bind (:map helm-command-map
                     ("C-c h" . helm-execute-persistent-action))))
@@ -224,7 +224,7 @@ Example:
         :bind ((helm-command-map
                 ("C-c h" . helm-execute-persistent-action)))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package term
         :bind (("C-c t" . term)
                :map term-mode-map
@@ -247,7 +247,7 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/use-package--modes-and-interpreters
   '(
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ruby-mode
         :mode "\\.rb\\'"
         :interpreter "ruby"))
@@ -256,7 +256,7 @@ Example:
         :mode (("\\.rb\\'" . ruby-mode))
         :interpreter (("ruby" . ruby-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package python
         :mode ("\\.py\\'" . python-mode)
         :interpreter ("python" . python-mode)))
@@ -267,7 +267,7 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/use-package--magic-handlers
   '(
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package pdf-tools
         :magic ("%PDF" . pdf-view-mode)
         :config
@@ -279,7 +279,7 @@ Example:
         (with-eval-after-load 'pdf-tools
           (pdf-tools-install :no-query))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package pdf-tools
         :magic-fallback ("%PDF" . pdf-view-mode)
         :config
@@ -292,21 +292,21 @@ Example:
           (pdf-tools-install :no-query))))))
 
 (cort-deftest-with-equal leaf-convert/use-package--hooks
-  '(((leaf-convert-from-use-package
+  '(((leaf-convert
       (use-package ace-jump-mode
         :hook prog-mode))
      '(leaf ace-jump-mode
         :commands ace-jump-mode
         :hook ((prog-mode-hook . ace-jump-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ace-jump-mode
         :hook (prog-mode . ace-jump-mode)))
      '(leaf ace-jump-mode
         :commands ace-jump-mode
         :hook ((prog-mode-hook . ace-jump-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ace-jump-mode
         :commands ace-jump-mode
         :init
@@ -315,7 +315,7 @@ Example:
         :commands ace-jump-mode
         :hook ((prog-mode-hook . ace-jump-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ace-jump-mode
         :hook (prog-mode text-mode)))
      '(leaf ace-jump-mode
@@ -323,7 +323,7 @@ Example:
         :hook ((prog-mode-hook . ace-jump-mode)
                (text-mode-hook . ace-jump-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ace-jump-mode
         :hook ((prog-mode text-mode) . ace-jump-mode)))
      '(leaf ace-jump-mode
@@ -331,7 +331,7 @@ Example:
         :hook ((prog-mode-hook . ace-jump-mode)
                (text-mode-hook . ace-jump-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ace-jump-mode
         :hook ((prog-mode . ace-jump-mode)
                (text-mode . ace-jump-mode))))
@@ -340,7 +340,7 @@ Example:
         :hook ((prog-mode-hook . ace-jump-mode)
                (text-mode-hook . ace-jump-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ace-jump-mode
         :commands ace-jump-mode
         :init
@@ -353,7 +353,7 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/use-package--package-customization
   '(
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package comint
         :custom
         (comint-prompt-regexp "^")
@@ -365,7 +365,7 @@ Example:
                   (comint-prompt-read-only t "Make the prompt read only."))
         :require t))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package eruby-mode
         :custom-face
         (eruby-standard-face ((t (:slant italic))))))
@@ -373,7 +373,7 @@ Example:
         :custom-face ((eruby-standard-face . '((t (:slant italic)))))
         :require t))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package eruby-mode
         :custom-face
         (eruby-standard-face ((t (,(or :slant) italic))))))
@@ -384,7 +384,7 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/use-package--condition-loading
   '(
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package edit-server
         :if window-system
         :init
@@ -396,7 +396,7 @@ Example:
                (after-init-hook . edit-server-start))
         :require t))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package exec-path-from-shell
         :if (memq window-system '(mac ns))
         :ensure t
@@ -410,20 +410,20 @@ Example:
           (exec-path-from-shell-initialize)
           t)))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ess-site
         :disabled
         :commands R))
      '(leaf ess-site))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package abbrev
         :requires foo))
      '(leaf abbrev
         :when (featurep 'foo)
         :require t))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package abbrev
         :requires (foo bar baz)))
      '(leaf abbrev
@@ -432,7 +432,7 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/use-package--byte-compiling-your-emacs
   '(
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package texinfo
         :defines texinfo-section-list
         :commands texinfo-mode
@@ -443,7 +443,7 @@ Example:
         :commands texinfo-mode
         :mode (("\\.texi$" . texinfo-mode))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ruby-mode
         :mode "\\.rb\\'"
         :interpreter "ruby"
@@ -466,7 +466,7 @@ Example:
 
           (add-hook 'ruby-mode-hook 'my-ruby-mode-hook))))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package foo
         :no-require t
         :config
@@ -477,7 +477,7 @@ Example:
 
 (cort-deftest-with-equal leaf-convert/use-package--extending-the-load-path
   '(
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ess-site
         :load-path "site-lisp/ess/lisp/"
         :commands R))
@@ -490,7 +490,7 @@ Example:
 ;;   '())
 
 (cort-deftest-with-equal leaf-convert/use-package--diminishing-and-delighting-minor-modes
-  '(((leaf-convert-from-use-package
+  '(((leaf-convert
       (use-package abbrev
         :diminish abbrev-mode
         :config
@@ -503,28 +503,28 @@ Example:
           (quietly-read-abbrev-file))
         :diminish abbrev-mode))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package rainbow-mode
         :delight))
      '(leaf rainbow-mode
         :require t
         :delight (rainbow-mode nil rainbow-mode)))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package autorevert
         :delight auto-revert-mode))
      '(leaf autorevert
         :require t
         :delight (auto-revert-mode nil autorevert)))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package projectile
         :delight '(:eval (concat " " (projectile-project-name)))))
      '(leaf projectile
         :require t
         :delight (projectile-mode '(:eval (concat " " (projectile-project-name))) projectile)))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package emacs
         :delight
         (auto-fill-function " AF")
@@ -536,21 +536,21 @@ Example:
         (visual-line-mode nil emacs)))))
 
 (cort-deftest-with-equal leaf-convert/use-package--package-installation
-  '(((leaf-convert-from-use-package
+  '(((leaf-convert
       (use-package magit
         :ensure t))
      '(leaf magit
         :ensure t
         :require t))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package tex
         :ensure auctex))
      '(leaf tex
         :ensure auctex
         :require t))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package auto-package-update
         :config
         (setq auto-package-update-delete-old-versions t)
@@ -563,7 +563,7 @@ Example:
                (auto-package-update-hide-results . t))))))
 
 (cort-deftest-with-equal leaf-convert/use-package--chords
-  '(((leaf-convert-from-use-package
+  '(((leaf-convert
       (use-package use-package-chords
         :ensure t
         :config (key-chord-mode 1)))
@@ -572,7 +572,7 @@ Example:
         :require t
         :config (key-chord-mode 1)))
 
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package ace-jump-mode
         :chords (("jj" . ace-jump-char-mode)
                  ("jk" . ace-jump-word-mode)
@@ -848,7 +848,7 @@ Example:
         :ensure t))
 
     ;; could convert use-package :ensure t
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package leaf
         :ensure t))
      '(leaf leaf
@@ -856,7 +856,7 @@ Example:
         :require t))
 
     ;; could convert use-package :ensure argument
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package tex
         :ensure auctex))
      '(leaf tex
@@ -864,7 +864,7 @@ Example:
         :require t))
 
     ;; could convert use-package :ensure arguments
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package tex
         :ensure t
         :ensure auctex))
@@ -889,7 +889,7 @@ Example:
         :require t))
 
     ;; empty use-package will convert :require keyword
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package tex))
      '(leaf tex
         :require t))
@@ -903,7 +903,7 @@ Example:
         (require 'leaf "~/.emacs.d/site-lisp/leaf.el/leaf.el" t)))
 
     ;; Sexps that are executed before require are placed in the appropriate place
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package foo
         :init
         (setq foo-variable t)
@@ -944,7 +944,7 @@ Example:
         :commands moccur))
 
     ;; use-package :commands converted :commands
-    ((leaf-convert-from-use-package
+    ((leaf-convert
       (use-package color-moccur
         :commands (isearch-moccur isearch-all)
         :init
