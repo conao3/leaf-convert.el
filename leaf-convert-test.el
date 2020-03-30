@@ -1272,6 +1272,26 @@ Example:
         (overwrite-mode " Ov" t)
         (emacs-lisp-mode "Elisp" :major)))))
 
+(cort-deftest-with-equal leaf-convert/chord
+  '(
+    ;; key-chord-define-global convert :chord
+    ((leaf-convert
+      (key-chord-define-global "hj" 'undo))
+     '(leaf leaf-convert
+        :chord (("hj" . undo))))
+
+    ;; key-chord-define vector convert :chord
+    ((leaf-convert
+      (key-chord-define-global [?h ?j]  'undo))
+     '(leaf leaf-convert
+        :chord (([104 106] . undo))))
+
+    ;; bind-chord convert :chord
+    ((leaf-convert
+      (bind-chord "jj" 'ace-jump-char-mode))
+     '(leaf leaf-convert
+        :chord (("jj" . ace-jump-char-mode))))))
+
 (cort-deftest-with-equal leaf-convert/mode-line-structp
   ;; see https://github.com/myrjola/diminish.el
   '(((leaf-convert--mode-line-structp " Rbow") t)

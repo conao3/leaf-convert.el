@@ -96,8 +96,8 @@ Currently, the following ~leaf~ keywords are supported for automatic conversion.
   ;;    :combo*
   ;;    :smartrep
   ;;    :smartrep*
-  ;;    :chord
-  ;;    :chord*
+  ;;    :chord                  ; supported!!
+  ;;    :chord*                 ; supported!!
   ;;    :mode-hook
   ;;    :leaf-defer
   ;;    :config                 ; supported!!

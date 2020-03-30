@@ -65,7 +65,8 @@
 
 (defcustom leaf-convert-prefer-list-keywords
   (leaf-list
-   :bind :bind* :mode :interpreter :magic :magic-fallback :hook
+   :bind :bind* :chord :chord*
+   :mode :interpreter :magic :magic-fallback :hook
    :custom :custom* :custom-face :pl-custom :auth-custom
    :setq :pre-setq :setq-default
    :pl-setq :pl-pre-setq :pl-setq-default
@@ -301,6 +302,12 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push elm (alist-get 'require contents)))
       (`(require ',(and (pred symbolp) elm) nil ,_)
        (setq contents (leaf-convert-contents-new--sexp-1 `(require ',elm) contents)))
+
+      ;; :chord, :chord*
+      (`(key-chord-define-global ,(or (and (pred stringp) key) (and (pred vector) key)) ',(and (pred symbolp) fn))
+       (push `(,key . ,fn) (alist-get 'chord contents)))
+      (`(bind-chord ,(or (and (pred stringp) key) (and (pred vector) key)) ',(and (pred symbolp) fn))
+       (push `(,key . ,fn) (alist-get 'chord contents)))
 
       ;; :diminish, :delight
       (`(,(and (or 'diminish 'delight) op) ',(and (pred symbolp) elm))
