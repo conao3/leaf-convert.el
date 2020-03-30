@@ -570,7 +570,18 @@ Example:
      '(leaf use-package-chords
         :ensure t
         :require t
-        :config (key-chord-mode 1)))))
+        :config (key-chord-mode 1)))
+
+    ((leaf-convert-from-use-package
+      (use-package ace-jump-mode
+        :chords (("jj" . ace-jump-char-mode)
+                 ("jk" . ace-jump-word-mode)
+                 ("jl" . ace-jump-line-mode))))
+     '(leaf ace-jump-mode
+        :commands ace-jump-char-mode ace-jump-word-mode ace-jump-line-mode
+        :chord (("jj" . ace-jump-char-mode)
+                ("jk" . ace-jump-word-mode)
+                ("jl" . ace-jump-line-mode))))))
 
 (cort-deftest-with-equal leaf-convert/progn
   '(
