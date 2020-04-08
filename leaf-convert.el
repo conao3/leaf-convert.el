@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.1
+;; Version: 1.0.2
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -521,7 +521,7 @@ And kill generated leaf block to quick yank."
     (thread-last (leaf-convert-contents-new--sexp-internal `(prog1 ',pkg) nil 'toplevel)
       (leaf-convert--fill-info)
       (leaf-convert-from-contents)
-      (ppp-leaf)))
+      (ppp-sexp)))
   (delete-char -1)
   (backward-sexp)
   (indent-sexp)
@@ -692,7 +692,7 @@ If VAL contains the same value as leaf--name, replace it with t."
          (form (read str))
          (res (eval `(leaf-convert ,form))))
     (delete-region beg end)
-    (insert (ppp-leaf-to-string res))
+    (insert (ppp-sexp-to-string res))
     (delete-char -1)
     (indent-region
      (save-excursion (thing-at-point--beginning-of-sexp) (point)) (point))))
@@ -714,7 +714,7 @@ If VAL contains the same value as leaf--name, replace it with t."
       (princ "\n\n")
       (princ ";; Converted Leaf format\n")
       (princ ";; --------------------------------------------------\n")
-      (ppp-leaf res))))
+      (ppp-sexp res))))
 
 (provide 'leaf-convert)
 
