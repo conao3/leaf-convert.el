@@ -170,10 +170,10 @@ Example:
                (isearch-mode-map
                 ("M-o" . isearch-moccur)
                 ("M-O" . isearch-moccur-all)))
+        :setq ((isearch-lazy-highlight . t))
         :config
         (with-eval-after-load 'color-moccur
-          (use-package moccur-edit))
-        :setq ((isearch-lazy-highlight . t))))))
+          (use-package moccur-edit))))))
 
 (cort-deftest-with-equal leaf-convert/use-package--keybinding
   '(
@@ -498,10 +498,10 @@ Example:
             (quietly-read-abbrev-file))))
      '(leaf abbrev
         :require t
+        :diminish abbrev-mode
         :config
         (when (file-exists-p abbrev-file-name)
-          (quietly-read-abbrev-file))
-        :diminish abbrev-mode))
+          (quietly-read-abbrev-file))))
 
     ((leaf-convert
       (use-package rainbow-mode
@@ -558,9 +558,9 @@ Example:
         (auto-package-update-maybe)))
      '(leaf auto-package-update
         :require t
-        :config (auto-package-update-maybe)
         :setq ((auto-package-update-delete-old-versions . t)
-               (auto-package-update-hide-results . t))))))
+               (auto-package-update-hide-results . t))
+        :config (auto-package-update-maybe)))))
 
 (cort-deftest-with-equal leaf-convert/use-package--chords
   '(((leaf-convert
@@ -757,8 +757,8 @@ Example:
         (setq gc-cons-threshold (* 512 1024 1024))
         (setq garbage-collection-messages t)))
      '(leaf alloc
-        :config (setq gc-cons-threshold (* 512 1024 1024))
-        :setq ((garbage-collection-messages . t))))))
+        :setq ((garbage-collection-messages . t))
+        :config (setq gc-cons-threshold (* 512 1024 1024))))))
 
 (cort-deftest-with-equal leaf-convert/setq-default
   '(
@@ -777,8 +777,8 @@ Example:
         (setq-default gc-cons-threshold (* 512 1024 1024))
         (setq-default garbage-collection-messages t)))
      '(leaf alloc
-        :config (setq-default gc-cons-threshold (* 512 1024 1024))
-        :setq-default ((garbage-collection-messages . t))))))
+        :setq-default ((garbage-collection-messages . t))
+        :config (setq-default gc-cons-threshold (* 512 1024 1024))))))
 
 (cort-deftest-with-equal leaf-convert/diminish
   '(
@@ -911,8 +911,8 @@ Example:
         :config
         (foo-enable)))
      '(leaf foo
-        :init (foo-init)
         :pre-setq ((foo-variable . t))
+        :init (foo-init)
         :require t
         :config (foo-enable)))))
 
