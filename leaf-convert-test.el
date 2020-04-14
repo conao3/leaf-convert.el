@@ -247,8 +247,8 @@ Example:
         :interpreter "ruby"))
      '(leaf ruby-mode
         :commands ruby-mode
-        :mode (("\\.rb\\'" . ruby-mode))
-        :interpreter (("ruby" . ruby-mode))))
+        :mode ("\\.rb\\'")
+        :interpreter ("ruby")))
 
     ((leaf-convert
       (use-package python
@@ -450,8 +450,8 @@ Example:
         (add-hook 'ruby-mode-hook 'my-ruby-mode-hook)))
      '(leaf ruby-mode
         :commands ruby-mode
-        :mode (("\\.rb\\'" . ruby-mode))
-        :interpreter (("ruby" . ruby-mode))
+        :mode ("\\.rb\\'")
+        :interpreter ("ruby")
         :config
         (with-eval-after-load 'ruby-mode
           (defun my-ruby-mode-hook ()
@@ -1082,7 +1082,7 @@ Example:
       (prog1 'ruby-mode
         (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))))
      '(leaf ruby-mode
-        :mode (("\\.rb\\'" . ruby-mode))))))
+        :mode ("\\.rb\\'")))))
 
 (cort-deftest-with-equal leaf-convert/interpreter
   '(
@@ -1091,7 +1091,7 @@ Example:
       (prog1 'ruby-mode
         (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))))
      '(leaf ruby-mode
-        :interpreter (("ruby" . ruby-mode))))))
+        :interpreter ("ruby")))))
 
 (cort-deftest-with-equal leaf-convert/magic
   '(
