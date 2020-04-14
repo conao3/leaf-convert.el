@@ -246,7 +246,6 @@ Example:
         :mode "\\.rb\\'"
         :interpreter "ruby"))
      '(leaf ruby-mode
-        :commands ruby-mode
         :mode ("\\.rb\\'")
         :interpreter ("ruby")))
 
@@ -255,7 +254,6 @@ Example:
         :mode ("\\.py\\'" . python-mode)
         :interpreter ("python" . python-mode)))
      '(leaf python
-        :commands python-mode
         :mode ("\\.py\\'")
         :interpreter ("python")))))
 
@@ -434,7 +432,6 @@ Example:
         (add-to-list 'auto-mode-alist '("\\.texi$" . texinfo-mode))))
      '(leaf texinfo
         :defvar texinfo-section-list
-        :commands texinfo-mode
         :mode ("\\.texi$")))
 
     ((leaf-convert
@@ -449,7 +446,6 @@ Example:
 
         (add-hook 'ruby-mode-hook 'my-ruby-mode-hook)))
      '(leaf ruby-mode
-        :commands ruby-mode
         :mode ("\\.rb\\'")
         :interpreter ("ruby")
         :config
