@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.7
+;; Version: 1.0.8
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -597,6 +597,20 @@ And kill generated leaf block to quick yank."
 ELM can be string or symbol."
   (if (stringp elm) (intern elm) elm))
 
+(defun leaf-convert--optimize-over-keyword (contents)
+  "Optimize CONTENTS over keyword.
+- Remove :bind function from :commands."
+  (let ((keys (mapcar #'car contents)))
+    (when (and (memq 'commands keys) (memq 'bind keys))
+      (let ((fns (cadr (eval `(leaf-keys ,(alist-get 'bind contents) 'dryrun)))))
+        (setf (alist-get 'commands contents)
+              (cl-set-difference (alist-get 'commands contents) fns))))
+    (when (and (memq 'commands keys) (memq 'bind* keys))
+      (let ((fns (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))))
+        (setf (alist-get 'commands contents)
+              (cl-set-difference (alist-get 'commands contents) fns))))
+    contents))
+
 (defun leaf-convert--convert-eval-after-load (key val)
   "Convert `eval-after-load' to `with-eval-after-load' for VAL.
 If KEY is the member of :preface :init :config."
@@ -658,19 +672,20 @@ If VAL contains the same value as leaf--name, replace it with t."
                           (`((leaf . ,body)) body)))))
         `(leaf ,@body)
       `(leaf ,pkg
-         ,@(mapcan
-            (lambda (key)
-              (when-let* ((value (alist-get (leaf-sym-from-keyword key) contents))
-                          (value* (thread-last value
-                                    (nreverse)
-                                    (leaf-convert--remove-constant key)
-                                    (leaf-convert--convert-eval-after-load key)
-                                    (leaf-convert--omit-leaf-name pkg key)
-                                    (delete-dups))))
-                (if (memq key leaf-convert-prefer-list-keywords)
-                    `(,key ,value*)
-                  `(,key ,@value*))))
-            all-keywords)))))
+         ,@(let ((contents* (leaf-convert--optimize-over-keyword contents)))
+             (mapcan
+              (lambda (key)
+                (when-let* ((value (alist-get (leaf-sym-from-keyword key) contents*))
+                            (value* (thread-last value
+                                      (nreverse)
+                                      (leaf-convert--convert-eval-after-load key)
+                                      (leaf-convert--omit-leaf-name pkg key)
+                                      (leaf-convert--remove-constant key)
+                                      (delete-dups))))
+                  (if (memq key leaf-convert-prefer-list-keywords)
+                      `(,key ,value*)
+                    `(,key ,@value*))))
+              all-keywords))))))
 
 ;;;###autoload
 (defmacro leaf-convert (&rest body)

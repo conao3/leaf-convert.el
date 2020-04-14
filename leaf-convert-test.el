@@ -165,7 +165,7 @@ Example:
         :config
         (use-package moccur-edit)))
      '(leaf color-moccur
-        :commands moccur isearch-moccur isearch-moccur-all isearch-all
+        :commands isearch-all
         :bind (("M-s O" . moccur)
                (isearch-mode-map
                 ("M-o" . isearch-moccur)
@@ -181,7 +181,6 @@ Example:
       (use-package ace-jump-mode
         :bind ("C-." . ace-jump-mode)))
      '(leaf ace-jump-mode
-        :commands ace-jump-mode
         :bind (("C-." . ace-jump-mode))))
 
     ((leaf-convert
@@ -190,7 +189,6 @@ Example:
                ("M-o r" . highlight-regexp)
                ("M-o w" . highlight-phrase))))
      '(leaf hi-lock
-        :commands highlight-lines-matching-regexp highlight-regexp highlight-phrase
         :bind (("M-o l" . highlight-lines-matching-regexp)
                ("M-o r" . highlight-regexp)
                ("M-o w" . highlight-phrase))))
@@ -202,7 +200,6 @@ Example:
                ([f10] . helm-buffers-list)
                ([S-f10] . helm-recentf))))
      '(leaf helm
-        :commands helm-M-x helm-find-files helm-buffers-list helm-recentf
         :bind (("M-x" . helm-M-x)
                ("M-<f5>" . helm-find-files)
                ([f10] . helm-buffers-list)
@@ -212,7 +209,6 @@ Example:
       (use-package unfill
         :bind ([remap fill-paragraph] . unfill-toggle)))
      '(leaf unfill
-        :commands unfill-toggle
         :bind (([remap fill-paragraph] . unfill-toggle))))
 
     ((leaf-convert
@@ -220,7 +216,6 @@ Example:
         :bind (:map helm-command-map
                     ("C-c h" . helm-execute-persistent-action))))
      '(leaf helm
-        :commands helm-execute-persistent-action
         :bind ((helm-command-map
                 ("C-c h" . helm-execute-persistent-action)))))
 
@@ -235,7 +230,6 @@ Example:
                ("M-p" . term-send-up)
                ("M-n" . term-send-down))))
      '(leaf term
-        :commands term term-send-up term-send-down other-window
         :bind (("C-c t" . term)
                (term-mode-map
                 ("M-p" . term-send-up)
