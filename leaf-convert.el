@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.1.2
+;; Version: 1.1.3
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -620,6 +620,7 @@ ELM can be string or symbol."
 
 :commands
   - The elements can be omitted for :bind, :bind* functions.
+  - The elements can be omitted if the mode symbol could be guessed.
 
 :mode :interpreter :magic :magic-fallback
   - The pair's cdr can be omitted if the same as leaf--name.
@@ -649,6 +650,18 @@ ELM can be string or symbol."
                   (push (car pair) tmp)
                 (push pair tmp)))
             (setf (alist-get key contents) (nreverse tmp))))))
+
+    (when (and (memq 'leaf-convert--name keys)
+               (leaf-list-memq keys (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords)))
+      (let (guessp)                 ; t means, use guess major-mode feature
+        (dolist (key (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords))
+          (when (memq key keys)
+            (dolist (pair (alist-get key contents))
+              (when (stringp pair)
+                (setq guessp t)))))
+        (when guessp
+          (setf (alist-get 'commands contents)
+                (delq (leaf-mode-sym (alist-get 'leaf-convert--name contents)) (alist-get 'commands contents))))))
 
     (when (and (memq 'leaf-convert--name keys) (memq 'defun keys))
       (let (tmp)
