@@ -600,7 +600,7 @@ ELM can be string or symbol."
 (defun leaf-convert--convert-eval-after-load (key val)
   "Convert `eval-after-load' to `with-eval-after-load' for VAL.
 If KEY is the member of :preface :init :config."
-  (if (not (memq key '(:preface :init :config)))
+  (if (not (memq key leaf-convert-config-like-keywords))
       val
     (let (val*)
       (dolist (elm val)
