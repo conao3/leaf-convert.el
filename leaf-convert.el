@@ -88,11 +88,11 @@ see `leaf-convert--fill-info'"
   :group 'leaf-convert
   :type 'sexp)
 
+(defvar leaf-convert-config-like-keywords '(:preface :init :config)
+  "Keywords like :config.")
+
 (defvar leaf-convert-omit-leaf-name-keywords '(:ensure :feather :package :require :after)
   "Keywords that interpret t as leaf--name.")
-
-(defvar leaf-convert-remove-constant-keywords '(:preface :init :config)
-  "Keywords that constant is useless.")
 
 
 ;;; Patterns
@@ -618,7 +618,7 @@ If KEY is the member of :preface :init :config."
 
 (defun leaf-convert--remove-constant (key val)
   "Remove constant in VAL if KEY is the member of remove-constant-keywords."
-  (if (memq key leaf-convert-remove-constant-keywords)
+  (if (memq key leaf-convert-config-like-keywords)
       (thread-last val
         (mapcar (lambda (elm) (if (atom elm) nil elm)))
         (delq nil))
