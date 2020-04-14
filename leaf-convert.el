@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.1.1
+;; Version: 1.1.2
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -617,7 +617,16 @@ ELM can be string or symbol."
 
 (defun leaf-convert--optimize-over-keyword (contents)
   "Optimize CONTENTS over keyword.
-- Remove :bind, :bind* function from :commands."
+
+:commands
+  - The elements can be omitted for :bind, :bind* functions.
+
+:mode :interpreter :magic :magic-fallback
+  - The pair's cdr can be omitted if the same as leaf--name.
+  - The pair's cdr can be omitted if the mode symbol could be guessed.
+
+:defun
+  - The pair's cdr can be omitted if the mode symbol could be guessed."
   (let ((name (alist-get 'leaf-convert--name contents))
         (keys (mapcar #'car contents)))
     (when (or (and (memq 'commands keys) (memq 'bind keys))
@@ -633,7 +642,10 @@ ELM can be string or symbol."
         (when (memq key keys)
           (let (tmp)
             (dolist (pair (alist-get key contents))
-              (if (and (leaf-pairp pair) (eq (cdr pair) name))
+              (if (and (leaf-pairp pair)
+                       (or (eq (cdr pair) name)
+                           (eq (leaf-mode-sym (cdr pair)) name)
+                           (eq (cdr pair) (leaf-mode-sym name))))
                   (push (car pair) tmp)
                 (push pair tmp)))
             (setf (alist-get key contents) (nreverse tmp))))))

@@ -256,8 +256,8 @@ Example:
         :interpreter ("python" . python-mode)))
      '(leaf python
         :commands python-mode
-        :mode (("\\.py\\'" . python-mode))
-        :interpreter (("python" . python-mode))))))
+        :mode ("\\.py\\'")
+        :interpreter ("python")))))
 
 (cort-deftest-with-equal leaf-convert/use-package--magic-handlers
   '(
@@ -435,7 +435,7 @@ Example:
      '(leaf texinfo
         :defvar texinfo-section-list
         :commands texinfo-mode
-        :mode (("\\.texi$" . texinfo-mode))))
+        :mode ("\\.texi$")))
 
     ((leaf-convert
       (use-package ruby-mode
