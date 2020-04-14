@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.1.4
+;; Version: 1.1.5
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -91,7 +91,7 @@ see `leaf-convert--fill-info'"
 (defvar leaf-convert-config-like-keywords '(:preface :init :config :mode-hook)
   "Keywords like :config.")
 
-(defvar leaf-convert-mode-like-keywords '(:mode :interpreter :magic :magic-fallback)
+(defvar leaf-convert-mode-like-keywords '(:mode :interpreter :magic :magic-fallback :hook)
   "Keywords like :mode.")
 
 (defvar leaf-convert-omit-leaf-name-keywords '(:ensure :feather :package :require :after)
@@ -654,10 +654,7 @@ ELM can be string or symbol."
         (when (memq key keys)
           (let (tmp)
             (dolist (pair (alist-get key contents))
-              (if (and (leaf-pairp pair)
-                       (or (eq (cdr pair) name)
-                           (eq (leaf-mode-sym (cdr pair)) name)
-                           (eq (cdr pair) (leaf-mode-sym name))))
+              (if (and (listp pair) (eq (leaf-mode-sym (cdr pair)) (leaf-mode-sym name)))
                   (push (car pair) tmp)
                 (push pair tmp)))
             (setf (alist-get key contents) (nreverse tmp))))))
@@ -668,7 +665,7 @@ ELM can be string or symbol."
         (dolist (key (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords))
           (when (memq key keys)
             (dolist (pair (alist-get key contents))
-              (when (stringp pair)
+              (unless (listp pair)
                 (setq guessp t)))))
         (when guessp
           (setf (alist-get 'commands contents)
