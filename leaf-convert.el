@@ -603,24 +603,24 @@ And kill generated leaf block to quick yank."
 ELM can be string or symbol."
   (if (stringp elm) (intern elm) elm))
 
-(defun leaf-convert--optimize-per-keyword (key val)
-  "Optimize VAL for KEY."
-  (pcase key
-    ((or :preface :init :config)
-     (let (val*)
-       (dolist (elm val)
-         (pcase elm
-           (`(eval-after-load ,(or `',name (and (pred stringp) name))
-               ',body)
-            (push `(with-eval-after-load ',name
-                     ,@(pcase body
-                         (`(progn . ,body*)
-                          (leaf-convert--remove-constant :config body*))
-                         (_ `(,body))))
-                  val*))
-           (_ (push elm val*))))
-       (nreverse val*)))
-    (_ val)))
+(defun leaf-convert--convert-eval-after-load (key val)
+  "Convert `eval-after-load' to `with-eval-after-load' for VAL.
+If KEY is the member of :preface :init :config."
+  (if (not (memq key '(:preface :init :config)))
+      val
+    (let (val*)
+      (dolist (elm val)
+        (pcase elm
+          (`(eval-after-load ,(or `',name (and (pred stringp) name))
+              ',body)
+           (push `(with-eval-after-load ',name
+                    ,@(pcase body
+                        (`(progn . ,body*)
+                         (leaf-convert--remove-constant :config body*))
+                        (_ `(,body))))
+                 val*))
+          (_ (push elm val*))))
+      (nreverse val*))))
 
 (defun leaf-convert--remove-constant (key val)
   "Remove constant in VAL if KEY is the member of remove-constant-keywords."
@@ -670,7 +670,7 @@ If VAL contains the same value as leaf--name, replace it with t."
                           (value* (thread-last value
                                     (nreverse)
                                     (leaf-convert--remove-constant key)
-                                    (leaf-convert--optimize-per-keyword key)
+                                    (leaf-convert--convert-eval-after-load key)
                                     (leaf-convert--omit-leaf-name pkg key)
                                     (delete-dups))))
                 (if (memq key leaf-convert-prefer-list-keywords)
