@@ -91,6 +91,9 @@ see `leaf-convert--fill-info'"
 (defvar leaf-convert-config-like-keywords '(:preface :init :config :mode-hook)
   "Keywords like :config.")
 
+(defvar leaf-convert-mode-like-keywords '(:mode :interpreter :magic :magic-fallback)
+  "Keywords like :mode.")
+
 (defvar leaf-convert-omit-leaf-name-keywords '(:ensure :feather :package :require :after)
   "Keywords that interpret t as leaf--name.")
 
@@ -623,6 +626,17 @@ ELM can be string or symbol."
             (fns* (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))))
         (setf (alist-get 'commands contents)
               (cl-set-difference (alist-get 'commands contents) (append fns fns*)))))
+
+    (when (and (memq 'leaf-convert--name keys)
+               (leaf-list-memq keys (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords)))
+      (dolist (key (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords))
+        (when (memq key keys)
+          (let (tmp)
+            (dolist (pair (alist-get key contents))
+              (if (and (leaf-pairp pair) (eq (cdr pair) name))
+                  (push (car pair) tmp)
+                (push pair tmp)))
+            (setf (alist-get key contents) (nreverse tmp))))))
 
     (when (and (memq 'leaf-convert--name keys) (memq 'defun keys))
       (let (tmp)
