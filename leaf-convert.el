@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.6
+;; Version: 1.0.7
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -88,11 +88,11 @@ see `leaf-convert--fill-info'"
   :group 'leaf-convert
   :type 'sexp)
 
+(defvar leaf-convert-config-like-keywords '(:preface :init :config :mode-hook)
+  "Keywords like :config.")
+
 (defvar leaf-convert-omit-leaf-name-keywords '(:ensure :feather :package :require :after)
   "Keywords that interpret t as leaf--name.")
-
-(defvar leaf-convert-remove-constant-keywords '(:preface :init :config)
-  "Keywords that constant is useless.")
 
 
 ;;; Patterns
@@ -600,7 +600,7 @@ ELM can be string or symbol."
 (defun leaf-convert--convert-eval-after-load (key val)
   "Convert `eval-after-load' to `with-eval-after-load' for VAL.
 If KEY is the member of :preface :init :config."
-  (if (not (memq key '(:preface :init :config)))
+  (if (not (memq key leaf-convert-config-like-keywords))
       val
     (let (val*)
       (dolist (elm val)
@@ -618,11 +618,11 @@ If KEY is the member of :preface :init :config."
 
 (defun leaf-convert--remove-constant (key val)
   "Remove constant in VAL if KEY is the member of remove-constant-keywords."
-  (if (memq key leaf-convert-remove-constant-keywords)
-      (thread-last val
-        (mapcar (lambda (elm) (if (atom elm) nil elm)))
-        (delq nil))
-    val))
+  (if (not (memq key leaf-convert-config-like-keywords))
+      val
+    (thread-last val
+      (mapcar (lambda (elm) (if (atom elm) nil elm)))
+      (delq nil))))
 
 (defun leaf-convert--omit-leaf-name (pkg key val)
   "Convert PKG symbol to t if KEY is the menber of omittable-keywords.
