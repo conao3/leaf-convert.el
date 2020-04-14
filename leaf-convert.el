@@ -630,12 +630,13 @@ ELM can be string or symbol."
   - The pair's cdr can be omitted if the mode symbol could be guessed."
   (let ((name (alist-get 'leaf-convert--name contents))
         (keys (mapcar #'car contents)))
-    (when (or (and (memq 'commands keys) (memq 'bind keys))
-              (and (memq 'commands keys) (memq 'bind* keys)))
-      (let ((fns  (cadr (eval `(leaf-keys ,(alist-get 'bind contents) 'dryrun))))
-            (fns* (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))))
-        (setf (alist-get 'commands contents)
-              (cl-set-difference (alist-get 'commands contents) (append fns fns*)))))
+    (when (and (memq 'commands keys)
+               (leaf-list-memq '(bind bind*) keys))
+      (setf (alist-get 'commands contents)
+            (cl-set-difference
+             (alist-get 'commands contents)
+             (append (cadr (eval `(leaf-keys ,(alist-get 'bind contents) 'dryrun)))
+                     (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))))))
 
     (when (and (memq 'leaf-convert--name keys)
                (leaf-list-memq keys (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords)))
