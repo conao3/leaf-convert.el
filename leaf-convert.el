@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.5
+;; Version: 1.0.6
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -77,18 +77,6 @@
   :group 'leaf-convert
   :type 'sexp)
 
-(defcustom leaf-convert-omit-leaf-name-keywords
-  (leaf-list
-   :ensure :feather :package :require :after)
-  "Keywords that interpret t as leaf--name."
-  :group 'leaf-convert
-  :type 'sexp)
-
-(defcustom leaf-convert-remove-constant-keywords '(:preface :init :config)
-  "Keywords that constant is useless."
-  :group 'leaf-convert
-  :type 'sexp)
-
 (defcustom leaf-convert-except-after
   (leaf-list
    cl-lib let-alist pkg-info json seq
@@ -99,6 +87,12 @@
 see `leaf-convert--fill-info'"
   :group 'leaf-convert
   :type 'sexp)
+
+(defvar leaf-convert-omit-leaf-name-keywords '(:ensure :feather :package :require :after)
+  "Keywords that interpret t as leaf--name.")
+
+(defvar leaf-convert-remove-constant-keywords '(:preface :init :config)
+  "Keywords that constant is useless.")
 
 
 ;;; Patterns
