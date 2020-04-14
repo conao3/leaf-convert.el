@@ -1064,7 +1064,7 @@ Example:
                 ("M-p" . term-send-up)
                 ("M-n" . term-send-down)))))
      '(leaf term
-        :defun (term . term) (term-send-up . term) (term-send-down . term) (other-window . term)
+        :defun term term-send-up term-send-down other-window
         :defvar term-mode-map term-raw-map
         :bind (("C-c t" . term)
                (term-mode-map :package term

@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.9
+;; Version: 1.1.0
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -614,16 +614,24 @@ ELM can be string or symbol."
 
 (defun leaf-convert--optimize-over-keyword (contents)
   "Optimize CONTENTS over keyword.
-- Remove :bind function from :commands."
-  (let ((keys (mapcar #'car contents)))
-    (when (and (memq 'commands keys) (memq 'bind keys))
-      (let ((fns (cadr (eval `(leaf-keys ,(alist-get 'bind contents) 'dryrun)))))
+- Remove :bind, :bind* function from :commands."
+  (let ((name (alist-get 'leaf-convert--name contents))
+        (keys (mapcar #'car contents)))
+    (when (or (and (memq 'commands keys) (memq 'bind keys))
+              (and (memq 'commands keys) (memq 'bind* keys)))
+      (let ((fns  (cadr (eval `(leaf-keys ,(alist-get 'bind contents) 'dryrun))))
+            (fns* (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))))
         (setf (alist-get 'commands contents)
-              (cl-set-difference (alist-get 'commands contents) fns))))
-    (when (and (memq 'commands keys) (memq 'bind* keys))
-      (let ((fns (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))))
-        (setf (alist-get 'commands contents)
-              (cl-set-difference (alist-get 'commands contents) fns))))
+              (cl-set-difference (alist-get 'commands contents) (append fns fns*)))))
+
+    (when (and (memq 'leaf-convert--name keys) (memq 'defun keys))
+      (let (tmp)
+        (dolist (pair (alist-get 'defun contents))
+          (if (and (leaf-pairp pair) (eq (cdr pair) name))
+              (push (car pair) tmp)
+            (push pair tmp)))
+        (setf (alist-get 'defun contents) (nreverse tmp))))
+
     contents))
 
 (defun leaf-convert--convert-eval-after-load (key val)
