@@ -597,6 +597,11 @@ And kill generated leaf block to quick yank."
 ELM can be string or symbol."
   (if (stringp elm) (intern elm) elm))
 
+(defun leaf-convert--optimize-over-keyword (contents)
+  "Optimize CONTENTS over keyword.
+- Remove :bind function from :commands."
+  contents)
+
 (defun leaf-convert--convert-eval-after-load (key val)
   "Convert `eval-after-load' to `with-eval-after-load' for VAL.
 If KEY is the member of :preface :init :config."
@@ -658,19 +663,20 @@ If VAL contains the same value as leaf--name, replace it with t."
                           (`((leaf . ,body)) body)))))
         `(leaf ,@body)
       `(leaf ,pkg
-         ,@(mapcan
-            (lambda (key)
-              (when-let* ((value (alist-get (leaf-sym-from-keyword key) contents))
-                          (value* (thread-last value
-                                    (nreverse)
-                                    (leaf-convert--remove-constant key)
-                                    (leaf-convert--convert-eval-after-load key)
-                                    (leaf-convert--omit-leaf-name pkg key)
-                                    (delete-dups))))
-                (if (memq key leaf-convert-prefer-list-keywords)
-                    `(,key ,value*)
-                  `(,key ,@value*))))
-            all-keywords)))))
+         ,@(let ((contents* (leaf-convert--optimize-over-keyword contents)))
+             (mapcan
+              (lambda (key)
+                (when-let* ((value (alist-get (leaf-sym-from-keyword key) contents*))
+                            (value* (thread-last value
+                                      (nreverse)
+                                      (leaf-convert--convert-eval-after-load key)
+                                      (leaf-convert--omit-leaf-name pkg key)
+                                      (leaf-convert--remove-constant key)
+                                      (delete-dups))))
+                  (if (memq key leaf-convert-prefer-list-keywords)
+                      `(,key ,value*)
+                    `(,key ,@value*))))
+              all-keywords))))))
 
 ;;;###autoload
 (defmacro leaf-convert (&rest body)
