@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.1.3
+;; Version: 1.1.4
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -620,6 +620,7 @@ ELM can be string or symbol."
 
 :commands
   - The elements can be omitted for :bind, :bind* functions.
+  - The elements can be omitted for cdr of :mode like keywords arguments.
   - The elements can be omitted if the mode symbol could be guessed.
 
 :mode :interpreter :magic :magic-fallback
@@ -630,12 +631,22 @@ ELM can be string or symbol."
   - The pair's cdr can be omitted if the mode symbol could be guessed."
   (let ((name (alist-get 'leaf-convert--name contents))
         (keys (mapcar #'car contents)))
-    (when (or (and (memq 'commands keys) (memq 'bind keys))
-              (and (memq 'commands keys) (memq 'bind* keys)))
-      (let ((fns  (cadr (eval `(leaf-keys ,(alist-get 'bind contents) 'dryrun))))
-            (fns* (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))))
-        (setf (alist-get 'commands contents)
-              (cl-set-difference (alist-get 'commands contents) (append fns fns*)))))
+    (when (and (memq 'commands keys)
+               (leaf-list-memq (append '(bind bind*)
+                                       (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords))
+                               keys))
+      (setf (alist-get 'commands contents)
+            (cl-set-difference
+             (alist-get 'commands contents)
+             (append (cadr (eval `(leaf-keys ,(alist-get 'bind contents) 'dryrun)))
+                     (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))
+                     (let (ret)
+                       (dolist (key (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords))
+                         (dolist (elm (alist-get key contents))
+                           (pcase elm
+                             (`(,(and (pred stringp) _fn) . ,sym)
+                              (push sym ret)))))
+                       ret)))))
 
     (when (and (memq 'leaf-convert--name keys)
                (leaf-list-memq keys (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords)))

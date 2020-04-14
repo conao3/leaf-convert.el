@@ -265,7 +265,6 @@ Example:
         :config
         (pdf-tools-install :no-query)))
      '(leaf pdf-tools
-        :commands pdf-view-mode
         :magic (("%PDF" . pdf-view-mode))
         :config
         (with-eval-after-load 'pdf-tools
@@ -277,7 +276,6 @@ Example:
         :config
         (pdf-tools-install :no-query)))
      '(leaf pdf-tools
-        :commands pdf-view-mode
         :magic-fallback (("%PDF" . pdf-view-mode))
         :config
         (with-eval-after-load 'pdf-tools
