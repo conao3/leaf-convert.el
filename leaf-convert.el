@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.8
+;; Version: 1.0.9
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -253,6 +253,21 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (setq contents (leaf-convert-contents-new--sexp-1 `(define-key override-global-map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
       (`(,(and (or 'bind-keys 'bind-keys*) op) . ,args)
        (setq contents (leaf-convert-contents--parse-bind-keys op args contents)))
+
+      (`(leaf-key ,key ,(and (pred fnp) fn))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(define-key global-map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
+      (`(leaf-key ,key ,(and (pred fnp) fn) ,(and (pred symbolp) map))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(define-key ,map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
+      (`(leaf-key* ,key ,(and (pred fnp) fn))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(define-key leaf-key-override-global-map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
+      (`(leaf-keys ,spec)
+       (let ((spec* (if (cdr (last spec)) (list spec) spec)))
+         (dolist (elm spec*)
+           (push elm (alist-get 'bind contents)))))
+      (`(leaf-keys* ,spec)
+       (let ((spec* (if (cdr (last spec)) (list spec) spec)))
+         (dolist (elm spec*)
+           (push elm (alist-get 'bind* contents)))))
 
       ;; :mode, :interpreter, :magic, :magic-fallback
       (`(add-to-list ',(and (or 'auto-mode-alist 'interpreter-mode-alist 'magic-mode-alist 'magic-fallback-mode-alist) lst)
