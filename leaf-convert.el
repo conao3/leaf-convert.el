@@ -91,7 +91,7 @@ see `leaf-convert--fill-info'"
 (defvar leaf-convert-config-like-keywords '(:preface :init :config :mode-hook)
   "Keywords like :config.")
 
-(defvar leaf-convert-mode-like-keywords '(:mode :interpreter :magic :magic-fallback)
+(defvar leaf-convert-mode-like-keywords '(:mode :interpreter :magic :magic-fallback :hook)
   "Keywords like :mode.")
 
 (defvar leaf-convert-omit-leaf-name-keywords '(:ensure :feather :package :require :after)
@@ -665,7 +665,7 @@ ELM can be string or symbol."
         (dolist (key (mapcar #'leaf-sym-from-keyword leaf-convert-mode-like-keywords))
           (when (memq key keys)
             (dolist (pair (alist-get key contents))
-              (when (stringp pair)
+              (unless (listp pair)
                 (setq guessp t)))))
         (when guessp
           (setf (alist-get 'commands contents)
