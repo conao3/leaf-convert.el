@@ -618,11 +618,11 @@ If KEY is the member of :preface :init :config."
 
 (defun leaf-convert--remove-constant (key val)
   "Remove constant in VAL if KEY is the member of remove-constant-keywords."
-  (if (memq key leaf-convert-config-like-keywords)
-      (thread-last val
-        (mapcar (lambda (elm) (if (atom elm) nil elm)))
-        (delq nil))
-    val))
+  (if (not (memq key leaf-convert-config-like-keywords))
+      val
+    (thread-last val
+      (mapcar (lambda (elm) (if (atom elm) nil elm)))
+      (delq nil))))
 
 (defun leaf-convert--omit-leaf-name (pkg key val)
   "Convert PKG symbol to t if KEY is the menber of omittable-keywords.
