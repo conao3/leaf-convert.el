@@ -615,13 +615,22 @@ ELM can be string or symbol."
 (defun leaf-convert--optimize-over-keyword (contents)
   "Optimize CONTENTS over keyword.
 - Remove :bind, :bind* function from :commands."
-  (let ((keys (mapcar #'car contents)))
+  (let ((name (alist-get 'leaf-convert--name contents))
+        (keys (mapcar #'car contents)))
     (when (or (and (memq 'commands keys) (memq 'bind keys))
               (and (memq 'commands keys) (memq 'bind* keys)))
       (let ((fns  (cadr (eval `(leaf-keys ,(alist-get 'bind contents) 'dryrun))))
             (fns* (cadr (eval `(leaf-keys ,(alist-get 'bind* contents) 'dryrun)))))
         (setf (alist-get 'commands contents)
               (cl-set-difference (alist-get 'commands contents) (append fns fns*)))))
+
+    (when (and (memq 'leaf-convert--name keys) (memq 'defun keys))
+      (let (tmp)
+        (dolist (pair (alist-get 'defun contents))
+          (if (and (leaf-pairp pair) (eq (cdr pair) name))
+              (push (car pair) tmp)
+            (push pair tmp)))
+        (setf (alist-get 'defun contents) (nreverse tmp))))
 
     contents))
 
