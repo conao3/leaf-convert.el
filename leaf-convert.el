@@ -254,6 +254,21 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       (`(,(and (or 'bind-keys 'bind-keys*) op) . ,args)
        (setq contents (leaf-convert-contents--parse-bind-keys op args contents)))
 
+      (`(leaf-key ,key ,(and (pred fnp) fn))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(define-key global-map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
+      (`(leaf-key ,key ,(and (pred fnp) fn) ,(and (pred symbolp) map))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(define-key ,map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
+      (`(leaf-key* ,key ,(and (pred fnp) fn))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(define-key leaf-key-override-global-map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
+      (`(leaf-keys ,spec)
+       (let ((spec* (if (cdr (last spec)) (list spec) spec)))
+         (dolist (elm spec*)
+           (push elm (alist-get 'bind contents)))))
+      (`(leaf-keys* ,spec)
+       (let ((spec* (if (cdr (last spec)) (list spec) spec)))
+         (dolist (elm spec*)
+           (push elm (alist-get 'bind* contents)))))
+
       ;; :mode, :interpreter, :magic, :magic-fallback
       (`(add-to-list ',(and (or 'auto-mode-alist 'interpreter-mode-alist 'magic-mode-alist 'magic-fallback-mode-alist) lst)
                      '(,(and (pred stringp) elm) . ,(and (pred symbolp) fn)))

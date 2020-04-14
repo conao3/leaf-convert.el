@@ -1028,6 +1028,53 @@ Example:
      '(leaf simple
         :bind* (("C-h" . delete-backward-char))))))
 
+(cort-deftest-with-equal leaf-convert/leaf-key
+  '(
+    ;; leaf-key convert :bind keyword
+    ((leaf-convert
+      (leaf-key "M-s O" #'moccur)
+      (leaf-key "M-o" #'isearch-moccur))
+     '(leaf leaf-convert
+        :bind (("M-s O" . moccur)
+               ("M-o" . isearch-moccur))))
+
+    ;; leaf-keys convert :bind keyword
+    ((leaf-convert
+      (leaf-keys ("M-s O" . moccur)))
+     '(leaf leaf-convert
+        :bind (("M-s O" . moccur))))
+
+    ;; leaf-keys convert :bind keyword
+    ((leaf-convert
+      (leaf-keys (("M-s O" . moccur)
+                  ("M-o"   . isearch-moccur))))
+     '(leaf leaf-convert
+        :bind (("M-s O" . moccur)
+               ("M-o" . isearch-moccur))))
+
+    ;; leaf :bind keyword convert :bind keyword again
+    ((leaf-convert
+      (leaf term
+        :bind (("C-c t" . term)
+               (term-mode-map
+                ("M-p" . term-send-up)
+                ("M-n" . term-send-down))
+               (term-raw-map
+                ("M-o" . other-window)
+                ("M-p" . term-send-up)
+                ("M-n" . term-send-down)))))
+     '(leaf term
+        :defun (term . term) (term-send-up . term) (term-send-down . term) (other-window . term)
+        :defvar term-mode-map term-raw-map
+        :bind (("C-c t" . term)
+               (term-mode-map :package term
+                              ("M-p" . term-send-up)
+                              ("M-n" . term-send-down))
+               (term-raw-map :package term
+                             ("M-o" . other-window)
+                             ("M-p" . term-send-up)
+                             ("M-n" . term-send-down)))))))
+
 (cort-deftest-with-equal leaf-convert/mode
   '(
     ;; add-to-list 'auto-mode-alist to :mode keyword
