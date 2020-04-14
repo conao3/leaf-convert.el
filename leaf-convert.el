@@ -88,7 +88,7 @@ see `leaf-convert--fill-info'"
   :group 'leaf-convert
   :type 'sexp)
 
-(defvar leaf-convert-config-like-keywords '(:preface :init :config)
+(defvar leaf-convert-config-like-keywords '(:preface :init :config :mode-hook)
   "Keywords like :config.")
 
 (defvar leaf-convert-omit-leaf-name-keywords '(:ensure :feather :package :require :after)
