@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.1.5
+;; Version: 1.1.6
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -474,8 +474,10 @@ If specified CONTENTS, add value to it instead of new instance."
             (if (or (package-built-in-p pkg) (string-match-p "/share/" file))
                 (push "builtin" tags)
               (push "out-of-MELPA" tags)
+              (push pkg (alist-get 'require contents))
               (push (intern (format "{{user}}/%s" pkg)) (alist-get 'el-get contents))))
         (push "out-of-MELPA" tags)
+        (push pkg (alist-get 'require contents))
         (push (intern (format "{{user}}/%s" pkg)) (alist-get 'el-get contents))))
      ((and pkg desc)
       (push (package-desc-summary desc) docs)
