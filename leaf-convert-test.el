@@ -338,10 +338,15 @@ Example:
         (comint-prompt-regexp "^")
         (comint-buffer-maximum-size 20000 "Increase comint buffer size.")
         (comint-prompt-read-only t "Make the prompt read only.")))
+     ;; '(leaf comint
+     ;;    :custom ((comint-prompt-regexp . "^"))
+     ;;    :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")
+     ;;              (comint-prompt-read-only t "Make the prompt read only."))
+     ;;    :require t)
      '(leaf comint
-        :custom ((comint-prompt-regexp . "^"))
-        :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")
-                  (comint-prompt-read-only t "Make the prompt read only."))
+        :custom ((comint-prompt-regexp . "^")
+                 (comint-buffer-maximum-size . 20000)
+                 (comint-prompt-read-only . t))
         :require t))
 
     ((leaf-convert
@@ -1047,16 +1052,16 @@ Example:
                 ("M-p" . term-send-up)
                 ("M-n" . term-send-down)))))
      '(leaf term
-        :defun term term-send-up term-send-down other-window
-        :defvar term-mode-map term-raw-map
         :bind (("C-c t" . term)
-               (term-mode-map :package term
-                              ("M-p" . term-send-up)
-                              ("M-n" . term-send-down))
-               (term-raw-map :package term
-                             ("M-o" . other-window)
-                             ("M-p" . term-send-up)
-                             ("M-n" . term-send-down)))))))
+               (term-mode-map
+                :package term
+                ("M-p" . term-send-up)
+                ("M-n" . term-send-down))
+               (term-raw-map
+                :package term
+                ("M-o" . other-window)
+                ("M-p" . term-send-up)
+                ("M-n" . term-send-down)))))))
 
 (cort-deftest-with-equal leaf-convert/mode
   '(
