@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.1.6
+;; Version: 1.1.7
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -297,6 +297,10 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',elm ,val) contents)))
       (`(customize-set-variable ',(and (pred symbolp) elm) ,(and (pred constp) val) ,(and (pred stringp) desc))
        (push `(,elm ,val ,desc) (alist-get 'custom* contents)))
+      (`(funcall (or (get ',(and (pred symbolp) elm) 'custom-set) #'set-default) ',(and (pred symbolp) elm2) ,(and (pred constp) val))
+       (if (eq elm elm2)
+           (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',elm ,val) contents))
+         (push sexp (alist-get 'config contents))))
       (`(custom-set-variables . ,args)
        (pcase-dolist (`',elm args)
          (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',(car elm) ,@(cdr elm)) contents))))
