@@ -1014,7 +1014,18 @@ Example:
      '(leaf dired
         :bind ((dired-mode-map
                 ("o" . dired-omit-mode)
-                ("a" . some-custom-dired-function)))))))
+                ("a" . some-custom-dired-function)))))
+
+    ((leaf-convert
+      (prog1 'custom
+        (defun my-leaf-convert-command ()
+          (message "hi"))
+        (bind-key "M-*" 'my-leaf-convert-command)))
+     '(leaf custom
+        :preface
+        (defun my-leaf-convert-command ()
+          (message "hi"))
+        :bind (("M-*" . my-leaf-convert-command))))))
 
 (cort-deftest-with-equal leaf-convert/bind*
   '(
