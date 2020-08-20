@@ -354,6 +354,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :setq, :setq-default
       (`(,(and (or 'setq 'setq-default) op) ,(and (pred atom) elm) ,(and (pred constp) val))
        (push `(,elm . ,val) (alist-get op contents)))
+      (`(,(and (or 'setq 'setq-default) op) ,sym ,val . ,(and (pred identity) args))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(,op ,sym ,val) contents))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(,op ,@args) contents)))
 
       ;; use-package, leaf
       (`(,(or 'use-package 'leaf) ,(and (pred symbolp) pkg) . ,_body)
