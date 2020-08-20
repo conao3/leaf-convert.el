@@ -807,13 +807,13 @@ This command support prefix argument.
 (defun leaf-convert-region-pop (beg end)
   "Pop a buffer showing the result of converting Elisp BEG to END to a leaf."
   (interactive "r")
-  (let* ((str (format "(progn %s)" (buffer-substring beg end)))
+  (let* ((str (format "(progn\n%s)" (buffer-substring beg end)))
          (form (read str))
          (res (eval `(leaf-convert ,form))))
     (with-current-buffer (get-buffer-create "*leaf-convert*")
       (let ((inhibit-read-only t)
             (str (with-temp-buffer
-                   (insert ";; Converted Leaf format\n")
+                   (insert ";; Converted Leaf form\n")
                    (insert ";; --------------------------------------------------\n")
                    (insert (ppp-sexp-to-string res))
                    (insert "\n\n")
