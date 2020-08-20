@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.2.1
+;; Version: 1.2.2
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -807,20 +807,28 @@ This command support prefix argument.
 (defun leaf-convert-region-pop (beg end)
   "Pop a buffer showing the result of converting Elisp BEG to END to a leaf."
   (interactive "r")
-  (let* ((str (format "(progn %s)" (buffer-substring beg end)))
+  (let* ((str (format "(progn\n%s)" (buffer-substring beg end)))
          (form (read str))
          (res (eval `(leaf-convert ,form))))
-    (with-help-window "*leaf-convert*"
-      (lisp-mode-variables nil nil 'elisp)
-      (princ ";; Selected Elisp\n")
-      (princ ";; --------------------------------------------------\n")
-      (princ str)
-      (indent-region
-       (save-excursion (thing-at-point--beginning-of-sexp) (point)) (point))
-      (princ "\n\n")
-      (princ ";; Converted Leaf format\n")
-      (princ ";; --------------------------------------------------\n")
-      (ppp-sexp res))))
+    (with-current-buffer (get-buffer-create "*leaf-convert*")
+      (let ((inhibit-read-only t)
+            (str (with-temp-buffer
+                   (insert ";; Converted Leaf form\n")
+                   (insert ";; --------------------------------------------------\n")
+                   (insert (ppp-sexp-to-string res))
+                   (insert "\n\n")
+                   (insert ";; Selected Elisp\n")
+                   (insert ";; --------------------------------------------------\n")
+                   (insert str)
+                   (emacs-lisp-mode)
+                   (font-lock-mode)
+                   (font-lock-default-fontify-buffer)
+                   (indent-region (point-min) (point-max))
+                   (buffer-string))))
+        (erase-buffer)
+        (insert str)
+        (help-mode)
+        (pop-to-buffer (current-buffer))))))
 
 (provide 'leaf-convert)
 
