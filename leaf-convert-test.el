@@ -740,7 +740,16 @@ Example:
         (setq garbage-collection-messages t)))
      '(leaf alloc
         :setq ((garbage-collection-messages . t))
-        :config (setq gc-cons-threshold (* 512 1024 1024))))))
+        :config (setq gc-cons-threshold (* 512 1024 1024))))
+
+    ;; support multiple setq
+    ((leaf-convert
+      (prog1 'alloc
+        (setq gc-cons-threshold 536870912
+              garbage-collection-messages t)))
+     '(leaf alloc
+        :setq ((gc-cons-threshold . 536870912)
+               (garbage-collection-messages . t))))))
 
 (cort-deftest-with-equal leaf-convert/setq-default
   '(

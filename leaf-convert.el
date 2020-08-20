@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.1.8
+;; Version: 1.1.9
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -354,6 +354,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
       ;; :setq, :setq-default
       (`(,(and (or 'setq 'setq-default) op) ,(and (pred atom) elm) ,(and (pred constp) val))
        (push `(,elm . ,val) (alist-get op contents)))
+      (`(,(and (or 'setq 'setq-default) op) ,sym ,val . ,(and (pred identity) args))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(,op ,sym ,val) contents))
+       (setq contents (leaf-convert-contents-new--sexp-1 `(,op ,@args) contents)))
 
       ;; use-package, leaf
       (`(,(or 'use-package 'leaf) ,(and (pred symbolp) pkg) . ,_body)
