@@ -358,6 +358,10 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (setq contents (leaf-convert-contents-new--sexp-1 `(,op ,sym ,val) contents))
        (setq contents (leaf-convert-contents-new--sexp-1 `(,op ,@args) contents)))
 
+      ;; special Sexp will expand :preface
+      (`(defun . ,args)
+       (push sexp (alist-get 'preface contents)))
+
       ;; use-package, leaf
       (`(,(or 'use-package 'leaf) ,(and (pred symbolp) pkg) . ,_body)
        (let* ((form (leaf-convert--expand-use-package sexp))
