@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.2.0
+;; Version: 1.2.1
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -85,6 +85,13 @@
    memoise popup popwin request simple-httpd transient htmlize)
   "Except packages for :after keyword.
 see `leaf-convert--fill-info'"
+  :group 'leaf-convert
+  :type 'sexp)
+
+(defcustom leaf-convert-preface-op-list
+  (leaf-list
+   defun defmacro cl-defun cl-defmacro)
+  "Sexp op list should be expand in :preface section."
   :group 'leaf-convert
   :type 'sexp)
 
@@ -359,7 +366,7 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (setq contents (leaf-convert-contents-new--sexp-1 `(,op ,@args) contents)))
 
       ;; special Sexp will expand :preface
-      (`(defun . ,args)
+      (`(,(pred (lambda (elm) (memq elm leaf-convert-preface-op-list))) . ,_body)
        (push sexp (alist-get 'preface contents)))
 
       ;; use-package, leaf
