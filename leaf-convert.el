@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.1.7
+;; Version: 1.1.8
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -771,12 +771,19 @@ If VAL contains the same value as leaf--name, replace it with t."
 
 ;;;###autoload
 (defun leaf-convert-region-replace (beg end)
-  "Replace Elisp BEG to END to leaf format."
+  "Replace Elisp BEG to END to leaf format.
+
+This command support prefix argument.
+  - With a normal, replace region with converted leaf form.
+  - With a `\\[universal-argument]', insert converted leaf form after region."
   (interactive "r")
   (let* ((str (format "(progn %s)" (buffer-substring beg end)))
          (form (read str))
          (res (eval `(leaf-convert ,form))))
-    (delete-region beg end)
+    (if (null current-prefix-arg)
+        (delete-region beg end)
+      (goto-char end)
+      (newline))
     (insert (ppp-sexp-to-string res))
     (delete-char -1)
     (indent-region
