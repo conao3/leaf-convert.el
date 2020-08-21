@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.2.5
+;; Version: 1.2.6
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -251,9 +251,9 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (push `(,key . ,(cadr fn)) (alist-get 'bind* contents)))
       (`(define-key ,(and (pred symbolp) map) ,(or `(kbd ,key) `,(and (pred vectorp) key)) ,(and (pred fnp) fn))
        (push `(,map (,key . ,(cadr fn))) (alist-get 'bind contents)))
-      (`(global-set-key ,(or `(kbd ,key) `,(and (pred vectorp) key)) ,(and (pred fnp) fn))
+      (`(global-set-key ,(or `(kbd ,key) `,(and (pred vectorp) key) `,(and (pred stringp) key)) ,(and (pred fnp) fn))
        (setq contents (leaf-convert-contents-new--sexp-1 `(define-key global-map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
-      (`(global-unset-key ,(or `(kbd ,key) `,(and (pred vectorp) key)))
+      (`(global-unset-key ,(or `(kbd ,key) `,(and (pred vectorp) key) `,(and (pred stringp) key)))
        (setq contents (leaf-convert-contents-new--sexp-1 `(define-key global-map ,(if (stringp key) `(kbd ,key) key) nil) contents)))
       (`(bind-key ,key ,(and (pred fnp) fn))
        (setq contents (leaf-convert-contents-new--sexp-1 `(define-key global-map ,(if (stringp key) `(kbd ,key) key) ,fn) contents)))
