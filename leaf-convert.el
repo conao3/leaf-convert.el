@@ -199,7 +199,7 @@ BIND-KEYS-ARGS is bind-keys' all argument."
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (cl-flet ((constp (elm) (pcase elm ((pred atom) t) (`(quote ,_) t) (`(function ,_) t)))
-            (fnp (elm) (pcase elm ('nil t) (`(quote ,_) t) (`(function ,_) t)))
+            (fnp (elm) (pcase elm ('nil t) (`(quote ,(pred symbolp)) t) (`(function ,(pred symbolp)) t)))
             (modelinep (elm) (leaf-convert--mode-line-structp elm))
             (quotemodelinep (elm) (leaf-convert--mode-line-structp elm t)))
     (pcase sexp

@@ -1030,7 +1030,15 @@ Example:
         :preface
         (defun my-leaf-convert-command ()
           (message "hi"))
-        :bind (("M-*" . my-leaf-convert-command))))))
+        :bind (("M-*" . my-leaf-convert-command))))
+
+    ((leaf-convert
+      (global-set-key (kbd "C-c l") '(lambda () (interactive)
+                                       (ispell-change-dictionary "american"))))
+     '(leaf leaf-convert
+        :config
+        (global-set-key (kbd "C-c l") '(lambda () (interactive)
+                                         (ispell-change-dictionary "american")))))))
 
 (cort-deftest-with-equal leaf-convert/bind*
   '(
