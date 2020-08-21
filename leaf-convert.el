@@ -308,16 +308,30 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (if (eq elm elm2)
            (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',elm ,val) contents))
          (push sexp (alist-get 'config contents))))
-      (`(custom-set-variables . ,args)
-       (pcase-dolist (`',elm args)
-         (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',(car elm) ,@(cdr elm)) contents))))
+      (`(custom-set-variables . ,specs)
+       (dolist (spec specs)
+         (pcase spec
+           (`'(,(and (pred symbolp) elm) ,val ,desc)
+            (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',elm ,val ,desc) contents)))
+           (`'(,(and (pred symbolp) elm) ,val)
+            (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',elm ,val) contents)))
+           (``(,(and (pred symbolp) elm) ,(and (pred constp) val))
+            (setq contents (leaf-convert-contents-new--sexp-1 `(customize-set-variable ',elm ,val) contents)))
+           (_
+            (push `(customize-set-variables ,spec) (alist-get 'config contents))))))
 
       ;; :custom-face
-      (`(custom-set-faces . ,args)
-       (pcase-dolist (`',elm args)
-         (if (memq '\, (leaf-flatten args)) ; use-package accept right value include comma
-             (push `(custom-set-faces (backquote (,(car elm) ,(cadr elm)))) (alist-get 'config contents))
-           (push `(,(car elm) . ',(cadr elm)) (alist-get 'custom-face contents)))))
+      (`(custom-set-faces . ,specs)
+       (dolist (spec specs)
+         (pcase spec
+           (`'(,(and (pred symbolp) elm) ,val)
+            (push `(,elm . ',val) (alist-get 'custom-face contents)))
+           (`(backquote (,(and (pred symbolp) elm) ,val))          ; use-package support
+            (if (memq '\, (leaf-flatten val))
+                (push `(custom-set-faces (backquote (,elm ,val))) (alist-get 'config contents))
+              (push `(,elm . ',val) (alist-get 'custom-face contents))))
+           (_
+            (push `(custom-set-faces ,spec) (alist-get 'config contents))))))
 
       ;; :require
       (`(require ',(and (pred symbolp) elm))
