@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.2.3
+;; Version: 1.2.4
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -843,6 +843,18 @@ This command support prefix argument.
         (insert str)
         (help-mode)
         (pop-to-buffer (current-buffer))))))
+
+;;;###autoload
+(defun leaf-convert-buffer-replace ()
+  "Replace Elisp buffer to leaf form."
+  (interactive)
+  (leaf-convert-region-replace (point-min) (point-max)))
+
+;;;###autoload
+(defun leaf-convert-buffer-pop ()
+  "Pop converted leaf buffer from Elisp buffer."
+  (interactive)
+  (leaf-convert-region-pop (point-min) (point-max)))
 
 (provide 'leaf-convert)
 
