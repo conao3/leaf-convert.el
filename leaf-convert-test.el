@@ -360,8 +360,13 @@ Example:
     ((leaf-convert
       (use-package eruby-mode
         :custom-face
-        (eruby-standard-face ((t (,(or :slant) italic))))))
+        (eruby-standard-face ((t (,(or :slant) italic))))
+        (org-level-1 ((t (:bold t :foreground "dodger blue" :height 1.0))))
+        (org-level-2 ((t (:bold t :foreground "#edd400" :height 1.0))))))
      '(leaf eruby-mode
+        :custom-face
+        ((org-level-1 . '((t (:bold t :foreground "dodger blue" :height 1.0))))
+         (org-level-2 . '((t (:bold t :foreground "#edd400" :height 1.0)))))
         :init (custom-set-faces
                (backquote (eruby-standard-face ((t ((\, (or :slant)) italic))))))
         :require t))))
@@ -1159,7 +1164,20 @@ Example:
          '(comint-prompt-read-only t))))
      '(leaf comint
         :custom ((comint-buffer-maximum-size . 20000)
-                 (comint-prompt-read-only . t))))))
+                 (comint-prompt-read-only . t))))
+
+    ((leaf-convert
+      (prog1 'comint
+        (custom-set-variables
+         `(comint-buffer-maximum-size ,(* 256 256))
+         `(comint-prompt-read-only t)
+         `(leaf-keywords-optional '(:doc :url :tag)))))
+     '(leaf comint
+        :custom ((comint-prompt-read-only . t)
+                 (leaf-keywords-optional . '(:doc :url :tag)))
+        :config
+        (customize-set-variables
+         `(comint-buffer-maximum-size ,(* 256 256)))))))
 
 (cort-deftest-with-equal leaf-convert/custom*
   '(
