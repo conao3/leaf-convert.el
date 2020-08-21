@@ -1038,7 +1038,12 @@ Example:
      '(leaf leaf-convert
         :config
         (global-set-key (kbd "C-c l") '(lambda () (interactive)
-                                         (ispell-change-dictionary "american")))))))
+                                         (ispell-change-dictionary "american")))))
+
+    ((leaf-convert
+      (global-set-key "\C-x\i" 'indent-region))
+     '(leaf leaf-convert
+        :bind (("\C-x\i" . indent-region))))))
 
 (cort-deftest-with-equal leaf-convert/bind*
   '(
