@@ -68,7 +68,7 @@ help:
 build: $(ELS:%.el=%.elc)
 
 test: build
-	cask exec $(EMACS) -Q --batch -l $(TESTFILE) -f cort-test-run
+	cask exec $(EMACS) -Q --batch -l $(TESTFILE) -f cort-test-run-silence
 
 clean:
 	rm -rf $(ELS:%.el=%.elc) .cask
