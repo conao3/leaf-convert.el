@@ -27,51 +27,15 @@
 
 ;;; Code:
 
-(require 'cort-test)
+(require 'cort)
 (require 'leaf-convert)
 (require 'use-package)
 (require 'use-package-chords)
 
-(defmacro cort-deftest-with-equal (name form)
-  "Return `cort-deftest' compare by `equal' for NAME, FORM.
-
-Example:
-  (p (cort-deftest-with-equal leaf/disabled
-       '((asdf asdf-fn)
-         (uiop uiop-fn))))
-   => (cort-deftest leaf/disabled
-        '((:equal 'asdf asdf-fn)
-          (:equal 'uiop uiop-fn)))"
-  (declare (indent 1))
-  `(cort-deftest ,name
-     ',(mapcar (lambda (elm)
-                 `(:equal ,(cadr elm) ,(car elm)))
-               (cadr form))))
-
-(defmacro cort-deftest-with-macroexpand (name form)
-  "Return `cort-deftest' compare by `equal' for NAME, FORM.
-
-Example:
-  (p (cort-deftest-with-equal leaf/disabled
-       '((asdf asdf)
-         (uiop uiop))))
-   => (cort-deftest leaf/disabled
-        '((:equal 'asdf
-                  (macroexpand-1 'asdf))
-          (:equal 'uiop
-                  (macroexpand-1 'uiop))))"
-  (declare (indent 1))
-  `(cort-deftest ,name
-     ',(mapcar (lambda (elm)
-                 `(:equal
-                   ',(cadr elm)
-                   (macroexpand-1 ',(car elm))))
-               (cadr form))))
-
 
 ;;; test definitions
 
-(cort-deftest-with-equal leaf-convert/convert-contents
+(cort-deftest-generate :equal leaf-convert/convert-contents
   '(
     ;; leaf-covnert from nil generates empty leaf
     ((leaf-convert-from-contents
@@ -111,7 +75,7 @@ Example:
         (leaf-keywords-teardown)
         (leaf-keywords-init)))))
 
-(cort-deftest-with-equal leaf-convert/use-package--getting-started
+(cort-deftest-generate :equal leaf-convert/use-package--getting-started
   '(
     ;; simplest use-package
     ((leaf-convert
@@ -175,7 +139,7 @@ Example:
         (with-eval-after-load 'color-moccur
           (use-package moccur-edit))))))
 
-(cort-deftest-with-equal leaf-convert/use-package--keybinding
+(cort-deftest-generate :equal leaf-convert/use-package--keybinding
   '(
     ((leaf-convert
       (use-package ace-jump-mode
@@ -239,7 +203,7 @@ Example:
                 ("M-p" . term-send-up)
                 ("M-n" . term-send-down)))))))
 
-(cort-deftest-with-equal leaf-convert/use-package--modes-and-interpreters
+(cort-deftest-generate :equal leaf-convert/use-package--modes-and-interpreters
   '(
     ((leaf-convert
       (use-package ruby-mode
@@ -257,7 +221,7 @@ Example:
         :mode ("\\.py\\'")
         :interpreter ("python")))))
 
-(cort-deftest-with-equal leaf-convert/use-package--magic-handlers
+(cort-deftest-generate :equal leaf-convert/use-package--magic-handlers
   '(
     ((leaf-convert
       (use-package pdf-tools
@@ -281,7 +245,7 @@ Example:
         (with-eval-after-load 'pdf-tools
           (pdf-tools-install :no-query))))))
 
-(cort-deftest-with-equal leaf-convert/use-package--hooks
+(cort-deftest-generate :equal leaf-convert/use-package--hooks
   '(((leaf-convert
       (use-package ace-jump-mode
         :hook prog-mode))
@@ -330,7 +294,7 @@ Example:
      '(leaf ace-jump-mode
         :hook (prog-mode-hook text-mode-hook)))))
 
-(cort-deftest-with-equal leaf-convert/use-package--package-customization
+(cort-deftest-generate :equal leaf-convert/use-package--package-customization
   '(
     ((leaf-convert
       (use-package comint
@@ -371,7 +335,7 @@ Example:
                (backquote (eruby-standard-face ((t ((\, (or :slant)) italic))))))
         :require t))))
 
-(cort-deftest-with-equal leaf-convert/use-package--condition-loading
+(cort-deftest-generate :equal leaf-convert/use-package--condition-loading
   '(
     ((leaf-convert
       (use-package edit-server
@@ -419,7 +383,7 @@ Example:
         :unless (member nil (mapcar (function featurep) '(foo bar baz)))
         :require t))))
 
-(cort-deftest-with-equal leaf-convert/use-package--byte-compiling-your-emacs
+(cort-deftest-generate :equal leaf-convert/use-package--byte-compiling-your-emacs
   '(
     ((leaf-convert
       (use-package texinfo
@@ -462,7 +426,7 @@ Example:
         :config
         (message "This is evaluated when `foo' is loaded")))))
 
-(cort-deftest-with-equal leaf-convert/use-package--extending-the-load-path
+(cort-deftest-generate :equal leaf-convert/use-package--extending-the-load-path
   '(
     ((leaf-convert
       (use-package ess-site
@@ -473,10 +437,10 @@ Example:
         :commands R))))
 
 ;; unsupported for now...
-;; (cort-deftest-with-equal leaf-convert/use-package--catching-errors-during-use-package-expansion
+;; (cort-deftest-generate :equal leaf-convert/use-package--catching-errors-during-use-package-expansion
 ;;   '())
 
-(cort-deftest-with-equal leaf-convert/use-package--diminishing-and-delighting-minor-modes
+(cort-deftest-generate :equal leaf-convert/use-package--diminishing-and-delighting-minor-modes
   '(((leaf-convert
       (use-package abbrev
         :diminish abbrev-mode
@@ -522,7 +486,7 @@ Example:
         (auto-fill-function " AF" emacs)
         (visual-line-mode nil emacs)))))
 
-(cort-deftest-with-equal leaf-convert/use-package--package-installation
+(cort-deftest-generate :equal leaf-convert/use-package--package-installation
   '(((leaf-convert
       (use-package magit
         :ensure t))
@@ -549,7 +513,7 @@ Example:
                (auto-package-update-hide-results . t))
         :config (auto-package-update-maybe)))))
 
-(cort-deftest-with-equal leaf-convert/use-package--chords
+(cort-deftest-generate :equal leaf-convert/use-package--chords
   '(((leaf-convert
       (use-package use-package-chords
         :ensure t
@@ -570,7 +534,7 @@ Example:
                 ("jk" . ace-jump-word-mode)
                 ("jl" . ace-jump-line-mode))))))
 
-(cort-deftest-with-equal leaf-convert/progn
+(cort-deftest-generate :equal leaf-convert/progn
   '(
     ;; accept progn
     ((leaf-convert
@@ -602,7 +566,7 @@ Example:
         "site-lisp/leaf"
         "site-lisp/leaf-keywords"))))
 
-(cort-deftest-with-equal leaf-convert/load-path
+(cort-deftest-generate :equal leaf-convert/load-path
   '(
     ;; add-to-list load-path convert to :load-path keyword
     ((leaf-convert
@@ -633,7 +597,7 @@ Example:
         "site-lisp/leaf-keywords"
         "site-lisp/leaf-convert"))))
 
-(cort-deftest-with-equal leaf-convert/config
+(cort-deftest-generate :equal leaf-convert/config
   '(
     ;; unknown sexp convert to :config
     ((leaf-convert
@@ -642,7 +606,7 @@ Example:
         :config
         (leaf-keywords-init)))))
 
-(cort-deftest-with-equal leaf-convert/defun
+(cort-deftest-generate :equal leaf-convert/defun
   '(
     ;; declare-function convert to :defun
     ((leaf-convert
@@ -650,7 +614,7 @@ Example:
      '(leaf leaf-convert
         :defun (leaf . leaf)))))
 
-(cort-deftest-with-equal leaf-convert/defvar
+(cort-deftest-generate :equal leaf-convert/defvar
   '(
     ;; empty defvar convert to :defvar
     ((leaf-convert
@@ -664,7 +628,7 @@ Example:
      '(leaf leaf-convert
         :setq ((leaf-keywords-optional . '(:doc :url :tag)))))))
 
-(cort-deftest-with-equal leaf-convert/after
+(cort-deftest-generate :equal leaf-convert/after
   '(
     ;; eval-after-load convert to :after
     ((leaf-convert
@@ -715,7 +679,7 @@ Example:
             '(progn
                (leaf-browser-init))))))))
 
-(cort-deftest-with-equal leaf-convert/setq
+(cort-deftest-generate :equal leaf-convert/setq
   '(
     ;; empty defvar convert to :defvar
     ((leaf-convert
@@ -756,7 +720,7 @@ Example:
         :setq ((gc-cons-threshold . 536870912)
                (garbage-collection-messages . t))))))
 
-(cort-deftest-with-equal leaf-convert/setq-default
+(cort-deftest-generate :equal leaf-convert/setq-default
   '(
     ;; setq-default sexp convert to :setq-default keyword
     ((leaf-convert
@@ -776,7 +740,7 @@ Example:
         :setq-default ((garbage-collection-messages . t))
         :config (setq-default gc-cons-threshold (* 512 1024 1024))))))
 
-(cort-deftest-with-equal leaf-convert/diminish
+(cort-deftest-generate :equal leaf-convert/diminish
   '(
     ;; hide minor-mode lighter
     ((leaf-convert
@@ -834,7 +798,7 @@ Example:
      '(leaf rainbow-mode
         :diminish (rainbow-mode . '(2 " Rbow" "/" "s"))))))
 
-(cort-deftest-with-equal leaf-convert/ensure
+(cort-deftest-generate :equal leaf-convert/ensure
   '(
     ;; package-install will convert :ensure keyword
     ((leaf-convert
@@ -868,7 +832,7 @@ Example:
         :ensure t auctex
         :require t))))
 
-(cort-deftest-with-equal leaf-convert/require
+(cort-deftest-generate :equal leaf-convert/require
   '(
     ;; require will convert :require keyword
     ((leaf-convert
@@ -912,7 +876,7 @@ Example:
         :require t
         :config (foo-enable)))))
 
-(cort-deftest-with-equal leaf-convert/commands
+(cort-deftest-generate :equal leaf-convert/commands
   '(
     ;; autoload will convert :commands keyword
     ((leaf-convert
@@ -949,7 +913,7 @@ Example:
         :commands isearch-moccur isearch-all
         :setq ((isearch-lazy-highlight . t))))))
 
-(cort-deftest-with-equal leaf-convert/bind
+(cort-deftest-generate :equal leaf-convert/bind
   '(
     ;; global-set-key convert :bind keyword
     ((leaf-convert
@@ -1045,7 +1009,7 @@ Example:
      '(leaf leaf-convert
         :bind (("\C-x\i" . indent-region))))))
 
-(cort-deftest-with-equal leaf-convert/bind*
+(cort-deftest-generate :equal leaf-convert/bind*
   '(
     ;; bind-key* convert :bind* keyword
     ((leaf-convert
@@ -1054,7 +1018,7 @@ Example:
      '(leaf simple
         :bind* (("C-h" . delete-backward-char))))))
 
-(cort-deftest-with-equal leaf-convert/leaf-key
+(cort-deftest-generate :equal leaf-convert/leaf-key
   '(
     ;; leaf-key convert :bind keyword
     ((leaf-convert
@@ -1101,7 +1065,7 @@ Example:
                 ("M-p" . term-send-up)
                 ("M-n" . term-send-down)))))))
 
-(cort-deftest-with-equal leaf-convert/mode
+(cort-deftest-generate :equal leaf-convert/mode
   '(
     ;; add-to-list 'auto-mode-alist to :mode keyword
     ((leaf-convert
@@ -1110,7 +1074,7 @@ Example:
      '(leaf ruby-mode
         :mode ("\\.rb\\'")))))
 
-(cort-deftest-with-equal leaf-convert/interpreter
+(cort-deftest-generate :equal leaf-convert/interpreter
   '(
     ;; add-to-list 'interpreter-alist to :interpreter keyword
     ((leaf-convert
@@ -1119,7 +1083,7 @@ Example:
      '(leaf ruby-mode
         :interpreter ("ruby")))))
 
-(cort-deftest-with-equal leaf-convert/magic
+(cort-deftest-generate :equal leaf-convert/magic
   '(
     ;; add-to-list 'magic-mode-alist to :magic keyword
     ((leaf-convert
@@ -1128,7 +1092,7 @@ Example:
      '(leaf pdf-tools
         :magic (("%PDF" . pdf-view-mode))))))
 
-(cort-deftest-with-equal leaf-convert/magic-fallback
+(cort-deftest-generate :equal leaf-convert/magic-fallback
   '(
     ;; add-to-list 'magic-fallback-mode-alist to :magic-fallback keyword
     ((leaf-convert
@@ -1137,7 +1101,7 @@ Example:
      '(leaf pdf-tools
         :magic-fallback (("%PDF" . pdf-view-mode))))))
 
-(cort-deftest-with-equal leaf-convert/hook
+(cort-deftest-generate :equal leaf-convert/hook
   '(
     ;; add-hook convert to :hook keyword
     ((leaf-convert
@@ -1153,7 +1117,7 @@ Example:
      '(leaf ace-jump-mode
         :hook (prog-mode-hook)))))
 
-(cort-deftest-with-equal leaf-convert/custom
+(cort-deftest-generate :equal leaf-convert/custom
   '(
     ;; customize-set-variable convert to :custom keyword
     ((leaf-convert
@@ -1192,7 +1156,7 @@ Example:
         (customize-set-variables
          `(comint-buffer-maximum-size ,(* 256 256)))))))
 
-(cort-deftest-with-equal leaf-convert/custom*
+(cort-deftest-generate :equal leaf-convert/custom*
   '(
     ;; if comment is non-nil, convert to custom*
     ((leaf-convert
@@ -1211,7 +1175,7 @@ Example:
          :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")
                    (comint-prompt-read-only t "Make the prompt read only.")))))))
 
-(cort-deftest-with-equal leaf-convert/custom-face
+(cort-deftest-generate :equal leaf-convert/custom-face
   '(
     ;; if comment is non-nil, convert to custom*
     ((leaf-convert
@@ -1223,7 +1187,7 @@ Example:
         :custom-face ((ac-candidate-face . '((t (:background "dark orange" :foreground "white"))))
                       (ac-selection-face . '((t (:background "blue" :foreground "white")))))))))
 
-(cort-deftest-with-equal leaf-convert/when
+(cort-deftest-generate :equal leaf-convert/when
   '(
     ;; when convert to :when keyword
     ((leaf-convert
@@ -1247,7 +1211,7 @@ Example:
         :ensure t
         :require t))))
 
-(cort-deftest-with-equal leaf-convert/unless
+(cort-deftest-generate :equal leaf-convert/unless
   '(
     ;; unless convert to :unless keyword
     ((leaf-convert
@@ -1258,7 +1222,7 @@ Example:
         :unless (server-running-p)
         :config (server-start)))))
 
-(cort-deftest-with-equal leaf-convert/if
+(cort-deftest-generate :equal leaf-convert/if
   '(
     ;; if convert to :when keyword only second argument
     ((leaf-convert
@@ -1312,7 +1276,7 @@ Example:
               (require 'jupyter))
           (warn "jupyter is not found"))))))
 
-(cort-deftest-with-equal leaf-convert/diminish
+(cort-deftest-generate :equal leaf-convert/diminish
   '(
     ;; simple diminish convert just symbol in :diminish
     ((leaf-convert
@@ -1326,7 +1290,7 @@ Example:
      '(leaf leaf-convert
         :diminish (abbrev-mode . "Abv")))))
 
-(cort-deftest-with-equal leaf-convert/delight
+(cort-deftest-generate :equal leaf-convert/delight
   '(
     ;; simple delight convert just symbol in :delight
     ((leaf-convert
@@ -1363,7 +1327,7 @@ Example:
         (overwrite-mode " Ov" t)
         (emacs-lisp-mode "Elisp" :major)))))
 
-(cort-deftest-with-equal leaf-convert/chord
+(cort-deftest-generate :equal leaf-convert/chord
   '(
     ;; key-chord-define-global convert :chord
     ((leaf-convert
@@ -1383,7 +1347,7 @@ Example:
      '(leaf leaf-convert
         :chord (("jj" . ace-jump-char-mode))))))
 
-(cort-deftest-with-equal leaf-convert/mode-line-structp
+(cort-deftest-generate :equal leaf-convert/mode-line-structp
   ;; see https://github.com/myrjola/diminish.el
   '(((leaf-convert--mode-line-structp " Rbow") t)
     ((leaf-convert--mode-line-structp ''rainbow-mode-lighter) t)
