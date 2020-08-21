@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.2.4
+;; Version: 1.2.5
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -199,7 +199,7 @@ BIND-KEYS-ARGS is bind-keys' all argument."
   "Internal recursive function of `leaf-convert-contents-new--sexp'.
 Add convert SEXP to leaf-convert-contents to CONTENTS."
   (cl-flet ((constp (elm) (pcase elm ((pred atom) t) (`(quote ,_) t) (`(function ,_) t)))
-            (fnp (elm) (pcase elm ('nil t) (`(quote ,_) t) (`(function ,_) t)))
+            (fnp (elm) (pcase elm ('nil t) (`(quote ,(pred symbolp)) t) (`(function ,(pred symbolp)) t)))
             (modelinep (elm) (leaf-convert--mode-line-structp elm))
             (quotemodelinep (elm) (leaf-convert--mode-line-structp elm t)))
     (pcase sexp
