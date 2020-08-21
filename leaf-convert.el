@@ -844,6 +844,18 @@ This command support prefix argument.
         (help-mode)
         (pop-to-buffer (current-buffer))))))
 
+;;;###autoload
+(defun leaf-convert-buffer-replace ()
+  "Replace Elisp buffer to leaf form."
+  (interactive)
+  (leaf-convert-region-replace (point-min) (point-max)))
+
+;;;###autoload
+(defun leaf-convert-buffer-pop ()
+  "Pop converted leaf buffer from Elisp buffer."
+  (interactive)
+  (leaf-convert-region-pop (point-min) (point-max)))
+
 (provide 'leaf-convert)
 
 ;; Local Variables:
