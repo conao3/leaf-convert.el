@@ -69,7 +69,7 @@ Currently, the following ~leaf~ keywords are supported for automatic conversion.
   ;;    :feather                ; <no corresponding sexp>
   ;;    :straight
   ;;    :el-get
-  ;;    :after
+  ;;    :after                  ; supported!!
   ;;    :commands               ; supported!!
   ;;    :bind                   ; supported!!
   ;;    :bind*                  ; supported!!
@@ -92,7 +92,7 @@ Currently, the following ~leaf~ keywords are supported for automatic conversion.
   ;;    :require                ; supported!!
   ;;    :hydra
   ;;    :transient
-  ;;    :combo
+  ;;    :combop
   ;;    :combo*
   ;;    :smartrep
   ;;    :smartrep*
