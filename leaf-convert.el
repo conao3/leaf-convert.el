@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.3.0
+;; Version: 1.3.1
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26.1") (leaf "3.6.0") (leaf-keywords "1.1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-convert.el
@@ -521,9 +521,7 @@ If specified CONTENTS, add value to it instead of new instance."
           (push "builtin" tags)
         (push pkg (alist-get 'ensure contents)))))
 
-    ;; This line causes circular-list...  Why?
-    ;; (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
-
+    (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
     (dolist (doc docs)   (when doc (push doc (alist-get 'doc contents))))
     (dolist (tag tags)   (when tag (push tag (alist-get 'tag contents))))
     ;; (dolist (file files) (when file (push (concat "~/" (file-relative-name file "~/")) (alist-get 'file contents))))
