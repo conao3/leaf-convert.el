@@ -522,7 +522,7 @@ If specified CONTENTS, add value to it instead of new instance."
         (push pkg (alist-get 'ensure contents)))))
 
     ;; This line causes circular-list...  Why?
-    (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
+    ;; (push (format-time-string "%Y-%m-%d") (alist-get 'added contents))
 
     (dolist (doc docs)   (when doc (push doc (alist-get 'doc contents))))
     (dolist (tag tags)   (when tag (push tag (alist-get 'tag contents))))
