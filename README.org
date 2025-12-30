@@ -1,230 +1,167 @@
-#+author: conao3
-#+date: <2018-10-25 Thu>
+#+title: leaf-convert.el
+#+author: Naoya Yamashita
 
 [[https://github.com/conao3/leaf-convert.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/leaf-convert.el.png]]
+
 [[https://github.com/conao3/leaf-convert.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/leaf-convert.el.svg?style=flat-square]]
 [[https://github.com/conao3/leaf-convert.el/releases][https://img.shields.io/github/tag/conao3/leaf-convert.el.svg?style=flat-square]]
 [[https://github.com/conao3/leaf-convert.el/actions][https://github.com/conao3/leaf-convert.el/workflows/Main%20workflow/badge.svg]]
-[[https://app.codacy.com/project/conao3/leaf-convert.el/dashboard][https://img.shields.io/codacy/grade/62a36f4f04524d5e8c758440e8071c45.svg?logo=codacy&style=flat-square]]
-[[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
-[[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
 
-* Table of Contents
-- [[#description][Description]]
-- [[#install][Install]]
-- [[#usage][Usage]]
-- [[#customize][Customize]]
-- [[#syntaxes][Syntaxes]]
-- [[#information][Information]]
-  - [[#community][Community]]
-  - [[#contribution][Contribution]]
-  - [[#migration][Migration]]
-  - [[#license][License]]
-  - [[#author][Author]]
-  - [[#contributors][Contributors]]
-  - [[#special-thanks][Special Thanks]]
+* Overview
 
-* Description
-Convert from a plain Elisp to an expression using a ~leaf~.
+Convert plain Emacs Lisp or ~use-package~ declarations into ~leaf~ expressions.
 
-This is accomplished by not just converting ~use-package~'s keywords, but by converting them once they have been expanded to a plain Elisp.
+Rather than simply translating ~use-package~ keywords, this package expands the source to plain Elisp first, then converts it to ~leaf~. This approach can produce cleaner ~leaf~ expressions, though forms without corresponding keywords will be placed in the ~:config~ section.
 
-This may result in a simpler ~leaf~ expression, but if there is no corresponding keyword, most of it will be converted to a ~:config~ section.
+You can also run ~leaf~ expressions through the converter to optimize and reorganize them with appropriate keywords.
 
-Since the source is Elisp, it is possible to convert the ~leaf~ to Elisp once and then convert it to ~leaf~ again.
+* Requirements
 
-This can be used to convert miscellaneous settings in the ~:config~ section into ~leaf~ expressions with appropriate keywords.
-It is also possible to optimize settings that are not needed.
+- Emacs 26.1 or later
+- [[https://github.com/conao3/leaf.el][leaf]] 3.6.0 or later
+- [[https://github.com/conao3/leaf-keywords.el][leaf-keywords]] 1.1.0 or later
+- [[https://github.com/conao3/ppp.el][ppp]] 2.1 or later
 
-Currently, the following ~leaf~ keywords are supported for automatic conversion.
+* Installation
+
+Install from MELPA:
 
 #+begin_src emacs-lisp
-  (leaf-available-keywords)
-  ;;=> (:disabled
-  ;;    :leaf-protect           ; <leaf system keyword>
-  ;;    :load-path              ; supported!!
-  ;;    :load-path*             ; supported!!
-  ;;    :leaf-autoload          ; <leaf system keyword>
-  ;;    :doc                    ; <leaf doc keyword>
-  ;;    :req                    ; <leaf doc keyword>
-  ;;    :tag                    ; <leaf doc keyword>
-  ;;    :file                   ; <leaf doc keyword>
-  ;;    :url                    ; <leaf doc keyword>
-  ;;    :added                  ; <leaf doc keyword>
-  ;;    :defun                  ; supported!!
-  ;;    :defvar                 ; supported!!
-  ;;    :leaf-defun             ; <leaf system keyword>
-  ;;    :leaf-defvar            ; <leaf system keyword>
-  ;;    :preface                ; supported!!
-  ;;    :when                   ; supported!!
-  ;;    :unless                 ; supported!!
-  ;;    :if                     ; <convert to :when or :unless>
-  ;;    :emacs<
-  ;;    :emacs<=
-  ;;    :emacs=
-  ;;    :emacs>
-  ;;    :emacs>=
-  ;;    :package                ; <converted to :ensure>
-  ;;    :ensure                 ; supported!!
-  ;;    :feather                ; <no corresponding sexp>
-  ;;    :straight
-  ;;    :el-get
-  ;;    :after                  ; supported!!
-  ;;    :commands               ; supported!!
-  ;;    :bind                   ; supported!!
-  ;;    :bind*                  ; supported!!
-  ;;    :mode                   ; supported!!
-  ;;    :interpreter            ; supported!!
-  ;;    :magic                  ; supported!!
-  ;;    :magic-fallback         ; supported!!
-  ;;    :hook                   ; supported!!
-  ;;    :advice
-  ;;    :advice-remove
-  ;;    :init                   ; supported!!
-  ;;    :pre-setq
-  ;;    :pl-pre-setq
-  ;;    :auth-pre-setq
-  ;;    :custom                 ; supported!!
-  ;;    :custom*                ; supported!!
-  ;;    :pl-custom
-  ;;    :auth-custom
-  ;;    :custom-face            ; supported!!
-  ;;    :require                ; supported!!
-  ;;    :hydra
-  ;;    :transient
-  ;;    :combop
-  ;;    :combo*
-  ;;    :smartrep
-  ;;    :smartrep*
-  ;;    :chord                  ; supported!!
-  ;;    :chord*                 ; supported!!
-  ;;    :mode-hook
-  ;;    :leaf-defer
-  ;;    :config                 ; supported!!
-  ;;    :global-minor-mode
-  ;;    :diminish               ; supported!!
-  ;;    :delight                ; supported!!
-  ;;    :setq                   ; supported!!
-  ;;    :setq-default           ; supoorted!!
-  ;;    :pl-setq
-  ;;    :auth-setq
-  ;;    :pl-setq-default
-  ;;    :auth-setq-default)
-#+end_src
-
-* Install
-~leaf-convert~ is available via ~el-get~.
-
-#+begin_src emacs-lisp
-  (leaf leaf-convert :ensure t)
+(leaf leaf-convert :ensure t)
 #+end_src
 
 * Usage
-Pass any S-exps to ~leaf-convert~ to get a ~leaf~ expression.
+
+Pass any S-expressions to ~leaf-convert~ to get the corresponding ~leaf~ form.
+
+** Converting key bindings
 
 #+begin_src emacs-lisp
-  (leaf-convert
-   (defvar leaf-covert-variable)
-   (bind-key "C-c x" 'my-ctrl-c-x-command)
-   (bind-key "C-c x" 'my-ctrl-c-x-command some-other-mode-map)
-   (bind-keys :map dired-mode-map
-              ("o" . dired-omit-mode)
-              ("a" . some-custom-dired-function)))
-  ;;=> (leaf leaf-convert
-  ;;     :defvar leaf-covert-variable
-  ;;     :bind (("C-c x" . my-ctrl-c-x-command)
-  ;;            (some-other-mode-map
-  ;;             ("C-c x" . my-ctrl-c-x-command))
-  ;;            (dired-mode-map
-  ;;             ("o" . dired-omit-mode)
-  ;;             ("a" . some-custom-dired-function))))
+(leaf-convert
+ (defvar leaf-covert-variable)
+ (bind-key "C-c x" 'my-ctrl-c-x-command)
+ (bind-key "C-c x" 'my-ctrl-c-x-command some-other-mode-map)
+ (bind-keys :map dired-mode-map
+            ("o" . dired-omit-mode)
+            ("a" . some-custom-dired-function)))
 
-  (leaf-convert
-   (use-package edit-server
-     :if window-system
-     :init
-     (add-hook 'after-init-hook 'server-start t)
-     (add-hook 'after-init-hook 'edit-server-start t)))
-  ;;=> (leaf edit-server
-  ;;     :when window-system
-  ;;     :hook ((after-init-hook . server-start)
-  ;;            (after-init-hook . edit-server-start))
-  ;;     :require t)
-
-  (leaf-convert
-   (leaf markdown-mode
-     ;;:mode ("\\.md\\'" . commonmark-gfm-mode)
-     :config
-     (with-eval-after-load 'markdown-mode
-       (require 'org-table)
-       (add-hook 'markdown-mode-hook 'orgtbl-mode)
-       (unbind-key "`" gfm-mode-map)
-       (visual-line-mode nil))))
-  ;;=> (leaf markdown-mode
-  ;;     :after t
-  ;;     :hook ((markdown-mode-hook . orgtbl-mode))
-  ;;     :require org-table
-  ;;     :config
-  ;;     (unbind-key "`" gfm-mode-map)
-  ;;     (visual-line-mode nil))
+;; Result:
+;; (leaf leaf-convert
+;;   :defvar leaf-covert-variable
+;;   :bind (("C-c x" . my-ctrl-c-x-command)
+;;          (some-other-mode-map
+;;           ("C-c x" . my-ctrl-c-x-command))
+;;          (dired-mode-map
+;;           ("o" . dired-omit-mode)
+;;           ("a" . some-custom-dired-function))))
 #+end_src
 
-* Customize
+** Converting use-package declarations
 
-* Information
-** Community
-All feedback and suggestions are welcome!
+#+begin_src emacs-lisp
+(leaf-convert
+ (use-package edit-server
+   :if window-system
+   :init
+   (add-hook 'after-init-hook 'server-start t)
+   (add-hook 'after-init-hook 'edit-server-start t)))
 
-You can use github issues, but you can also use [[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][Slack]]
-if you want a more casual conversation.
+;; Result:
+;; (leaf edit-server
+;;   :when window-system
+;;   :hook ((after-init-hook . server-start)
+;;          (after-init-hook . edit-server-start))
+;;   :require t)
+#+end_src
 
-** Contribution
-We welcome PR!
+** Optimizing existing leaf expressions
 
-*** Require tools for testing
-- cask
-  - install via brew
-    #+begin_src shell
-      brew install cask
-    #+end_src
+#+begin_src emacs-lisp
+(leaf-convert
+ (leaf markdown-mode
+   :config
+   (with-eval-after-load 'markdown-mode
+     (require 'org-table)
+     (add-hook 'markdown-mode-hook 'orgtbl-mode)
+     (unbind-key "`" gfm-mode-map)
+     (visual-line-mode nil))))
 
-  - manual install
-    #+begin_src shell
-      cd ~/
-      hub clone cask/cask
-      export PATH="$HOME/.cask/bin:$PATH"
-    #+end_src
+;; Result:
+;; (leaf markdown-mode
+;;   :after t
+;;   :hook ((markdown-mode-hook . orgtbl-mode))
+;;   :require org-table
+;;   :config
+;;   (unbind-key "`" gfm-mode-map)
+;;   (visual-line-mode nil))
+#+end_src
 
-*** Running test
-Below operation flow is recommended.
+* Supported Keywords
+
+The following ~leaf~ keywords are supported for automatic conversion:
+
+| Keyword          | Status                        |
+|------------------+-------------------------------|
+| ~:load-path~     | Supported                     |
+| ~:load-path*~    | Supported                     |
+| ~:defun~         | Supported                     |
+| ~:defvar~        | Supported                     |
+| ~:preface~       | Supported                     |
+| ~:when~          | Supported                     |
+| ~:unless~        | Supported                     |
+| ~:if~            | Converted to ~:when/:unless~  |
+| ~:package~       | Converted to ~:ensure~        |
+| ~:ensure~        | Supported                     |
+| ~:after~         | Supported                     |
+| ~:commands~      | Supported                     |
+| ~:bind~          | Supported                     |
+| ~:bind*~         | Supported                     |
+| ~:mode~          | Supported                     |
+| ~:interpreter~   | Supported                     |
+| ~:magic~         | Supported                     |
+| ~:magic-fallback~| Supported                     |
+| ~:hook~          | Supported                     |
+| ~:init~          | Supported                     |
+| ~:custom~        | Supported                     |
+| ~:custom*~       | Supported                     |
+| ~:custom-face~   | Supported                     |
+| ~:require~       | Supported                     |
+| ~:chord~         | Supported                     |
+| ~:chord*~        | Supported                     |
+| ~:config~        | Supported                     |
+| ~:diminish~      | Supported                     |
+| ~:delight~       | Supported                     |
+| ~:setq~          | Supported                     |
+| ~:setq-default~  | Supported                     |
+
+* Contributing
+
+Contributions are welcome. Please feel free to open issues or submit pull requests on [[https://github.com/conao3/leaf-convert.el][GitHub]].
+
+** Development Setup
+
+1. Clone the repository
+2. Install [[https://github.com/cask/cask][Cask]] for dependency management
+3. Run ~make~ to set up the development environment
+4. Run ~make test~ to run the test suite
+
+** Workflow
+
 #+begin_src shell
-  make                              # Install git-hooks in local .git
-
-  git branch [feature-branch]       # Create branch named [feature-branch]
-  git checkout [feature-branch]     # Checkout branch named [feature-branch]
-
-  # <edit loop>
-  emacs leaf-convert.el             # Edit something you want
-
-  make test                         # Test leaf-convert via multi version Emacs
-  git commit -am "brabra"           # Commit (auto-run test before commit)
-  # </edit loop>
-
-  hub fork                          # Create fork at GitHub
-  git push [user] [feature-branch]  # Push feature-branch to your fork
-  hub pull-request                  # Create pull-request
+git checkout -b feature-branch
+# Make your changes
+make test
+git commit -am "Description of changes"
+git push origin feature-branch
+# Open a pull request
 #+end_src
 
-** Migration
+* License
 
-** License
-#+begin_example
-  General Public License Version 3 (GPLv3)
-  Copyright (c) Naoya Yamashita - https://conao3.com
-  https://github.com/conao3/leaf-convert.el/blob/master/LICENSE
-#+end_example
+GPL-3.0. See [[https://github.com/conao3/leaf-convert.el/blob/master/LICENSE][LICENSE]] for details.
 
-** Author
-- Naoya Yamashita ([[https://github.com/conao3][conao3]])
+Copyright (C) 2020 Naoya Yamashita
 
-** Contributors
+* Author
+
+Naoya Yamashita ([[https://github.com/conao3][conao3]])
