@@ -333,6 +333,11 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
            (_
             (push `(custom-set-faces ,spec) (alist-get 'config contents))))))
 
+      (`(apply #'face-spec-set (backquote (,(and (pred symbolp) elm) ,val)))
+       (if (memq '\, (leaf-flatten val))
+           (push `(custom-set-faces (backquote (,elm ,val))) (alist-get 'config contents))
+         (push `(,elm . ',val) (alist-get 'custom-face contents))))
+
       ;; :require
       (`(require ',(and (pred symbolp) elm))
        (progn                           ; move :config sexp to :init section
@@ -343,9 +348,11 @@ Add convert SEXP to leaf-convert-contents to CONTENTS."
        (setq contents (leaf-convert-contents-new--sexp-1 `(require ',elm) contents)))
 
       ;; :chord, :chord*
-      (`(key-chord-define-global ,(or (and (pred stringp) key) (and (pred vector) key)) ',(and (pred symbolp) fn))
+      (`(key-chord-define-global ,(or (and (pred stringp) key) (and (pred vector) key)) ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn)))
        (push `(,key . ,fn) (alist-get 'chord contents)))
-      (`(bind-chord ,(or (and (pred stringp) key) (and (pred vector) key)) ',(and (pred symbolp) fn))
+      (`(bind-chord ,(or (and (pred stringp) key) (and (pred vector) key)) ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn)))
+       (push `(,key . ,fn) (alist-get 'chord contents)))
+      (`(bind-chord ,(or (and (pred stringp) key) (and (pred vector) key)) ,(or `',(and (pred symbolp) fn) `#',(and (pred symbolp) fn)) nil)
        (push `(,key . ,fn) (alist-get 'chord contents)))
 
       ;; :diminish, :delight
@@ -579,6 +586,7 @@ And kill generated leaf block to quick yank."
 (defvar leaf-expand-minimally)
 (defvar use-package-expand-minimally)
 (defvar use-package-ensure-function)
+(defvar use-package-use-theme)
 
 (defun leaf-convert--expand-use-package (sexp)
   "Macroexpand-1 for use-package SEXP.
@@ -617,6 +625,7 @@ And kill generated leaf block to quick yank."
                  (funcall (lambda (elm) (setf (car elm) op) elm))
                  (funcall (lambda (elm)
                             (let ((use-package-expand-minimally t)
+                                  (use-package-use-theme nil)
                                   (leaf-expand-minimally t))
                               (macroexpand-1 elm))))
                  (cl-subst 'use-package sym)))
@@ -625,6 +634,7 @@ And kill generated leaf block to quick yank."
                   (funcall (lambda (elm) (setf (car elm) op) elm))
                   (funcall (lambda (elm)
                              (let ((use-package-expand-minimally t)
+                                   (use-package-use-theme nil)
                                    (leaf-expand-minimally t)
                                    (byte-compile-current-file t)  ; use-package hack
                                    (use-package-ensure-function 'ignore))
