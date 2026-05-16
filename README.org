@@ -18,9 +18,9 @@ You can also run ~leaf~ expressions through the converter to optimize and reorga
 * Requirements
 
 - Emacs 26.1 or later
-- [[https://github.com/conao3/leaf.el][leaf]] 3.6.0 or later
-- [[https://github.com/conao3/leaf-keywords.el][leaf-keywords]] 1.1.0 or later
-- [[https://github.com/conao3/ppp.el][ppp]] 2.1 or later
+- [[https://github.com/conao3/leaf.el][leaf]] 4.5.5 or later
+- [[https://github.com/conao3/leaf-keywords.el][leaf-keywords]] 2.0.8 or later
+- [[https://github.com/conao3/ppp.el][ppp]] 2.2.4 or later
 
 * Installation
 
