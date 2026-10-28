@@ -295,7 +295,8 @@
         :hook (prog-mode-hook text-mode-hook)))))
 
 (cort-deftest-generate leaf-convert/use-package--package-customization :equal
-  '(
+  (append
+   '(
     ((leaf-convert
       (use-package comint
         :custom
@@ -306,8 +307,33 @@
         :custom ((comint-prompt-regexp . "^"))
         :custom* ((comint-buffer-maximum-size 20000 "Increase comint buffer size.")
                   (comint-prompt-read-only t "Make the prompt read only."))
+        :require t)))
+   (if (version<= "31" emacs-version)
+       '(
+    ((leaf-convert
+      (use-package eruby-mode
+        :custom-face
+        (eruby-standard-face ((t (:slant italic))))))
+     '(leaf eruby-mode
+        :init (apply #'face-spec-set (append (backquote (eruby-standard-face ((t (:slant italic))))) '(face-defface-spec)))
+        (put 'eruby-standard-face 'face-modified t)
         :require t))
 
+    ((leaf-convert
+      (use-package eruby-mode
+        :custom-face
+        (eruby-standard-face ((t (,(or :slant) italic))))
+        (org-level-1 ((t (:bold t :foreground "dodger blue" :height 1.0))))
+        (org-level-2 ((t (:bold t :foreground "#edd400" :height 1.0))))))
+     '(leaf eruby-mode
+        :init (apply #'face-spec-set (append (backquote (eruby-standard-face ((t ((\, (or :slant)) italic))))) '(face-defface-spec)))
+        (put 'eruby-standard-face 'face-modified t)
+        (apply #'face-spec-set (append (backquote (org-level-1 ((t (:bold t :foreground "dodger blue" :height 1.0))))) '(face-defface-spec)))
+        (put 'org-level-1 'face-modified t)
+        (apply #'face-spec-set (append (backquote (org-level-2 ((t (:bold t :foreground "#edd400" :height 1.0))))) '(face-defface-spec)))
+        (put 'org-level-2 'face-modified t)
+        :require t)))
+     '(
     ((leaf-convert
       (use-package eruby-mode
         :custom-face
@@ -328,7 +354,7 @@
          (org-level-2 . '((t (:bold t :foreground "#edd400" :height 1.0)))))
         :init (custom-set-faces
                (backquote (eruby-standard-face ((t ((\, (or :slant)) italic))))))
-        :require t))))
+        :require t))))))
 
 (cort-deftest-generate leaf-convert/use-package--condition-loading :equal
   '(
