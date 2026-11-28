@@ -1,11 +1,14 @@
-#+title: leaf-convert.el
 #+author: Naoya Yamashita
 
-[[https://github.com/conao3/leaf-convert.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/leaf-convert.el.png]]
+#+html: <p align="center"><img src="docs/assets/banner.png" alt="leaf-convert.el: Convert use-package and plain Emacs Lisp into leaf expressions" width="880"></p>
 
-[[https://github.com/conao3/leaf-convert.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/leaf-convert.el.svg?style=flat-square]]
-[[https://github.com/conao3/leaf-convert.el/releases][https://img.shields.io/github/tag/conao3/leaf-convert.el.svg?style=flat-square]]
-[[https://github.com/conao3/leaf-convert.el/actions][https://github.com/conao3/leaf-convert.el/workflows/Main%20workflow/badge.svg]]
+#+html: <p align="center"><strong>Convert use-package and plain Emacs Lisp into leaf expressions</strong></p>
+
+#+html: <p align="center"><a href="https://github.com/conao3/leaf-convert.el/actions/workflows/test.yml"><img src="https://github.com/conao3/leaf-convert.el/actions/workflows/test.yml/badge.svg?branch=master" alt="CI"></a> <a href="https://elispore.conao3.com/?q=repo:conao3/leaf-convert.el"><img src="https://img.shields.io/static/v1?label=elispore&message=leaf-convert.el&color=c96442" alt="Elispore"></a> <a href="LICENSE"><img src="https://img.shields.io/github/license/conao3/leaf-convert.el" alt="License"></a> <a href="leaf-convert.el"><img src="https://img.shields.io/badge/Emacs-26.1%2B-7F5AB6" alt="Emacs 26.1+"></a> <a href="https://github.com/conao3/leaf-convert.el/stargazers"><img src="https://img.shields.io/github/stars/conao3/leaf-convert.el?style=flat" alt="GitHub stars"></a></p>
+
+#+html: <p align="center"><a href="#installation">Installation</a> | <a href="#usage">Usage</a> | <a href="#supported-keywords">Supported Keywords</a> | <a href="#license">License</a></p>
+
+#+html: <h1>leaf-convert.el</h1>
 
 * Overview
 
